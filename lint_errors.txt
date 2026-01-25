@@ -1,0 +1,665 @@
+﻿
+> lumike-ui@0.1.0 lint
+> eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=0
+
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\jest.config.js
+  1:18  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\categorias\CategoryModal.tsx
+   9:23  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+  23:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\categorias\CategoryModal.tsx:23:7
+  21 |   useEffect(() => {
+  22 |     if (categoria) {
+> 23 |       setForm({
+     |       ^^^^^^^ Avoid calling setState() directly within an effect
+  24 |         name: categoria.name || '',
+  25 |         slug: categoria.slug || '',
+  26 |         description: categoria.description || '',  react-hooks/set-state-in-effect
+  46:26  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\categorias\page.tsx
+  11:10  warning  'Tag' is defined but never used           @typescript-eslint/no-unused-vars
+  48:46  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  57:14  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+  70:14  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\clientes\CustomerModal.tsx
+   9:21  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-explicit-any
+  28:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\clientes\CustomerModal.tsx:28:7
+  26 |   useEffect(() => {
+  27 |     if (cliente) {
+> 28 |       setForm({
+     |       ^^^^^^^ Avoid calling setState() directly within an effect
+  29 |         name: cliente.name || '',
+  30 |         email: cliente.email || '',
+  31 |         phone: cliente.phone || '',  react-hooks/set-state-in-effect
+  52:24  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\clientes\[id]\page.tsx
+   6:10  warning  'useCustomers' is defined but never used  @typescript-eslint/no-unused-vars
+  18:46  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\clientes\page.tsx
+   9:10  warning  'StatusBadge' is defined but never used   @typescript-eslint/no-unused-vars
+  54:44  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  63:14  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+  76:14  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\colecoes\CollectionModal.tsx
+   9:21  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  23:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\colecoes\CollectionModal.tsx:23:7
+  21 |   useEffect(() => {
+  22 |     if (colecao) {
+> 23 |       setForm({
+     |       ^^^^^^^ Avoid calling setState() directly within an effect
+  24 |         nome: colecao.nome || '',
+  25 |         slug: colecao.slug || '',
+  26 |         descricao: colecao.descricao || '',  react-hooks/set-state-in-effect
+  46:24  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\colecoes\page.tsx
+  11:10  warning  'FolderOpen' is defined but never used    @typescript-eslint/no-unused-vars
+  48:44  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  57:14  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+  70:14  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\configuracoes\page.tsx
+  6:10  warning  'ImageUpload' is defined but never used    @typescript-eslint/no-unused-vars
+  7:10  warning  'imagesService' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\estoque\page.tsx
+   33:6   warning  React Hook useEffect has a missing dependency: 'inventory'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   54:14  warning  'err' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+  134:9   warning  'historyColumns' is assigned a value but never used                                                           @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\page.tsx
+  34:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\produtos\ProductModal.tsx
+   17:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   98:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  122:74  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  151:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  193:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\produtos\etiquetas\page.tsx
+   3:20  warning  'useRef' is defined but never used                    @typescript-eslint/no-unused-vars
+   8:33  warning  'X' is defined but never used                         @typescript-eslint/no-unused-vars
+  17:23  warning  'loadProducts' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  17:37  warning  'loadingProducts' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\produtos\importar\page.tsx
+  155:29  error  Parsing error: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\produtos\page.tsx
+   9:21  warning  'Column' is defined but never used        @typescript-eslint/no-unused-vars
+  14:10  warning  'Package' is defined but never used       @typescript-eslint/no-unused-vars
+  57:44  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  66:14  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+  79:14  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\vendas\nova\page.tsx
+  88:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\vendas\page.tsx
+  12:10  warning  'Eye' is defined but never used  @typescript-eslint/no-unused-vars
+  57:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+  70:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\vendas\recibo\[id]\page.tsx
+   7:10  warning  'Loading' is defined but never used                                                                           @typescript-eslint/no-unused-vars
+   8:10  warning  'ErrorMessage' is defined but never used                                                                      @typescript-eslint/no-unused-vars
+  21:8   warning  React Hook useEffect has a missing dependency: 'loadOrder'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  32:23  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\api\categorias\slug\[slug]\route.ts
+  7:23  warning  'NextResponse' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\api\colecoes\route.ts
+  29:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  49:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\api\colecoes\slug\[slug]\route.ts
+  7:23  warning  'NextResponse' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\api\login\route.ts
+   9:10  warning  'api' is defined but never used           @typescript-eslint/no-unused-vars
+  53:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\api\pedidos\[id]\route.ts
+  46:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\api\produtos\[id]\images\[imageId]\order\route.ts
+  33:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\api\produtos\slug\[slug]\route.ts
+  28:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\layout.tsx
+  15:9  warning  Custom fonts not added in `pages/_document.js` will only load for a single page. This is discouraged. See: https://nextjs.org/docs/messages/no-page-custom-font  @next/next/no-page-custom-font
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\page.tsx
+   7:10  warning  'Header' is defined but never used          @typescript-eslint/no-unused-vars
+   8:8   warning  'Link' is defined but never used            @typescript-eslint/no-unused-vars
+  38:9   warning  'limit' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\produtos\[slug]\page.tsx
+   10:8   warning  'Image' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   11:10  warning  'ShoppingCart' is defined but never used                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   25:6   warning  React Hook useEffect has a missing dependency: 'loadProduct'. Either include it or remove the dependency array                                                                                                                                                                           react-hooks/exhaustive-deps
+   37:16  warning  'slugError' is defined but never used                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   48:54  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   57:19  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   86:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  104:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\components\admin\Sidebar.tsx
+  17:3  warning  'FileUp' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\components\footer.tsx
+  20:17  error  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  25:17  error  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  30:17  error  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\components\ui\image-upload.tsx
+  56:21  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  79:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\components\ui\pagination-info.tsx
+  19:3  warning  'totalPages' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\components\ui\pagination.tsx
+  32:7  error  'endPage' is never reassigned. Use 'const' instead  prefer-const
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\api-helpers.ts
+   16:11  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   48:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   74:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  101:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  126:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\api-proxy.ts
+  15:10  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\api-server.ts
+  1:10  warning  'cookies' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-api.ts
+  14:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-categories.ts
+  24:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `listApi`, but the source dependencies were [listApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-categories.ts:24:5
+  22 |
+  23 |   const loadCategories = useCallback(
+> 24 |     async (isActive?: boolean) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |       return listApi.execute(() => categoriesService.getAll(isActive));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  27 |     [listApi.execute],
+  28 |   );
+  29 |                                                              react-hooks/preserve-manual-memoization
+  27:5  warning  React Hook useCallback has a missing dependency: 'listApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+  31:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `createApi`, but the source dependencies were [createApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-categories.ts:31:5
+  29 |
+  30 |   const createCategory = useCallback(
+> 31 |     async (category: CreateCategoryDto) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |       return createApi.execute(() => categoriesService.create(category));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  34 |     [createApi.execute],
+  35 |   );
+  36 |                                  react-hooks/preserve-manual-memoization
+  34:5  warning  React Hook useCallback has a missing dependency: 'createApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+  38:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `updateApi`, but the source dependencies were [updateApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-categories.ts:38:5
+  36 |
+  37 |   const updateCategory = useCallback(
+> 38 |     async (id: number, category: UpdateCategoryDto) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 39 |       return updateApi.execute(() => categoriesService.update(id, category));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 40 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  41 |     [updateApi.execute],
+  42 |   );
+  43 |  react-hooks/preserve-manual-memoization
+  41:5  warning  React Hook useCallback has a missing dependency: 'updateApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+  45:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `deleteApi`, but the source dependencies were [deleteApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-categories.ts:45:5
+  43 |
+  44 |   const deleteCategory = useCallback(
+> 45 |     async (id: number) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |       return deleteApi.execute(() => categoriesService.remove(id));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 47 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  48 |     [deleteApi.execute],
+  49 |   );
+  50 |                                                                                react-hooks/preserve-manual-memoization
+  48:5  warning  React Hook useCallback has a missing dependency: 'deleteApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-collections.ts
+  24:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `listApi`, but the source dependencies were [listApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-collections.ts:24:5
+  22 |
+  23 |   const loadCollections = useCallback(
+> 24 |     async (isActive?: boolean) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |       return listApi.execute(() => collectionsService.getAll(isActive));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  27 |     [listApi.execute],
+  28 |   );
+  29 |                                                                           react-hooks/preserve-manual-memoization
+  27:5  warning  React Hook useCallback has a missing dependency: 'listApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  react-hooks/exhaustive-deps
+  31:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `createApi`, but the source dependencies were [createApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-collections.ts:31:5
+  29 |
+  30 |   const createCollection = useCallback(
+> 31 |     async (collection: CreateCollectionDto) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |       return createApi.execute(() => collectionsService.create(collection));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  34 |     [createApi.execute],
+  35 |   );
+  36 |                                  react-hooks/preserve-manual-memoization
+  34:5  warning  React Hook useCallback has a missing dependency: 'createApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+  38:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `updateApi`, but the source dependencies were [updateApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-collections.ts:38:5
+  36 |
+  37 |   const updateCollection = useCallback(
+> 38 |     async (id: string, collection: UpdateCollectionDto) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 39 |       return updateApi.execute(() => collectionsService.update(id, collection));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 40 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  41 |     [updateApi.execute],
+  42 |   );
+  43 |  react-hooks/preserve-manual-memoization
+  41:5  warning  React Hook useCallback has a missing dependency: 'updateApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+  45:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `deleteApi`, but the source dependencies were [deleteApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-collections.ts:45:5
+  43 |
+  44 |   const deleteCollection = useCallback(
+> 45 |     async (id: string) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |       return deleteApi.execute(() => collectionsService.remove(id));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 47 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  48 |     [deleteApi.execute],
+  49 |   );
+  50 |                                                                                            react-hooks/preserve-manual-memoization
+  48:5  warning  React Hook useCallback has a missing dependency: 'deleteApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-customers.ts
+  26:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `listApi`, but the source dependencies were [listApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-customers.ts:26:5
+  24 |
+  25 |   const loadCustomers = useCallback(
+> 26 |     async (page = 1, limit = 50) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |       return listApi.execute(() => customersService.getAll(page, limit));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  29 |     [listApi.execute],
+  30 |   );
+  31 |                                                     react-hooks/preserve-manual-memoization
+  29:5  warning  React Hook useCallback has a missing dependency: 'listApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+  33:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `createApi`, but the source dependencies were [createApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-customers.ts:33:5
+  31 |
+  32 |   const createCustomer = useCallback(
+> 33 |     async (customer: CreateCustomerDto) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |       return createApi.execute(() => customersService.create(customer));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  36 |     [createApi.execute],
+  37 |   );
+  38 |                                  react-hooks/preserve-manual-memoization
+  36:5  warning  React Hook useCallback has a missing dependency: 'createApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  40:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `updateApi`, but the source dependencies were [updateApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-customers.ts:40:5
+  38 |
+  39 |   const updateCustomer = useCallback(
+> 40 |     async (id: number, customer: UpdateCustomerDto) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |       return updateApi.execute(() => customersService.update(id, customer));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 42 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  43 |     [updateApi.execute],
+  44 |   );
+  45 |  react-hooks/preserve-manual-memoization
+  43:5  warning  React Hook useCallback has a missing dependency: 'updateApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  47:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `deleteApi`, but the source dependencies were [deleteApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-customers.ts:47:5
+  45 |
+  46 |   const deleteCustomer = useCallback(
+> 47 |     async (id: number) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^
+> 48 |       return deleteApi.execute(() => customersService.remove(id));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 49 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  50 |     [deleteApi.execute],
+  51 |   );
+  52 |                                                                                react-hooks/preserve-manual-memoization
+  50:5  warning  React Hook useCallback has a missing dependency: 'deleteApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-inventory.ts
+  24:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `entryApi`, but the source dependencies were [productId, entryApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-inventory.ts:24:5
+  22 |
+  23 |   const addStock = useCallback(
+> 24 |     async (dto: StockEntryDto) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |       if (!productId) throw new Error('Product ID ├® obrigat├│rio');
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |       return entryApi.execute(() => inventoryService.addStock(productId, dto));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  28 |     [productId, entryApi.execute],
+  29 |   );
+  30 |                 react-hooks/preserve-manual-memoization
+  28:5  warning  React Hook useCallback has a missing dependency: 'entryApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  32:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `exitApi`, but the source dependencies were [productId, exitApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-inventory.ts:32:5
+  30 |
+  31 |   const removeStock = useCallback(
+> 32 |     async (dto: StockExitDto) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |       if (!productId) throw new Error('Product ID ├® obrigat├│rio');
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |       return exitApi.execute(() => inventoryService.removeStock(productId, dto));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  36 |     [productId, exitApi.execute],
+  37 |   );
+  38 |                 react-hooks/preserve-manual-memoization
+  36:5  warning  React Hook useCallback has a missing dependency: 'exitApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/exhaustive-deps
+  40:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `historyApi`, but the source dependencies were [productId, historyApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-inventory.ts:40:5
+  38 |
+  39 |   const loadHistory = useCallback(
+> 40 |     async (limit: number = 50) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |       if (!productId) throw new Error('Product ID ├® obrigat├│rio');
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 42 |       return historyApi.execute(() => inventoryService.getHistory(productId, limit));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 43 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  44 |     [productId, historyApi.execute],
+  45 |   );
+  46 |  react-hooks/preserve-manual-memoization
+  44:5  warning  React Hook useCallback has a missing dependency: 'historyApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+  48:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `stockApi`, but the source dependencies were [productId, stockApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-inventory.ts:48:5
+  46 |
+  47 |   const loadStock = useCallback(
+> 48 |     async () => {
+     |     ^^^^^^^^^^^^^
+> 49 |       if (!productId) throw new Error('Product ID ├® obrigat├│rio');
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 50 |       return stockApi.execute(() => inventoryService.getStock(productId));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 51 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  52 |     [productId, stockApi.execute],
+  53 |   );
+  54 |                                                         react-hooks/preserve-manual-memoization
+  52:5  warning  React Hook useCallback has a missing dependency: 'stockApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-orders.ts
+  25:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `listApi`, but the source dependencies were [listApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-orders.ts:25:5
+  23 |
+  24 |   const loadOrders = useCallback(
+> 25 |     async (page = 1, limit = 50, status?: string, customerId?: number) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |       return listApi.execute(() => ordersService.getAll(page, limit, status, customerId));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  28 |     [listApi.execute],
+  29 |   );
+  30 |  react-hooks/preserve-manual-memoization
+  28:5  warning  React Hook useCallback has a missing dependency: 'listApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react-hooks/exhaustive-deps
+  32:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `createApi`, but the source dependencies were [createApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-orders.ts:32:5
+  30 |
+  31 |   const createOrder = useCallback(
+> 32 |     async (order: CreateOrderDto) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |       return createApi.execute(() => ordersService.create(order));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  35 |     [createApi.execute],
+  36 |   );
+  37 |                                                                                                                     react-hooks/preserve-manual-memoization
+  35:5  warning  React Hook useCallback has a missing dependency: 'createApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+  39:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `updateApi`, but the source dependencies were [updateApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-orders.ts:39:5
+  37 |
+  38 |   const updateOrderStatus = useCallback(
+> 39 |     async (id: number, status: string) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 40 |       return updateApi.execute(() => ordersService.updateStatus(id, status));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  42 |     [updateApi.execute],
+  43 |   );
+  44 |                                                                               react-hooks/preserve-manual-memoization
+  42:5  warning  React Hook useCallback has a missing dependency: 'updateApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+  46:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `deleteApi`, but the source dependencies were [deleteApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-orders.ts:46:5
+  44 |
+  45 |   const deleteOrder = useCallback(
+> 46 |     async (id: number) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^
+> 47 |       return deleteApi.execute(() => ordersService.remove(id));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 48 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  49 |     [deleteApi.execute],
+  50 |   );
+  51 |                                                                                                                                                 react-hooks/preserve-manual-memoization
+  49:5  warning  React Hook useCallback has a missing dependency: 'deleteApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-products.ts
+  13:57  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-explicit-any
+  19:5   error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `listApi`, but the source dependencies were [listApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-products.ts:19:5
+  17 |
+  18 |   const loadProducts = useCallback(
+> 19 |     async (page = 1, limit = 50, isActive?: boolean) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 20 |       return listApi.execute(() => productsService.getAll(page, limit, isActive));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  22 |     [listApi.execute],
+  23 |   );
+  24 |  react-hooks/preserve-manual-memoization
+  22:5   warning  React Hook useCallback has a missing dependency: 'listApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react-hooks/exhaustive-deps
+  26:5   error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `createApi`, but the source dependencies were [createApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-products.ts:26:5
+  24 |
+  25 |   const createProduct = useCallback(
+> 26 |     async (product: CreateProductDto) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |       return createApi.execute(() => productsService.create(product));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  29 |     [createApi.execute],
+  30 |   );
+  31 |                                                 react-hooks/preserve-manual-memoization
+  29:5   warning  React Hook useCallback has a missing dependency: 'createApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+  33:5   error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `updateApi`, but the source dependencies were [updateApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-products.ts:33:5
+  31 |
+  32 |   const updateProduct = useCallback(
+> 33 |     async (id: number, product: UpdateProductDto) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |       return updateApi.execute(() => productsService.update(id, product));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  36 |     [updateApi.execute],
+  37 |   );
+  38 |                 react-hooks/preserve-manual-memoization
+  36:5   warning  React Hook useCallback has a missing dependency: 'updateApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+  40:5   error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `deleteApi`, but the source dependencies were [deleteApi.execute]. Inferred less specific property than source.
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-products.ts:40:5
+  38 |
+  39 |   const deleteProduct = useCallback(
+> 40 |     async (id: number) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |       return deleteApi.execute(() => productsService.remove(id));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 42 |     },
+     | ^^^^^^ Could not preserve existing manual memoization
+  43 |     [deleteApi.execute],
+  44 |   );
+  45 |                                                                                         react-hooks/preserve-manual-memoization
+  43:5   warning  React Hook useCallback has a missing dependency: 'deleteApi'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\services\categories.service.ts
+  26:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\services\collections.service.ts
+  26:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\services\customers.service.ts
+  38:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\services\images.service.ts
+  33:13  warning  'data' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\services\products.service.ts
+   60:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+  127:40  error  Unexpected any. Specify a different type                          @typescript-eslint/no-explicit-any
+  136:30  error  Unexpected any. Specify a different type                          @typescript-eslint/no-explicit-any
+  136:46  error  Unexpected any. Specify a different type                          @typescript-eslint/no-explicit-any
+
+Ô£û 148 problems (77 errors, 71 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+

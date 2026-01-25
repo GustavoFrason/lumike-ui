@@ -1,0 +1,140 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Fonts */
+  --font-playfair: var(--font-playfair);
+  --font-montserrat: var(--font-montserrat);
+  --font-inter: var(--font-inter);
+  --font-poppins: var(--font-poppins);
+
+  /* Colors - Luxury Palette */
+  --color-primary-gold: #D4AF37;
+  --color-light-gold: #F4E4C1;
+  --color-rose-gold: #B76E79;
+
+  --color-pure-white: #FFFFFF;
+  --color-off-white: #F5F5F5;
+  --color-light-gray: #E5E5E5;
+  --color-medium-gray: #9E9E9E;
+
+  --color-deep-black: #0A0A0A;
+  --color-charcoal: #1A1A1A;
+  --color-dark-gray: #2A2A2A;
+
+  /* Semantic Colors */
+  --color-success: #4CAF50;
+  --color-error: #E57373;
+  --color-warning: #FFB74D;
+
+  /* Legacy Mappings (to avoid breaking existing Shadcn components immediately) */
+  --color-background: var(--off-white);
+  --color-foreground: var(--deep-black);
+
+  --color-sidebar: var(--pure-white);
+  --color-sidebar-foreground: var(--deep-black);
+  --color-sidebar-primary: var(--primary-gold);
+  --color-sidebar-primary-foreground: var(--pure-white);
+  --color-sidebar-accent: var(--light-gold);
+  --color-sidebar-accent-foreground: var(--deep-black);
+  --color-sidebar-border: var(--light-gray);
+  --color-sidebar-ring: var(--primary-gold);
+
+  /* Legacy / Admin UI Compatibility Mappings */
+  --lumike-gold: var(--color-primary-gold);
+  --lumike-beige: var(--color-off-white);
+  --lumike-text: var(--color-deep-black);
+  --lumike-bg: var(--color-pure-white);
+
+  --color-card: var(--pure-white);
+  --color-card-foreground: var(--deep-black);
+  --color-popover: var(--pure-white);
+  --color-popover-foreground: var(--deep-black);
+  --color-primary: var(--primary-gold);
+  --color-primary-foreground: var(--pure-white);
+  --color-secondary: var(--light-gold);
+  --color-secondary-foreground: var(--deep-black);
+  --color-muted: var(--off-white);
+  --color-muted-foreground: var(--medium-gray);
+  --color-accent: var(--light-gold);
+  --color-accent-foreground: var(--deep-black);
+  --color-destructive: var(--color-error);
+  --color-destructive-foreground: var(--pure-white);
+  --color-border: var(--light-gray);
+  --color-input: var(--light-gray);
+  --color-ring: var(--primary-gold);
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+}
+
+:root {
+  /* Tailwind 4 variables setup is handled by @theme usually, but defining specific vars here if needed by other libs */
+  --background: #F5F5F5;
+  --foreground: #0A0A0A;
+}
+
+@layer base {
+  body {
+    @apply font-inter text-deep-black antialiased bg-off-white;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-playfair;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+
+  /* Botão primário luxuoso */
+  .btn-primary {
+    @apply bg-primary-gold text-pure-white font-montserrat font-medium px-8 py-3 rounded-sm uppercase tracking-wider text-sm hover:bg-light-gold hover:text-deep-black hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer border border-transparent disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Botão secundário (outline) */
+  .btn-secondary {
+    @apply bg-transparent border border-primary-gold text-primary-gold font-montserrat font-medium px-8 py-3 rounded-sm uppercase tracking-wider text-sm hover:bg-primary-gold hover:text-pure-white transition-all duration-300 cursor-pointer;
+  }
+
+  /* Inputs refinados */
+  .input-luxury {
+    @apply w-full px-4 py-3 border border-light-gray bg-white focus:border-primary-gold focus:outline-none focus:ring-1 focus:ring-primary-gold transition-all duration-300 placeholder:text-medium-gray text-deep-black font-inter;
+  }
+
+  /* Animações customizadas */
+  .hover-underline-animation {
+    @apply relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-0 after:left-0 after:bg-primary-gold after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
+  }
+}
+
+/* Scrollbar Customizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-off-white);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-light-gray);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-gold);
+}

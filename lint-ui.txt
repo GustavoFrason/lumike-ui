@@ -1,0 +1,65 @@
+﻿
+> lumike-ui@0.1.0 lint
+> eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=0
+
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\categorias\CategoryModal.tsx
+  3:20  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\categorias\page.tsx
+  52:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\clientes\CustomerModal.tsx
+  3:20  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\clientes\[id]\page.tsx
+  6:10  warning  'useCustomers' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\clientes\page.tsx
+  59:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\colecoes\page.tsx
+  52:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\estoque\page.tsx
+   54:14  warning  'err' is defined but never used                      @typescript-eslint/no-unused-vars
+  134:9   warning  'historyColumns' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\garantias\page.tsx
+  80:25  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  80:74  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\produtos\page.tsx
+  60:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\api\categorias\slug\[slug]\route.ts
+  7:23  warning  'NextResponse' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\api\colecoes\slug\[slug]\route.ts
+  7:23  warning  'NextResponse' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\api\login\route.ts
+  9:10  warning  'api' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\page.tsx
+   8:10  warning  'Header' is defined but never used          @typescript-eslint/no-unused-vars
+   9:8   warning  'Link' is defined but never used            @typescript-eslint/no-unused-vars
+  39:9   warning  'limit' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\produtos\[slug]\page.tsx
+  11:10  warning  'ShoppingCart' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\components\ui\pagination-info.tsx
+  19:3  warning  'totalPages' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\api-server.ts
+  1:10  warning  'cookies' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\hooks\use-api.ts
+  31:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\lib\services\images.service.ts
+  33:13  warning  'data' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+Ô£û 22 problems (7 errors, 15 warnings)
+

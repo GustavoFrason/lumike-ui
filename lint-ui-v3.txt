@@ -1,0 +1,10 @@
+﻿
+> lumike-ui@0.1.0 lint
+> eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=0
+
+
+C:\desenvolvimento\pessoais\lumike\lumike-ui\src\app\admin\estoque\page.tsx
+  13:10  warning  'StockMovement' is defined but never used  @typescript-eslint/no-unused-vars
+
+Ô£û 1 problem (0 errors, 1 warning)
+
