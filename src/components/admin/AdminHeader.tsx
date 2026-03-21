@@ -17,10 +17,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
     <header className="flex flex-col bg-white border-b shadow-sm sticky top-0 z-40">
       <div className="flex items-center justify-between px-6 py-3">
         {/* Botão menu mobile */}
-        <button
-          className="md:hidden p-2 rounded-md hover:bg-gray-100"
-          onClick={onMenuClick}
-        >
+        <button className="md:hidden p-2 rounded-md hover:bg-gray-100" onClick={onMenuClick}>
           <Menu className="w-6 h-6 text-gray-700" />
         </button>
 
@@ -33,9 +30,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
             height={32}
             className="rounded-full"
           />
-          <span className="text-lg font-semibold text-gray-800 hidden md:block">
-            Painel Lumike
-          </span>
+          <span className="text-lg font-semibold text-gray-800 hidden md:block">Painel Lumike</span>
         </div>
 
         {/* Ações */}

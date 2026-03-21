@@ -15,6 +15,7 @@ import { PaginationInfo } from '@/components/ui/pagination-info';
 import { Product, UpdateProductDto, productsService } from '@/lib/services/products.service';
 import { imagesService } from '@/lib/services/images.service';
 import { Search, Filter } from 'lucide-react';
+import { WarrantyModal } from '../garantias/WarrantyModal';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -43,6 +44,11 @@ export default function ProdutosPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
+  // State for WarrantyModal
+  const [showWarrantyModal, setShowWarrantyModal] = useState(false);
+  const [warrantyProduct, setWarrantyProduct] = useState<Product | null>(null);
+  const [repairProduto, setRepairProduto] = useState<Product | null>(null);
+
   // Filters
   const [search, setSearch] = useState('');
   const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
@@ -68,16 +74,14 @@ export default function ProdutosPage() {
   }
 
   function toggleSelect(id: number) {
-    setSelectedIds(prev =>
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
   }
 
   function toggleSelectAll() {
     if (selectedIds.length === products.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(products.map(p => p.id));
+      setSelectedIds(products.map((p) => p.id));
     }
   }
 
@@ -103,7 +107,9 @@ export default function ProdutosPage() {
 
         // Se houver imagens pendentes e o produto foi criado com sucesso
         if (newProduct?.id && pendingFiles && pendingFiles.length > 0) {
-          console.log(`🚀 Iniciando upload de ${pendingFiles.length} imagens para o produto ${newProduct.id}`);
+          console.log(
+            `🚀 Iniciando upload de ${pendingFiles.length} imagens para o produto ${newProduct.id}`,
+          );
           for (let i = 0; i < pendingFiles.length; i++) {
             try {
               const file = pendingFiles[i];
@@ -111,11 +117,13 @@ export default function ProdutosPage() {
                 name: file?.name,
                 type: file?.type,
                 size: file?.size,
-                isBlob: file instanceof Blob
+                isBlob: file instanceof Blob,
               });
 
               if (!file || !(file instanceof File)) {
-                console.error(`❌ Imagem ${i + 1} inválida ou não é um arquivo (File), pulando upload.`);
+                console.error(
+                  `❌ Imagem ${i + 1} inválida ou não é um arquivo (File), pulando upload.`,
+                );
                 continue;
               }
 
@@ -257,13 +265,15 @@ export default function ProdutosPage() {
                 className="rounded border-zinc-300 text-[var(--lumike-gold)] focus:ring-[var(--lumike-gold)]"
               />
             ),
-            className: 'w-10'
+            className: 'w-10',
           },
           {
             key: 'id',
             header: 'ID',
-            render: (produto) => <span className="text-zinc-500 text-xs font-mono">#{produto.id}</span>,
-            className: 'w-16'
+            render: (produto) => (
+              <span className="text-zinc-500 text-xs font-mono">#{produto.id}</span>
+            ),
+            className: 'w-16',
           },
           {
             key: 'name',
@@ -276,7 +286,9 @@ export default function ProdutosPage() {
             render: (produto) => (
               <div className="flex flex-col">
                 <span className="text-zinc-700 font-mono text-sm">{produto.sku || '-'}</span>
-                {produto.sku2 && <span className="text-zinc-400 text-xs font-mono">{produto.sku2}</span>}
+                {produto.sku2 && (
+                  <span className="text-zinc-400 text-xs font-mono">{produto.sku2}</span>
+                )}
               </div>
             ),
           },
@@ -304,17 +316,13 @@ export default function ProdutosPage() {
               <div>
                 <span
                   className={
-                    produto.current_stock <= produto.min_stock
-                      ? 'text-red-600 font-semibold'
-                      : ''
+                    produto.current_stock <= produto.min_stock ? 'text-red-600 font-semibold' : ''
                   }
                 >
                   {produto.current_stock}
                 </span>
                 {produto.min_stock > 0 && (
-                  <span className="text-zinc-400 text-xs ml-1">
-                    (mín: {produto.min_stock})
-                  </span>
+                  <span className="text-zinc-400 text-xs ml-1">(mín: {produto.min_stock})</span>
                 )}
               </div>
             ),
@@ -332,6 +340,10 @@ export default function ProdutosPage() {
               <ActionButtons
                 onEdit={() => handleEditar(produto)}
                 onDelete={() => handleExcluir(produto.id)}
+                onRepair={() => {
+                  setRepairProduto(produto);
+                  setShowWarrantyModal(true);
+                }}
                 disabled={updating || deleting}
               />
             ),
@@ -339,13 +351,13 @@ export default function ProdutosPage() {
         ]}
         emptyTitle={
           search || categoryId
-            ? "Nenhum produto corresponde aos filtros"
-            : "Nenhum produto cadastrado"
+            ? 'Nenhum produto corresponde aos filtros'
+            : 'Nenhum produto cadastrado'
         }
         emptyDescription={
           search || categoryId
-            ? "Tente ajustar seus termos de busca ou filtros para encontrar o que procura."
-            : "Comece criando seu primeiro produto para gerenciar seu catálogo."
+            ? 'Tente ajustar seus termos de busca ou filtros para encontrar o que procura.'
+            : 'Comece criando seu primeiro produto para gerenciar seu catálogo.'
         }
         emptyAction={
           search || categoryId ? (
@@ -394,6 +406,24 @@ export default function ProdutosPage() {
           onSave={handleSalvar}
           loading={creating || updating}
           error={errorCreating || errorUpdating}
+        />
+      )}
+
+      {showWarrantyModal && repairProduto && (
+        <WarrantyModal
+          initialData={{
+            product_id: repairProduto.id,
+            origin: 'stock',
+          }}
+          onClose={() => {
+            setShowWarrantyModal(false);
+            setRepairProduto(null);
+          }}
+          onSave={() => {
+            setShowWarrantyModal(false);
+            setRepairProduto(null);
+            alert('Enviado para concerto com sucesso!');
+          }}
         />
       )}
     </section>

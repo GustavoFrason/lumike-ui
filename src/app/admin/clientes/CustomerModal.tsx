@@ -25,9 +25,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
     notes: cliente?.notes || '',
   });
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
@@ -66,9 +64,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Nome *
-            </label>
+            <label className="block text-sm font-medium text-zinc-700 mb-1">Nome *</label>
             <input
               type="text"
               name="name"
@@ -82,9 +78,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-1">
-                E-mail
-              </label>
+              <label className="block text-sm font-medium text-zinc-700 mb-1">E-mail</label>
               <input
                 type="email"
                 name="email"
@@ -96,9 +90,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-1">
-                Telefone
-              </label>
+              <label className="block text-sm font-medium text-zinc-700 mb-1">Telefone</label>
               <input
                 type="text"
                 name="phone"
@@ -111,9 +103,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              CPF
-            </label>
+            <label className="block text-sm font-medium text-zinc-700 mb-1">CPF</label>
             <input
               type="text"
               name="cpf"
@@ -125,9 +115,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Endereço
-            </label>
+            <label className="block text-sm font-medium text-zinc-700 mb-1">Endereço</label>
             <input
               type="text"
               name="address"
@@ -140,9 +128,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-1">
-                Cidade
-              </label>
+              <label className="block text-sm font-medium text-zinc-700 mb-1">Cidade</label>
               <input
                 type="text"
                 name="city"
@@ -154,9 +140,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-1">
-                Estado
-              </label>
+              <label className="block text-sm font-medium text-zinc-700 mb-1">Estado</label>
               <input
                 type="text"
                 name="state"
@@ -168,9 +152,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-1">
-                CEP
-              </label>
+              <label className="block text-sm font-medium text-zinc-700 mb-1">CEP</label>
               <input
                 type="text"
                 name="zipcode"
@@ -183,9 +165,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Observações
-            </label>
+            <label className="block text-sm font-medium text-zinc-700 mb-1">Observações</label>
             <textarea
               name="notes"
               placeholder="Observações sobre o cliente"
@@ -217,4 +197,3 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
     </div>
   );
 }
-

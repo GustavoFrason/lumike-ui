@@ -6,7 +6,6 @@
 
 import { api, PaginatedResponse } from '../api';
 
-
 export interface Product {
   id: number;
   sku?: string;
@@ -20,6 +19,7 @@ export interface Product {
   cost_price?: number;
   purchase_date: string;
   category_id?: number;
+  supplier_id?: number;
   colecao_id?: string;
   collection?: string;
   current_stock: number;
@@ -52,6 +52,7 @@ export interface CreateProductDto {
   cost_price?: number;
   purchase_date: string;
   category_id?: number;
+  supplier_id?: number;
   colecao_id?: string;
   collection?: string;
   current_stock?: number;
@@ -81,7 +82,14 @@ export const productsService = {
   /**
    * Lista todos os produtos
    */
-  async getAll(page = 1, limit = 50, isActive?: boolean, search?: string, category_id?: number, isFeatured?: boolean): Promise<PaginatedResponse<Product>> {
+  async getAll(
+    page = 1,
+    limit = 50,
+    isActive?: boolean,
+    search?: string,
+    category_id?: number,
+    isFeatured?: boolean,
+  ): Promise<PaginatedResponse<Product>> {
     const params = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
@@ -164,8 +172,13 @@ export const productsService = {
     return data;
   },
 
-  async confirmImport(items: ImportItem[]): Promise<{ updated: number; created: number; errors: number }> {
-    const { data } = await api.post<{ updated: number; created: number; errors: number }>('/produtos/import/confirm', items);
+  async confirmImport(
+    items: ImportItem[],
+  ): Promise<{ updated: number; created: number; errors: number }> {
+    const { data } = await api.post<{ updated: number; created: number; errors: number }>(
+      '/produtos/import/confirm',
+      items,
+    );
     return data;
   },
 
@@ -174,4 +187,3 @@ export const productsService = {
     return data;
   },
 };
-

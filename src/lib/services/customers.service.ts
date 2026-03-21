@@ -51,9 +51,7 @@ export const customersService = {
       params.append('search', search);
     }
 
-    const { data } = await api.get<PaginatedResponse<Customer>>(
-      `/clientes?${params.toString()}`,
-    );
+    const { data } = await api.get<PaginatedResponse<Customer>>(`/clientes?${params.toString()}`);
     return data;
   },
 
@@ -89,4 +87,3 @@ export const customersService = {
     return data;
   },
 };
-

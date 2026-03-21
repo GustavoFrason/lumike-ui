@@ -11,6 +11,11 @@ import { ProductCarousel } from '@/components/catalog/ProductCarousel';
 import { CategoryCarousel } from '@/components/catalog/CategoryCarousel';
 import { FadeIn } from '@/components/ui/fade-in';
 import { LuxuryBackground } from '@/components/ui/luxury-background';
+import { TrustSection } from '@/components/trust-section';
+import { TestimonialsSection } from '@/components/testimonials-section';
+import { FAQSection } from '@/components/faq-section';
+import { WhatsAppWidget } from '@/components/ui/whatsapp-widget';
+import { LeadCaptureModal } from '@/components/lead-capture-modal';
 
 interface Setting {
   key: string;
@@ -53,18 +58,19 @@ async function getProducts(searchParams: { [key: string]: string | string[] | un
 
   if (searchTerm) {
     const lowerTerm = searchTerm.toLowerCase();
-    products = products.filter(p =>
-      p.name.toLowerCase().includes(lowerTerm) ||
-      p.description?.toLowerCase().includes(lowerTerm)
+    products = products.filter(
+      (p) =>
+        p.name.toLowerCase().includes(lowerTerm) ||
+        p.description?.toLowerCase().includes(lowerTerm),
     );
   }
 
   if (categoryId) {
-    products = products.filter(p => p.category_id?.toString() === categoryId);
+    products = products.filter((p) => p.category_id?.toString() === categoryId);
   }
 
   if (collectionId) {
-    products = products.filter(p => p.colecao_id === collectionId);
+    products = products.filter((p) => p.colecao_id === collectionId);
   }
 
   return products;
@@ -102,14 +108,19 @@ export default async function HomePage({
     safeFetch(getProducts(params), []),
     safeFetch(getCategories(), []),
     safeFetch(getCollections(), []),
-    safeFetch(getSettings(), [])
+    safeFetch(getSettings(), []),
   ]);
 
-  const settings = settingsArr.reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {} as Record<string, string>);
+  const settings = settingsArr.reduce(
+    (acc, curr) => ({ ...acc, [curr.key]: curr.value }),
+    {} as Record<string, string>,
+  );
 
   const heroImage = settings['hero_banner_url']; // This will be passed to Client Component
   const title = settings['hero_title'] || 'Elegância Atemporal';
-  const subtitle = settings['hero_subtitle'] || 'Descubra nossa coleção exclusiva de semijoias que unem sofisticação e estilo.';
+  const subtitle =
+    settings['hero_subtitle'] ||
+    'Descubra nossa coleção exclusiva de semijoias que unem sofisticação e estilo.';
 
   return (
     <div className="bg-[#faf9f6] min-h-screen pb-20 relative overflow-hidden">
@@ -120,14 +131,16 @@ export default async function HomePage({
 
       <BenefitsBar />
 
+      <TrustSection />
+
       <main className="container mx-auto px-6 md:px-12 relative z-20 mt-12">
         {/* Featured Products */}
-        {products.filter(p => p.is_featured).length > 0 && (
+        {products.filter((p) => p.is_featured).length > 0 && (
           <FadeIn delay={0.2} className="mb-16">
             <ProductCarousel
               title="Nossos Destaques"
               subtitle="Peças exclusivas selecionadas para brilhar com você"
-              products={products.filter(p => p.is_featured)}
+              products={products.filter((p) => p.is_featured)}
             />
           </FadeIn>
         )}
@@ -142,8 +155,12 @@ export default async function HomePage({
 
         {/* Product Grid Section Title */}
         <div className="mb-12 text-center">
-          <h2 className="text-3xl font-playfair font-bold text-deep-black mb-2 uppercase tracking-[0.2em]">Nossos Destaques</h2>
-          <p className="text-zinc-500 font-inter text-sm max-w-xl mx-auto">Confira as peças que são tendência nesta temporada</p>
+          <h2 className="text-3xl font-playfair font-bold text-deep-black mb-2 uppercase tracking-[0.2em]">
+            Todas as Peças
+          </h2>
+          <p className="text-zinc-500 font-inter text-sm max-w-xl mx-auto">
+            Explore nossa curadoria completa de semijoias premium
+          </p>
         </div>
 
         {/* Products Grid */}
@@ -151,7 +168,9 @@ export default async function HomePage({
           <Suspense fallback={<Loading size="lg" className="py-20" />}>
             {products.length === 0 ? (
               <div className="text-center py-24">
-                <h3 className="font-playfair text-2xl text-deep-black mb-2">Nenhum produto encontrado</h3>
+                <h3 className="font-playfair text-2xl text-deep-black mb-2">
+                  Nenhum produto encontrado
+                </h3>
                 <p className="text-medium-gray font-inter">Tente ajustar seus filtros de busca.</p>
               </div>
             ) : (
@@ -171,7 +190,13 @@ export default async function HomePage({
           </FadeIn>
         )}
 
+        <TestimonialsSection />
+
+        <FAQSection />
       </main>
+
+      <LeadCaptureModal />
+      <WhatsAppWidget />
     </div>
   );
 }

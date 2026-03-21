@@ -9,10 +9,7 @@ import { handleGet } from '@/lib/api-helpers';
 
 const BACKEND_PATH = '/inventory/products';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const searchParams = request.nextUrl.searchParams;
   const queryString = searchParams.toString();
@@ -21,4 +18,3 @@ export async function GET(
     : `${BACKEND_PATH}/${id}/history`;
   return handleGet(request, path, 'Erro ao buscar histórico');
 }
-

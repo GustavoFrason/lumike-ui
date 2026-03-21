@@ -39,19 +39,24 @@ export function LoginForm() {
         }
 
         // --- Lógica de Alerta de Estoque Pendente ---
-        const pendingAlert = typeof window !== 'undefined' ? localStorage.getItem('pending_stock_alert') : null;
+        const pendingAlert =
+          typeof window !== 'undefined' ? localStorage.getItem('pending_stock_alert') : null;
         if (pendingAlert) {
           const alertData = JSON.parse(pendingAlert);
           try {
             // Registra o alerta no backend agora que temos o ID do usuário
-            await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/stock-notifications`, {
-              email: user.email,
-              product_id: alertData.product_id,
-              variant_id: alertData.variant_id,
-              user_id: Number(user.id)
-            }, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
+            await axios.post(
+              `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/stock-notifications`,
+              {
+                email: user.email,
+                product_id: alertData.product_id,
+                variant_id: alertData.variant_id,
+                user_id: Number(user.id),
+              },
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              },
+            );
             localStorage.removeItem('pending_stock_alert');
           } catch (err) {
             console.error('Erro ao registrar alerta pendente:', err);
@@ -112,11 +117,7 @@ export function LoginForm() {
             />
             {erro && <p className="text-red-500 text-sm text-center">{erro}</p>}
             <Button type="submit" disabled={loading}>
-              {loading ? (
-                <Loader2 className="animate-spin h-4 w-4" />
-              ) : (
-                'Entrar'
-              )}
+              {loading ? <Loader2 className="animate-spin h-4 w-4" /> : 'Entrar'}
             </Button>
           </form>
         </CardContent>
@@ -124,7 +125,10 @@ export function LoginForm() {
 
       <p className="text-center mt-6 text-sm text-medium-gray">
         Não tem cadastro?{' '}
-        <a href="/cadastro" className="font-bold text-deep-black hover:text-primary-gold underline transition-colors">
+        <a
+          href="/cadastro"
+          className="font-bold text-deep-black hover:text-primary-gold underline transition-colors"
+        >
           Criar conta
         </a>
       </p>

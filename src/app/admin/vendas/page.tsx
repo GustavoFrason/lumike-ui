@@ -69,11 +69,21 @@ export default function VendasPage() {
   }
 
   function exportToCSV() {
-    const headers = ['Pedido', 'Cliente', 'WhatsApp', 'Data', 'Valor Total', 'Valor Pago', 'Saldo', 'Status'];
+    const headers = [
+      'Pedido',
+      'Cliente',
+      'WhatsApp',
+      'Data',
+      'Valor Total',
+      'Valor Pago',
+      'Saldo',
+      'Status',
+    ];
     const csvContent = [
       headers.join(','),
-      ...orders.map(order => {
-        const currentSaldo = order.payment_status === 'pago' ? 0 : (order.boca_value ?? order.total_amount);
+      ...orders.map((order) => {
+        const currentSaldo =
+          order.payment_status === 'pago' ? 0 : (order.boca_value ?? order.total_amount);
         const valorPago = Math.max(0, order.total_amount - currentSaldo);
         const saldo = currentSaldo;
 
@@ -85,9 +95,9 @@ export default function VendasPage() {
           order.total_amount,
           valorPago,
           saldo,
-          statusLabels[order.status] || order.status
+          statusLabels[order.status] || order.status,
         ].join(',');
-      })
+      }),
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -103,10 +113,12 @@ export default function VendasPage() {
 
   async function handleStatusChange(id: number, newStatus: string) {
     if (newStatus === 'cancelled') {
-      const pedido = orders.find(o => o.id === id);
+      const pedido = orders.find((o) => o.id === id);
       if (pedido) {
         setSelectedOrder(pedido);
-        alert('Para cancelar com estorno e devolução de estoque, utilize o botão "Cancelar Venda" dentro dos detalhes do pedido.');
+        alert(
+          'Para cancelar com estorno e devolução de estoque, utilize o botão "Cancelar Venda" dentro dos detalhes do pedido.',
+        );
         return;
       }
     }
@@ -140,11 +152,7 @@ export default function VendasPage() {
     {
       key: 'customer',
       header: 'Cliente',
-      render: (pedido) => (
-        <span>
-          {pedido.customers?.name || 'Cliente não informado'}
-        </span>
-      ),
+      render: (pedido) => <span>{pedido.customers?.name || 'Cliente não informado'}</span>,
     },
     {
       key: 'created_at',
@@ -163,7 +171,8 @@ export default function VendasPage() {
       header: 'Valor Pago',
       render: (pedido) => {
         // Calcular valor pago acumulado
-        const saldo = pedido.payment_status === 'pago' ? 0 : (pedido.boca_value ?? pedido.total_amount);
+        const saldo =
+          pedido.payment_status === 'pago' ? 0 : (pedido.boca_value ?? pedido.total_amount);
         const valorPago = Math.max(0, pedido.total_amount - saldo);
 
         return (
@@ -178,7 +187,8 @@ export default function VendasPage() {
       header: 'Saldo',
       render: (pedido) => {
         // Calcular saldo pendente (usando boca_value como saldo universal)
-        const saldo = pedido.payment_status === 'pago' ? 0 : (pedido.boca_value ?? pedido.total_amount);
+        const saldo =
+          pedido.payment_status === 'pago' ? 0 : (pedido.boca_value ?? pedido.total_amount);
 
         return (
           <span className={`font-semibold ${saldo > 0 ? 'text-red-600' : 'text-green-600'}`}>
@@ -327,10 +337,7 @@ export default function VendasPage() {
       )}
 
       {selectedOrder && (
-        <OrderDetailsModal
-          order={selectedOrder}
-          onClose={() => setSelectedOrder(null)}
-        />
+        <OrderDetailsModal order={selectedOrder} onClose={() => setSelectedOrder(null)} />
       )}
     </section>
   );

@@ -1,7 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { dashboardService, DashboardKPIs, TopSeller, LowStockAlert } from '@/lib/services/dashboard.service';
+import {
+  dashboardService,
+  DashboardKPIs,
+  TopSeller,
+  LowStockAlert,
+} from '@/lib/services/dashboard.service';
 import { RevenueChart } from '@/components/admin/RevenueChart';
 import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
@@ -56,10 +61,7 @@ export default function AdminPage() {
     <section className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Bem-vindo ao Painel Lumike ✨</h1>
-        <button
-          onClick={loadDashboard}
-          className="text-sm text-zinc-600 hover:text-zinc-900"
-        >
+        <button onClick={loadDashboard} className="text-sm text-zinc-600 hover:text-zinc-900">
           Atualizar
         </button>
       </div>
@@ -76,7 +78,9 @@ export default function AdminPage() {
           <p className="text-3xl font-bold text-[var(--lumike-gold)]">
             {kpis ? formatCurrency(kpis.total_vendas) : 'R$ 0,00'}
           </p>
-          <p className="text-xs text-zinc-500 mt-1">{kpis?.total_pedidos || 0} pedidos confirmados</p>
+          <p className="text-xs text-zinc-500 mt-1">
+            {kpis?.total_pedidos || 0} pedidos confirmados
+          </p>
         </div>
 
         <div className="p-6 rounded-lg bg-[var(--lumike-beige)] border">
@@ -104,9 +108,7 @@ export default function AdminPage() {
             <h2 className="text-lg font-medium">Marketing Leads</h2>
             <Zap className="h-5 w-5 text-[var(--lumike-gold)]" />
           </div>
-          <p className="text-2xl font-bold text-zinc-900">
-            {kpis?.total_leads || 0}
-          </p>
+          <p className="text-2xl font-bold text-zinc-900">{kpis?.total_leads || 0}</p>
         </div>
 
         <div className="p-6 rounded-lg bg-white border">
@@ -114,9 +116,7 @@ export default function AdminPage() {
             <h2 className="text-lg font-medium">Produtos Ativos</h2>
             <Package className="h-5 w-5 text-[var(--lumike-gold)]" />
           </div>
-          <p className="text-2xl font-bold text-zinc-900">
-            {kpis?.produtos_ativos || 0}
-          </p>
+          <p className="text-2xl font-bold text-zinc-900">{kpis?.produtos_ativos || 0}</p>
         </div>
 
         <div className="p-6 rounded-lg bg-white border">
@@ -124,9 +124,7 @@ export default function AdminPage() {
             <h2 className="text-lg font-medium">Clientes Registrados</h2>
             <Users className="h-5 w-5 text-[var(--lumike-gold)]" />
           </div>
-          <p className="text-2xl font-bold text-zinc-900">
-            {kpis?.clientes || 0}
-          </p>
+          <p className="text-2xl font-bold text-zinc-900">{kpis?.clientes || 0}</p>
         </div>
       </div>
 
@@ -149,14 +147,10 @@ export default function AdminPage() {
                   className="flex items-center justify-between p-3 bg-zinc-50 rounded-lg"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-zinc-400 w-6">
-                      #{index + 1}
-                    </span>
+                    <span className="text-sm font-medium text-zinc-400 w-6">#{index + 1}</span>
                     <span className="font-medium">{seller.name}</span>
                   </div>
-                  <span className="text-sm text-zinc-600">
-                    {seller.qty_90d} unidades
-                  </span>
+                  <span className="text-sm text-zinc-600">{seller.qty_90d} unidades</span>
                 </div>
               ))}
             </div>
@@ -188,7 +182,8 @@ export default function AdminPage() {
                   <div>
                     <p className="font-medium text-red-900">{alert.product_name}</p>
                     <p className="text-xs text-red-700">
-                      Estoque: {alert.current_stock} | Mínimo: {alert.min_stock} | Faltam: {alert.missing}
+                      Estoque: {alert.current_stock} | Mínimo: {alert.min_stock} | Faltam:{' '}
+                      {alert.missing}
                     </p>
                   </div>
                   <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0" />

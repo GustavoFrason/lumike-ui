@@ -13,15 +13,10 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
     <header className="flex items-center justify-between bg-white border-b border-gray-200 px-4 py-3 shadow-sm sticky top-0 z-30">
       <div className="flex items-center gap-3">
         {/* Ícone do menu (mobile) */}
-        <button
-          onClick={onMenuClick}
-          className="md:hidden p-2 rounded-md hover:bg-gray-100"
-        >
+        <button onClick={onMenuClick} className="md:hidden p-2 rounded-md hover:bg-gray-100">
           <Menu className="w-6 h-6 text-gray-800" />
         </button>
-        <h1 className="text-lg font-semibold text-[#C6A664] tracking-wide">
-          Lumike Admin
-        </h1>
+        <h1 className="text-lg font-semibold text-[#C6A664] tracking-wide">Lumike Admin</h1>
       </div>
 
       <form action="/api/logout" method="POST">

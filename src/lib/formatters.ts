@@ -7,11 +7,17 @@
 /**
  * Formata um número como moeda brasileira
  */
-export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pt-BR', {
+export function formatCurrency(value: number, hideZeroCents: boolean = false): string {
+  const formatted = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
   }).format(value);
+
+  if (hideZeroCents && formatted.endsWith(',00')) {
+    return formatted.replace(',00', '');
+  }
+
+  return formatted;
 }
 
 /**
@@ -39,4 +45,3 @@ export function formatDateTime(date: string | Date): string {
     minute: '2-digit',
   }).format(dateObj);
 }
-

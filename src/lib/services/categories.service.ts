@@ -90,4 +90,3 @@ export const categoriesService = {
     return data;
   },
 };
-

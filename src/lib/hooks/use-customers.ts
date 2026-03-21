@@ -78,4 +78,3 @@ export function useCustomers() {
     resetDelete: deleteApi.reset,
   };
 }
-

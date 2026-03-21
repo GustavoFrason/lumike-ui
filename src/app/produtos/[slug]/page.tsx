@@ -30,7 +30,7 @@ async function getProduct(slug: string): Promise<Product | null> {
 async function getProductImages(id: string): Promise<string[]> {
   try {
     const data = await fetchServer<{ url: string }[]>(`/products/${id}/images`);
-    return data?.map(d => d.url) || [];
+    return data?.map((d) => d.url) || [];
   } catch (e) {
     return [];
   }
@@ -38,7 +38,7 @@ async function getProductImages(id: string): Promise<string[]> {
 
 export async function generateMetadata(
   { params }: Props,
-  parent: ResolvingMetadata
+  parent: ResolvingMetadata,
 ): Promise<Metadata> {
   const { slug } = await params; // Await params in newer Next.js versions
   const product = await getProduct(slug);
@@ -54,15 +54,13 @@ export async function generateMetadata(
 
   return {
     title: `${product.name} | Lumike Semijoias`,
-    description: product.description?.slice(0, 160) || 'Descubra a elegância exclusiva das semijoias Lumike.',
+    description:
+      product.description?.slice(0, 160) || 'Descubra a elegância exclusiva das semijoias Lumike.',
     openGraph: {
       title: product.name,
       description: product.description?.slice(0, 160),
       url: `https://lumike.com.br/produtos/${slug}`, // Ideally use valid domain env var
-      images: [
-        ...images,
-        ...previousImages,
-      ],
+      images: [...images, ...previousImages],
       siteName: 'Lumike Semijoias',
       locale: 'pt_BR',
       type: 'website',
@@ -72,7 +70,7 @@ export async function generateMetadata(
       title: product.name,
       description: product.description?.slice(0, 160),
       images: images[0] ? [images[0]] : [],
-    }
+    },
   };
 }
 

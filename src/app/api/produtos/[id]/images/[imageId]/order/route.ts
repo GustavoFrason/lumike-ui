@@ -36,4 +36,3 @@ export async function POST(
     return NextResponse.json({ error: 'Erro ao atualizar ordem.' }, { status: 500 });
   }
 }
-

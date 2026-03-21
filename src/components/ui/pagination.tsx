@@ -16,12 +16,7 @@ interface PaginationProps {
   className?: string;
 }
 
-export function Pagination({
-  currentPage,
-  totalPages,
-  onPageChange,
-  className,
-}: PaginationProps) {
+export function Pagination({ currentPage, totalPages, onPageChange, className }: PaginationProps) {
   if (totalPages <= 1) return null;
 
   const pages = [];
@@ -100,4 +95,3 @@ export function Pagination({
     </div>
   );
 }
-

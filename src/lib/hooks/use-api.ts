@@ -59,4 +59,3 @@ export function useApi<T = unknown>(options: UseApiOptions<T> = {}) {
     [loading, error, data, execute, reset],
   );
 }
-

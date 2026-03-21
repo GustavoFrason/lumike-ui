@@ -15,6 +15,9 @@ import {
   QrCode,
   Settings,
   BarChart3,
+  Truck,
+  ShoppingCart,
+  TrendingUp,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -37,6 +40,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     { href: '/admin/vendas', label: 'Pedidos', icon: <ShoppingBag size={18} /> },
     { href: '/admin/clientes', label: 'Clientes', icon: <Users size={18} /> },
     { href: '/admin/compras-acessorios', label: 'Insumos', icon: <Package size={18} /> },
+    { href: '/admin/fornecedores', label: 'Fornecedores', icon: <Truck size={18} /> },
+    { href: '/admin/compras', label: 'Entrada de Estoque', icon: <ShoppingCart size={18} /> },
+    { href: '/admin/analise-roi', label: 'Análise ROI', icon: <TrendingUp size={18} /> },
     { href: '/admin/clientes-pagar', label: 'A Receber (Boca)', icon: <ShoppingBag size={18} /> },
     { href: '/admin/fluxo-caixa', label: 'Fluxo de Caixa', icon: <BarChart3 size={18} /> },
     { href: '/admin/garantias', label: 'Garantias', icon: <Shield size={18} /> },
@@ -47,15 +53,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     <>
       {/* Sidebar desktop */}
       <aside className="hidden md:flex flex-col w-64 bg-white border-r shadow-sm">
-        <div className="p-6 text-lg font-semibold text-[var(--lumike-gold)]">
-          Menu Administrativo
-        </div>
+        <div className="p-6 text-lg font-semibold text-(--lumike-gold)">Menu Administrativo</div>
         <nav className="flex-1 p-4 space-y-2">
           {menuItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-[var(--lumike-beige)] transition"
+              className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-(--lumike-beige) transition"
             >
               {item.icon}
               <span>{item.label}</span>
@@ -86,7 +90,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             >
               <div className="flex items-center justify-between p-4 border-b">
-                <span className="font-semibold text-[var(--lumike-gold)]">Menu</span>
+                <span className="font-semibold text-(--lumike-gold)">Menu</span>
                 <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md">
                   <X size={20} />
                 </button>
@@ -98,7 +102,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     key={item.href}
                     href={item.href}
                     onClick={onClose}
-                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-[var(--lumike-beige)] transition"
+                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-(--lumike-beige) transition"
                   >
                     {item.icon}
                     <span>{item.label}</span>

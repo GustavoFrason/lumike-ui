@@ -9,10 +9,7 @@ import { proxyRequest } from '@/lib/api-proxy';
 
 const BACKEND_PATH = '/products';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> },
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await params;
     const response = await proxyRequest('GET', `${BACKEND_PATH}/slug/${slug}`);
@@ -31,4 +28,3 @@ export async function GET(
     return NextResponse.json({ error: 'Erro ao buscar produto.' }, { status: 500 });
   }
 }
-

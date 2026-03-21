@@ -16,4 +16,3 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   return handlePost(request, BACKEND_PATH, 'Erro ao criar pedido');
 }
-

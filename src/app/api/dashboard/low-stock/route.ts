@@ -17,4 +17,3 @@ export async function GET(request: NextRequest) {
     : `${BACKEND_PATH}/low-stock`;
   return handleGet(request, path, 'Erro ao buscar alertas de estoque');
 }
-

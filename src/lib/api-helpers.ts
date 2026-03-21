@@ -38,10 +38,7 @@ export async function handleGet(
     const data = await response.json();
 
     if (!response.ok) {
-      return createErrorResponse(
-        data.message || errorMessage,
-        response.status,
-      );
+      return createErrorResponse(data.message || errorMessage, response.status);
     }
 
     return NextResponse.json(data);
@@ -64,10 +61,7 @@ export async function handlePost(
     const data = await response.json();
 
     if (!response.ok) {
-      return createErrorResponse(
-        data.message || errorMessage,
-        response.status,
-      );
+      return createErrorResponse(data.message || errorMessage, response.status);
     }
 
     return NextResponse.json(data, { status: 201 });
@@ -91,10 +85,7 @@ export async function handlePatch(
     const data = await response.json();
 
     if (!response.ok) {
-      return createErrorResponse(
-        data.message || errorMessage,
-        response.status,
-      );
+      return createErrorResponse(data.message || errorMessage, response.status);
     }
 
     return NextResponse.json(data);
@@ -116,10 +107,7 @@ export async function handleDelete(
     const data = await response.json();
 
     if (!response.ok) {
-      return createErrorResponse(
-        data.message || errorMessage,
-        response.status,
-      );
+      return createErrorResponse(data.message || errorMessage, response.status);
     }
 
     return NextResponse.json(data);
@@ -127,4 +115,3 @@ export async function handleDelete(
     return createErrorResponse(errorMessage, 500, error);
   }
 }
-

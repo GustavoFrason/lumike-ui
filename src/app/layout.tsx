@@ -7,8 +7,9 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { FloatingWhatsApp } from '@/components/ui/floating-whatsapp';
 import { LeadCaptureModal } from '@/components/lead-capture-modal';
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from '@/components/ui/toaster';
 import { FavoritesProvider } from '@/contexts/favorites-context';
+import { CartProvider } from '@/contexts/cart-context';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -40,23 +41,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const isLogin = pathname === '/login';
 
   return (
-    <html lang="pt-BR" className={`${playfair.variable} ${montserrat.variable} ${inter.variable} ${poppins.variable} h-full w-full`} suppressHydrationWarning>
-      <body className="h-full w-full font-sans antialiased bg-[var(--off-white)] text-[var(--deep-black)] flex flex-col">
+    <html
+      lang="pt-BR"
+      className={`${playfair.variable} ${montserrat.variable} ${inter.variable} ${poppins.variable} h-full w-full`}
+      suppressHydrationWarning
+    >
+      <body className="h-full w-full font-sans antialiased bg-(--off-white) text-(--deep-black) flex flex-col">
         <FavoritesProvider>
-          {!isAdmin && !isLogin && <Header />}
+          <CartProvider>
+            {!isAdmin && !isLogin && <Header />}
 
-          <div className="flex-grow">
-            {children}
-          </div>
+            <div className="grow">{children}</div>
 
-          {!isAdmin && !isLogin && (
-            <>
-              <FloatingWhatsApp />
-              <LeadCaptureModal />
-              <Footer />
-            </>
-          )}
-          <Toaster />
+            {!isAdmin && !isLogin && (
+              <>
+                <FloatingWhatsApp />
+                <LeadCaptureModal />
+                <Footer />
+              </>
+            )}
+            <Toaster />
+          </CartProvider>
         </FavoritesProvider>
       </body>
     </html>

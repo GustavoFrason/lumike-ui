@@ -22,14 +22,11 @@ export function CategoryModal({ categoria, onClose, onSave, loading = false }: M
 
   const [pendingFile, setPendingFile] = useState<File | null>(null);
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value, type } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]:
-        type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
     }));
   }
 
@@ -50,12 +47,12 @@ export function CategoryModal({ categoria, onClose, onSave, loading = false }: M
 
   async function handleImageUpload(file: File, url: string) {
     setPendingFile(file);
-    setForm(prev => ({ ...prev, image_url: url }));
+    setForm((prev) => ({ ...prev, image_url: url }));
   }
 
   function handleImageRemove() {
     setPendingFile(null);
-    setForm(prev => ({ ...prev, image_url: '' }));
+    setForm((prev) => ({ ...prev, image_url: '' }));
   }
 
   return (
@@ -74,9 +71,7 @@ export function CategoryModal({ categoria, onClose, onSave, loading = false }: M
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Nome *
-            </label>
+            <label className="block text-sm font-medium text-zinc-700 mb-1">Nome *</label>
             <input
               type="text"
               name="name"
@@ -89,9 +84,7 @@ export function CategoryModal({ categoria, onClose, onSave, loading = false }: M
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Slug
-            </label>
+            <label className="block text-sm font-medium text-zinc-700 mb-1">Slug</label>
             <input
               type="text"
               name="slug"
@@ -100,15 +93,11 @@ export function CategoryModal({ categoria, onClose, onSave, loading = false }: M
               onChange={handleChange}
               className="w-full border rounded-lg px-3 py-2 font-mono text-sm"
             />
-            <p className="text-xs text-zinc-500 mt-1">
-              Deixe vazio para gerar automaticamente
-            </p>
+            <p className="text-xs text-zinc-500 mt-1">Deixe vazio para gerar automaticamente</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Descrição
-            </label>
+            <label className="block text-sm font-medium text-zinc-700 mb-1">Descrição</label>
             <textarea
               name="description"
               placeholder="Descrição da categoria"
@@ -166,4 +155,3 @@ export function CategoryModal({ categoria, onClose, onSave, loading = false }: M
     </div>
   );
 }
-

@@ -19,6 +19,7 @@ export function Header() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState<number>(2000);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -34,6 +35,24 @@ export function Header() {
       }
     }
     fetchCategories();
+  }, []);
+
+  // Fetch Settings (Free Shipping)
+  useEffect(() => {
+    async function fetchSettings() {
+      try {
+        const { data } = await api.get<{ key: string; value: string }>(
+          '/settings/free_shipping_threshold',
+        );
+        if (data && data.value) {
+          setFreeShippingThreshold(parseFloat(data.value));
+        }
+      } catch (err) {
+        // Silent error, use default
+        console.warn('Failed to load free shipping threshold, using fallback.');
+      }
+    }
+    fetchSettings();
   }, []);
 
   // Close mobile menu on route change
@@ -55,18 +74,17 @@ export function Header() {
       <header className="w-full bg-white z-50 border-b border-light-gray flex flex-col relative">
         {/* 1. Top Bar */}
         <div className="bg-deep-black text-white text-[10px] md:text-xs py-2 text-center font-montserrat tracking-widest uppercase">
-          Frete grátis via PAC para todo o Brasil a partir de R$ 2.000,00
+          Frete grátis via PAC para todo o Brasil a partir de{' '}
+          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
+            freeShippingThreshold,
+          )}
         </div>
 
         <div className="container mx-auto px-6 md:px-12 flex flex-col">
-
           {/* 2. Main Header: Logo & Icons */}
           <div className="flex items-center justify-between py-6 relative">
             {/* Mobile Menu Trigger (Left) */}
-            <button
-              className="md:hidden text-deep-black"
-              onClick={() => setIsMobileMenuOpen(true)}
-            >
+            <button className="md:hidden text-deep-black" onClick={() => setIsMobileMenuOpen(true)}>
               <Menu className="w-6 h-6" />
             </button>
 
@@ -121,7 +139,9 @@ export function Header() {
 
               <div className="hidden md:flex items-center gap-1 text-xs font-medium relative">
                 <ShoppingBag className="w-5 h-5 cursor-not-allowed opacity-50" />
-                <span className="text-[10px] absolute -top-1 -right-1 bg-medium-gray text-white w-3 h-3 flex items-center justify-center rounded-full">0</span>
+                <span className="text-[10px] absolute -top-1 -right-1 bg-medium-gray text-white w-3 h-3 flex items-center justify-center rounded-full">
+                  0
+                </span>
               </div>
             </div>
           </div>
@@ -129,10 +149,16 @@ export function Header() {
           {/* 3. Navigation Bar (Desktop Only) */}
           <nav className="hidden md:flex items-center justify-center gap-8 pb-5 border-t border-transparent">
             {/* Static Links */}
-            <Link href="/novidades" className="text-xs font-montserrat font-medium uppercase tracking-widest hover:text-primary-gold transition-colors">
+            <Link
+              href="/novidades"
+              className="text-xs font-montserrat font-medium uppercase tracking-widest hover:text-primary-gold transition-colors"
+            >
               Lançamentos
             </Link>
-            <Link href="/colecoes" className="text-xs font-montserrat font-medium uppercase tracking-widest hover:text-primary-gold transition-colors">
+            <Link
+              href="/colecoes"
+              className="text-xs font-montserrat font-medium uppercase tracking-widest hover:text-primary-gold transition-colors"
+            >
               Coleções
             </Link>
 
@@ -147,7 +173,10 @@ export function Header() {
               </Link>
             ))}
 
-            <Link href="/bestsellers" className="text-xs font-montserrat font-bold text-primary-gold uppercase tracking-widest hover:text-deep-black transition-colors">
+            <Link
+              href="/bestsellers"
+              className="text-xs font-montserrat font-bold text-primary-gold uppercase tracking-widest hover:text-deep-black transition-colors"
+            >
               Mais Vendidos
             </Link>
           </nav>
@@ -174,7 +203,10 @@ export function Header() {
             >
               <div className="flex justify-between items-center p-6 border-b border-light-gray">
                 <h2 className="font-playfair text-xl font-bold">Menu</h2>
-                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-light-gray rounded-full transition-colors">
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 hover:bg-light-gray rounded-full transition-colors"
+                >
                   <X className="w-6 h-6" />
                 </button>
               </div>
@@ -196,15 +228,23 @@ export function Header() {
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                <Link href="/" className="block font-montserrat text-sm font-bold uppercase tracking-widest text-deep-black">
+                <Link
+                  href="/"
+                  className="block font-montserrat text-sm font-bold uppercase tracking-widest text-deep-black"
+                >
                   Home
                 </Link>
-                <Link href="/colecoes" className="block font-montserrat text-sm font-bold uppercase tracking-widest text-deep-black">
+                <Link
+                  href="/colecoes"
+                  className="block font-montserrat text-sm font-bold uppercase tracking-widest text-deep-black"
+                >
                   Coleções
                 </Link>
 
                 <div className="space-y-3">
-                  <p className="text-xs text-medium-gray font-bold uppercase tracking-widest">Categorias</p>
+                  <p className="text-xs text-medium-gray font-bold uppercase tracking-widest">
+                    Categorias
+                  </p>
                   {categories.map((cat) => (
                     <Link
                       key={cat.id}
@@ -217,7 +257,10 @@ export function Header() {
                 </div>
 
                 <div className="pt-6 border-t border-light-gray space-y-4">
-                  <Link href="/login" className="flex items-center gap-3 text-sm font-medium text-deep-black">
+                  <Link
+                    href="/login"
+                    className="flex items-center gap-3 text-sm font-medium text-deep-black"
+                  >
                     <User className="w-5 h-5" /> Minha Conta
                   </Link>
                   <div className="flex items-center gap-3 text-sm font-medium text-deep-black opacity-50">

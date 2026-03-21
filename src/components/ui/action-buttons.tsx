@@ -4,12 +4,13 @@
  * Componente reutilizável para botões de ação em tabelas.
  */
 
-import { Edit, Trash2, MoreVertical } from 'lucide-react';
+import { Edit, Trash2, MoreVertical, Wrench } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ActionButtonsProps {
   onEdit?: () => void;
   onDelete?: () => void;
+  onRepair?: () => void;
   onMore?: () => void;
   disabled?: boolean;
   className?: string;
@@ -20,6 +21,7 @@ interface ActionButtonsProps {
 export function ActionButtons({
   onEdit,
   onDelete,
+  onRepair,
   onMore,
   disabled = false,
   className,
@@ -28,6 +30,19 @@ export function ActionButtons({
 }: ActionButtonsProps) {
   return (
     <div className={cn('flex items-center justify-end gap-2', className)}>
+      {onRepair && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onRepair();
+          }}
+          disabled={disabled}
+          className="text-amber-600 hover:text-amber-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          title="Mandar para Concerto"
+        >
+          <Wrench className="h-4 w-4" />
+        </button>
+      )}
       {onEdit && (
         <button
           onClick={(e) => {
@@ -70,4 +85,3 @@ export function ActionButtons({
     </div>
   );
 }
-

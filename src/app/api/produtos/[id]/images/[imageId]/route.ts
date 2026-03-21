@@ -14,10 +14,5 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string; imageId: string }> },
 ) {
   const { id, imageId } = await params;
-  return handleDelete(
-    `${BACKEND_PATH}/${id}/images`,
-    imageId,
-    'Erro ao remover imagem',
-  );
+  return handleDelete(`${BACKEND_PATH}/${id}/images`, imageId, 'Erro ao remover imagem');
 }
-

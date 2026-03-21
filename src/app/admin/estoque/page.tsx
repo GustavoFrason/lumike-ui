@@ -27,7 +27,7 @@ export default function EstoquePage() {
   }, [loadProducts]);
 
   const filteredProducts = onlyLowStock
-    ? products.filter(p => p.current_stock <= p.min_stock)
+    ? products.filter((p) => p.current_stock <= p.min_stock)
     : products;
 
   useEffect(() => {
@@ -82,9 +82,7 @@ export default function EstoquePage() {
             {produto.current_stock}
           </span>
           {produto.min_stock > 0 && (
-            <span className="text-zinc-400 text-xs ml-1">
-              (mín: {produto.min_stock})
-            </span>
+            <span className="text-zinc-400 text-xs ml-1">(mín: {produto.min_stock})</span>
           )}
         </div>
       ),
@@ -94,14 +92,8 @@ export default function EstoquePage() {
       header: 'Status',
       render: (produto) => (
         <StatusBadge
-          status={
-            produto.current_stock <= produto.min_stock ? 'pending' : 'active'
-          }
-          label={
-            produto.current_stock <= produto.min_stock
-              ? 'Estoque Baixo'
-              : 'Normal'
-          }
+          status={produto.current_stock <= produto.min_stock ? 'pending' : 'active'}
+          label={produto.current_stock <= produto.min_stock ? 'Estoque Baixo' : 'Normal'}
         />
       ),
     },
@@ -136,7 +128,6 @@ export default function EstoquePage() {
     },
   ];
 
-
   if (loadingProducts) {
     return (
       <section className="space-y-6">
@@ -150,20 +141,23 @@ export default function EstoquePage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Gestão de Estoque</h1>
         <div className="flex items-center gap-2">
-          <label className="text-sm text-zinc-600 font-medium cursor-pointer" onClick={() => setOnlyLowStock(!onlyLowStock)}>
+          <label
+            className="text-sm text-zinc-600 font-medium cursor-pointer"
+            onClick={() => setOnlyLowStock(!onlyLowStock)}
+          >
             Apenas Estoque Baixo:
           </label>
           <button
             onClick={() => setOnlyLowStock(!onlyLowStock)}
             className={cn(
-              "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
-              onlyLowStock ? "bg-red-600" : "bg-zinc-200"
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
+              onlyLowStock ? 'bg-red-600' : 'bg-zinc-200',
             )}
           >
             <span
               className={cn(
-                "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                onlyLowStock ? "translate-x-5" : "translate-x-0"
+                'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                onlyLowStock ? 'translate-x-5' : 'translate-x-0',
               )}
             />
           </button>
@@ -171,12 +165,7 @@ export default function EstoquePage() {
       </div>
 
       <ErrorMessage
-        message={
-          inventory.errorAdding ||
-          inventory.errorRemoving ||
-          inventory.errorHistory ||
-          ''
-        }
+        message={inventory.errorAdding || inventory.errorRemoving || inventory.errorHistory || ''}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -186,11 +175,13 @@ export default function EstoquePage() {
             data={filteredProducts}
             loading={loadingProducts}
             columns={productColumns}
-            emptyTitle={onlyLowStock ? "Nenhum produto com estoque baixo" : "Nenhum produto encontrado"}
+            emptyTitle={
+              onlyLowStock ? 'Nenhum produto com estoque baixo' : 'Nenhum produto encontrado'
+            }
             emptyDescription={
               onlyLowStock
-                ? "Parabéns! Todos os seus produtos estão com níveis de estoque saudáveis."
-                : "Cadastre produtos para gerenciar o estoque e as movimentações."
+                ? 'Parabéns! Todos os seus produtos estão com níveis de estoque saudáveis.'
+                : 'Cadastre produtos para gerenciar o estoque e as movimentações.'
             }
             emptyAction={
               onlyLowStock && (
@@ -229,9 +220,7 @@ export default function EstoquePage() {
               )}
 
               <div>
-                <h3 className="text-sm font-medium text-zinc-700 mb-2">
-                  Histórico Recente
-                </h3>
+                <h3 className="text-sm font-medium text-zinc-700 mb-2">Histórico Recente</h3>
                 {inventory.loadingHistory ? (
                   <Loading size="sm" />
                 ) : inventory.history.length > 0 ? (
@@ -244,8 +233,8 @@ export default function EstoquePage() {
                         <div className="flex items-center justify-between text-sm">
                           <span
                             className={cn(
-                              "font-bold",
-                              movement.movement === 'IN' ? 'text-green-600' : 'text-red-600'
+                              'font-bold',
+                              movement.movement === 'IN' ? 'text-green-600' : 'text-red-600',
                             )}
                           >
                             {movement.movement === 'IN' ? '+' : '-'}
@@ -256,9 +245,7 @@ export default function EstoquePage() {
                           </span>
                         </div>
                         {movement.reference && (
-                          <p className="text-[11px] text-zinc-500 italic">
-                            {movement.reference}
-                          </p>
+                          <p className="text-[11px] text-zinc-500 italic">{movement.reference}</p>
                         )}
                       </div>
                     ))}
@@ -289,4 +276,3 @@ export default function EstoquePage() {
     </section>
   );
 }
-

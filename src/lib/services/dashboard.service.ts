@@ -60,8 +60,9 @@ export const dashboardService = {
    * Busca histórico de faturamento
    */
   async getRevenueHistory(): Promise<{ date: string; revenue: number }[]> {
-    const { data } = await api.get<{ date: string; revenue: number }[]>('/dashboard/revenue-history');
+    const { data } = await api.get<{ date: string; revenue: number }[]>(
+      '/dashboard/revenue-history',
+    );
     return data;
   },
 };
-

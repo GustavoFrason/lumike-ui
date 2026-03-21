@@ -100,15 +100,15 @@ export default function CategoriasPage() {
     {
       key: 'slug',
       header: 'Slug',
-      render: (categoria) => <span className="text-zinc-500 font-mono text-xs">{categoria.slug || '-'}</span>,
+      render: (categoria) => (
+        <span className="text-zinc-500 font-mono text-xs">{categoria.slug || '-'}</span>
+      ),
     },
     {
       key: 'description',
       header: 'Descrição',
       render: (categoria) => (
-        <span className="text-zinc-600 text-sm">
-          {categoria.description || '-'}
-        </span>
+        <span className="text-zinc-600 text-sm">{categoria.description || '-'}</span>
       ),
     },
     {
@@ -173,4 +173,3 @@ export default function CategoriasPage() {
     </section>
   );
 }
-

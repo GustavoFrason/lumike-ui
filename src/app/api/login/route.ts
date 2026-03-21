@@ -20,13 +20,16 @@ export async function POST(req: Request) {
     }
 
     // Faz proxy para o backend
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/login`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, senha }),
       },
-      body: JSON.stringify({ email, senha }),
-    });
+    );
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ message: 'Erro ao autenticar' }));
@@ -44,18 +47,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, user: data.user, token: data.access_token });
     } else {
       await clearAuthCookie();
-      return NextResponse.json(
-        { success: false, message: 'Token não recebido' },
-        { status: 500 },
-      );
+      return NextResponse.json({ success: false, message: 'Token não recebido' }, { status: 500 });
     }
   } catch (error: unknown) {
     await clearAuthCookie();
     console.error('Erro ao autenticar:', error);
     const message = error instanceof Error ? error.message : 'Falha na autenticação';
-    return NextResponse.json(
-      { success: false, message },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, message }, { status: 500 });
   }
 }

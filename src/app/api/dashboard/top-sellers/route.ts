@@ -17,4 +17,3 @@ export async function GET(request: NextRequest) {
     : `${BACKEND_PATH}/top-sellers`;
   return handleGet(request, path, 'Erro ao buscar produtos mais vendidos');
 }
-

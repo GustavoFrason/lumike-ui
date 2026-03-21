@@ -65,7 +65,12 @@ export function DataTable<T extends { id: number | string }>({
   }
 
   return (
-    <div className={cn('bg-white rounded-lg shadow-sm border border-zinc-200 overflow-hidden', className)}>
+    <div
+      className={cn(
+        'bg-white rounded-lg shadow-sm border border-zinc-200 overflow-hidden',
+        className,
+      )}
+    >
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-[var(--lumike-beige)]">
@@ -103,4 +108,3 @@ export function DataTable<T extends { id: number | string }>({
     </div>
   );
 }
-

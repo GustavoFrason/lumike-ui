@@ -23,9 +23,14 @@ const sizeClasses = {
 export function Loading({ size = 'md', className, spinnerClassName, text }: LoadingProps) {
   return (
     <div className={cn('flex flex-col items-center justify-center gap-2', className)}>
-      <Loader2 className={cn('animate-spin text-[var(--lumike-gold)]', sizeClasses[size], spinnerClassName)} />
+      <Loader2
+        className={cn(
+          'animate-spin text-[var(--lumike-gold)]',
+          sizeClasses[size],
+          spinnerClassName,
+        )}
+      />
       {text && <p className="text-sm text-zinc-600">{text}</p>}
     </div>
   );
 }
-

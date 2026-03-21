@@ -36,34 +36,32 @@ export const imagesService = {
 
     // Mapeamento de extensões para MIME types comuns
     const mimeTypes: { [key: string]: string } = {
-      'jpg': 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'png': 'image/png',
-      'webp': 'image/webp',
-      'avif': 'image/avif',
-      'gif': 'image/gif'
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      webp: 'image/webp',
+      avif: 'image/avif',
+      gif: 'image/gif',
     };
 
     // Determina o contentType final:
     // Prioridade 1: Mapeamento pela extensão (mais confiável em Windows)
     // Prioridade 2: Tipo do arquivo se não for genérico
     // Prioridade 3: image/jpeg como fallback
-    const resolvedMimeType = mimeTypes[fileExt] || (
-      compressedFile.type && compressedFile.type !== 'application/octet-stream'
+    const resolvedMimeType =
+      mimeTypes[fileExt] ||
+      (compressedFile.type && compressedFile.type !== 'application/octet-stream'
         ? compressedFile.type
-        : 'image/jpeg'
-    );
+        : 'image/jpeg');
 
     console.log(`📡 Enviando para Supabase: ${fileName} | Content-Type: ${resolvedMimeType}`);
 
     // Upload para o Storage
-    const { error } = await supabase.storage
-      .from(BUCKET_NAME)
-      .upload(fileName, compressedFile, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: resolvedMimeType
-      });
+    const { error } = await supabase.storage.from(BUCKET_NAME).upload(fileName, compressedFile, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: resolvedMimeType,
+    });
 
     if (error) {
       console.error('❌ Erro no Supabase Storage:', error);
@@ -93,23 +91,21 @@ export const imagesService = {
     const fileName = `categorias/${Date.now()}.${fileExt}`;
 
     const mimeTypes: { [key: string]: string } = {
-      'jpg': 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'png': 'image/png',
-      'webp': 'image/webp',
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      webp: 'image/webp',
     };
 
     const resolvedMimeType = mimeTypes[fileExt] || 'image/jpeg';
 
     console.log(`📡 Enviando para categorias: ${fileName}`);
 
-    const { error } = await supabase.storage
-      .from(BUCKET_NAME)
-      .upload(fileName, compressedFile, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: resolvedMimeType
-      });
+    const { error } = await supabase.storage.from(BUCKET_NAME).upload(fileName, compressedFile, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: resolvedMimeType,
+    });
 
     if (error) {
       throw new Error(`Erro ao fazer upload: ${error.message}`);
@@ -125,15 +121,8 @@ export const imagesService = {
   /**
    * Registra a imagem no banco de dados via API
    */
-  async registerImage(
-    productId: number,
-    url: string,
-    ordem: number = 0,
-  ): Promise<ProductImage> {
-    const { data } = await api.post<ProductImage>(
-      `/produtos/${productId}/images`,
-      { url, ordem },
-    );
+  async registerImage(productId: number, url: string, ordem: number = 0): Promise<ProductImage> {
+    const { data } = await api.post<ProductImage>(`/produtos/${productId}/images`, { url, ordem });
     return data;
   },
 
@@ -141,9 +130,7 @@ export const imagesService = {
    * Lista todas as imagens de um produto
    */
   async getProductImages(productId: number): Promise<ProductImage[]> {
-    const { data } = await api.get<ProductImage[]>(
-      `/produtos/${productId}/images`,
-    );
+    const { data } = await api.get<ProductImage[]>(`/produtos/${productId}/images`);
     return data;
   },
 
@@ -157,11 +144,7 @@ export const imagesService = {
   /**
    * Atualiza a ordem das imagens
    */
-  async updateImageOrder(
-    productId: number,
-    imageId: string,
-    ordem: number,
-  ): Promise<ProductImage> {
+  async updateImageOrder(productId: number, imageId: string, ordem: number): Promise<ProductImage> {
     const { data } = await api.post<ProductImage>(
       `/produtos/${productId}/images/${imageId}/order`,
       { ordem },
@@ -169,4 +152,3 @@ export const imagesService = {
     return data;
   },
 };
-

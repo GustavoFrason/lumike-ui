@@ -75,4 +75,3 @@ export function useCategories() {
     resetDelete: deleteApi.reset,
   };
 }
-

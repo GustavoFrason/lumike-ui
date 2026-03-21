@@ -12,7 +12,6 @@ import { cn, normalizeImageUrl } from '@/lib/utils';
 import { Loading } from './loading';
 import { useEffect } from 'react';
 
-
 interface ImageUploadProps {
   onUpload: (file: File, previewUrl: string) => Promise<void>;
   onRemove?: (url: string) => void;
@@ -152,4 +151,3 @@ export function ImageUpload({
     </div>
   );
 }
-

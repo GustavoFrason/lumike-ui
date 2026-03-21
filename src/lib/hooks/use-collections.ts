@@ -75,4 +75,3 @@ export function useCollections() {
     resetDelete: deleteApi.reset,
   };
 }
-

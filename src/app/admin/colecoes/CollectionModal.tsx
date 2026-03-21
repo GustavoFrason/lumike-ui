@@ -18,14 +18,11 @@ export function CollectionModal({ colecao, onClose, onSave, loading = false }: M
     is_active: colecao?.is_active ?? true,
   });
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value, type } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]:
-        type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
     }));
   }
 
@@ -58,9 +55,7 @@ export function CollectionModal({ colecao, onClose, onSave, loading = false }: M
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Nome *
-            </label>
+            <label className="block text-sm font-medium text-zinc-700 mb-1">Nome *</label>
             <input
               type="text"
               name="nome"
@@ -73,9 +68,7 @@ export function CollectionModal({ colecao, onClose, onSave, loading = false }: M
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Slug
-            </label>
+            <label className="block text-sm font-medium text-zinc-700 mb-1">Slug</label>
             <input
               type="text"
               name="slug"
@@ -84,15 +77,11 @@ export function CollectionModal({ colecao, onClose, onSave, loading = false }: M
               onChange={handleChange}
               className="w-full border rounded-lg px-3 py-2 font-mono text-sm"
             />
-            <p className="text-xs text-zinc-500 mt-1">
-              Deixe vazio para gerar automaticamente
-            </p>
+            <p className="text-xs text-zinc-500 mt-1">Deixe vazio para gerar automaticamente</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Descrição
-            </label>
+            <label className="block text-sm font-medium text-zinc-700 mb-1">Descrição</label>
             <textarea
               name="descricao"
               placeholder="Descrição da coleção"
@@ -135,4 +124,3 @@ export function CollectionModal({ colecao, onClose, onSave, loading = false }: M
     </div>
   );
 }
-

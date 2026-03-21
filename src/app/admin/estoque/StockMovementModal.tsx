@@ -59,9 +59,7 @@ export function StockMovementModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Quantidade *
-            </label>
+            <label className="block text-sm font-medium text-zinc-700 mb-1">Quantidade *</label>
             <input
               type="number"
               min="1"
@@ -102,12 +100,14 @@ export function StockMovementModal({
               type="submit"
               disabled={loading}
               className={`flex-1 py-2 rounded-lg text-white transition disabled:opacity-50 disabled:cursor-not-allowed ${
-                type === 'entry'
-                  ? 'bg-green-600 hover:bg-green-700'
-                  : 'bg-red-600 hover:bg-red-700'
+                type === 'entry' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'
               }`}
             >
-              {loading ? 'Processando...' : type === 'entry' ? 'Registrar Entrada' : 'Registrar Saída'}
+              {loading
+                ? 'Processando...'
+                : type === 'entry'
+                  ? 'Registrar Entrada'
+                  : 'Registrar Saída'}
             </button>
           </div>
         </form>
@@ -115,4 +115,3 @@ export function StockMovementModal({
     </div>
   );
 }
-

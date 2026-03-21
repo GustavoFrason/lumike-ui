@@ -49,4 +49,3 @@ export async function proxyRequest(
 
   return response;
 }
-

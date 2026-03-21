@@ -77,4 +77,3 @@ export function useOrders() {
     resetDelete: deleteApi.reset,
   };
 }
-

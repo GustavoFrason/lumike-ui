@@ -39,4 +39,3 @@ export function ErrorMessage({ message, className, onDismiss }: ErrorMessageProp
     </div>
   );
 }
-

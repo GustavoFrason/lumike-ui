@@ -44,13 +44,10 @@ export function useInventory(productId?: number) {
     [productId, executeHistory],
   );
 
-  const loadStock = useCallback(
-    async () => {
-      if (!productId) throw new Error('Product ID é obrigatório');
-      return executeStock(() => inventoryService.getStock(productId));
-    },
-    [productId, executeStock],
-  );
+  const loadStock = useCallback(async () => {
+    if (!productId) throw new Error('Product ID é obrigatório');
+    return executeStock(() => inventoryService.getStock(productId));
+  }, [productId, executeStock]);
 
   return {
     // Entry
@@ -80,4 +77,3 @@ export function useInventory(productId?: number) {
     resetStock: stockApi.reset,
   };
 }
-

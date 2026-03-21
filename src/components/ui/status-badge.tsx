@@ -44,15 +44,8 @@ export function StatusBadge({ status, label, className }: StatusBadgeProps) {
   const displayLabel = label || config.label;
 
   return (
-    <span
-      className={cn(
-        'px-2 py-1 rounded-full text-xs font-medium',
-        config.className,
-        className,
-      )}
-    >
+    <span className={cn('px-2 py-1 rounded-full text-xs font-medium', config.className, className)}>
       {displayLabel}
     </span>
   );
 }
-

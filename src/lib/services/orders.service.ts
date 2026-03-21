@@ -88,9 +88,7 @@ export const ordersService = {
       params.append('customer_id', customerId.toString());
     }
 
-    const { data } = await api.get<PaginatedResponse<Order>>(
-      `/pedidos?${params.toString()}`,
-    );
+    const { data } = await api.get<PaginatedResponse<Order>>(`/pedidos?${params.toString()}`);
     return data;
   },
 
@@ -113,10 +111,7 @@ export const ordersService = {
   /**
    * Atualiza o status de um pedido
    */
-  async updateStatus(
-    id: number,
-    status: string,
-  ): Promise<Order> {
+  async updateStatus(id: number, status: string): Promise<Order> {
     const { data } = await api.patch<Order>(`/pedidos/${id}/status`, { status });
     return data;
   },
@@ -129,4 +124,3 @@ export const ordersService = {
     return data;
   },
 };
-

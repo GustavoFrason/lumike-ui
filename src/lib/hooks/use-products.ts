@@ -7,7 +7,12 @@
 
 import { useCallback } from 'react';
 import { useApi } from './use-api';
-import { productsService, Product, CreateProductDto, UpdateProductDto } from '../services/products.service';
+import {
+  productsService,
+  Product,
+  CreateProductDto,
+  UpdateProductDto,
+} from '../services/products.service';
 import { PaginatedResponse } from '../api';
 
 export function useProducts() {
@@ -72,4 +77,3 @@ export function useProducts() {
     resetDelete: deleteApi.reset,
   };
 }
-

@@ -12,4 +12,3 @@ const BACKEND_PATH = '/dashboard';
 export async function GET(request: NextRequest) {
   return handleGet(request, `${BACKEND_PATH}/kpis`, 'Erro ao buscar KPIs');
 }
-

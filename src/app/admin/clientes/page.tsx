@@ -79,7 +79,6 @@ export default function ClientesPage() {
   }
 
   const columns: Column<Customer>[] = [
-
     {
       key: 'name',
       header: 'Nome',
@@ -95,23 +94,17 @@ export default function ClientesPage() {
     {
       key: 'email',
       header: 'E-mail',
-      render: (cliente) => (
-        <span className="text-zinc-500">{cliente.email || '-'}</span>
-      ),
+      render: (cliente) => <span className="text-zinc-500">{cliente.email || '-'}</span>,
     },
     {
       key: 'phone',
       header: 'Telefone',
-      render: (cliente) => (
-        <span className="text-zinc-500">{cliente.phone || '-'}</span>
-      ),
+      render: (cliente) => <span className="text-zinc-500">{cliente.phone || '-'}</span>,
     },
     {
       key: 'cpf',
       header: 'CPF',
-      render: (cliente) => (
-        <span className="text-zinc-500">{cliente.cpf || '-'}</span>
-      ),
+      render: (cliente) => <span className="text-zinc-500">{cliente.cpf || '-'}</span>,
     },
     {
       key: 'created_at',

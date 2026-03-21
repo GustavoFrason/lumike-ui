@@ -49,7 +49,9 @@ export default function ColecoesPage() {
       if (colecaoSelecionada?.id) {
         await updateCollection(colecaoSelecionada.id, colecaoData);
       } else {
-        await createCollection(colecaoData as unknown as Omit<Collection, 'id' | 'created_at' | 'updated_at'>);
+        await createCollection(
+          colecaoData as unknown as Omit<Collection, 'id' | 'created_at' | 'updated_at'>,
+        );
       }
       setModalAberto(false);
       await loadCollections(true);
@@ -88,15 +90,15 @@ export default function ColecoesPage() {
     {
       key: 'slug',
       header: 'Slug',
-      render: (colecao) => <span className="text-zinc-500 font-mono text-xs">{colecao.slug || '-'}</span>,
+      render: (colecao) => (
+        <span className="text-zinc-500 font-mono text-xs">{colecao.slug || '-'}</span>
+      ),
     },
     {
       key: 'descricao',
       header: 'Descrição',
       render: (colecao) => (
-        <span className="text-zinc-600 text-sm">
-          {colecao.descricao || '-'}
-        </span>
+        <span className="text-zinc-600 text-sm">{colecao.descricao || '-'}</span>
       ),
     },
     {
@@ -161,4 +163,3 @@ export default function ColecoesPage() {
     </section>
   );
 }
-

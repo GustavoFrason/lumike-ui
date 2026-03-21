@@ -7,16 +7,12 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import { imagesService } from '@/lib/services/images.service';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { useCollections } from '@/lib/hooks/use-collections';
-import { Plus, Check, X, Info } from 'lucide-react';
+import { useSuppliers } from '@/lib/hooks/use-suppliers';
+import { Plus, Check, X, Info, Truck } from 'lucide-react';
 import CurrencyInput from 'react-currency-input-field';
 
 import { ErrorMessage } from '@/components/ui/error-message';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ModalProps {
   produto: Product | null;
@@ -42,7 +38,7 @@ function LabelWithTooltip({ label, tooltip, required, children }: LabelWithToolt
       <TooltipProvider>
         <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
-            <Info className="h-3.5 w-3.5 text-zinc-400 hover:text-[var(--lumike-gold)] cursor-help transition-colors" />
+            <Info className="h-3.5 w-3.5 text-zinc-400 hover:text-(--lumike-gold) cursor-help transition-colors" />
           </TooltipTrigger>
           <TooltipContent className="bg-zinc-800 text-zinc-50 border-zinc-700 max-w-xs">
             <p className="text-xs">{tooltip}</p>
@@ -57,6 +53,7 @@ function LabelWithTooltip({ label, tooltip, required, children }: LabelWithToolt
 export function ProductModal({ produto, onClose, onSave, loading = false, error }: ModalProps) {
   const { categories, loadCategories, loadingCategories } = useCategories();
   const { collections, loadCollections, loadingCollections } = useCollections();
+  const { suppliers, loadSuppliers } = useSuppliers();
 
   const [form, setForm] = useState({
     name: produto?.name || '',
@@ -71,6 +68,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
     current_stock: produto?.current_stock?.toString() || '',
     min_stock: produto?.min_stock?.toString() || '',
     category_id: produto?.category_id?.toString() || '',
+    supplier_id: produto?.supplier_id?.toString() || '',
     colecao_id: produto?.colecao_id || '',
     collection: produto?.collection || '',
     is_active: produto?.is_active ?? true,
@@ -103,7 +101,8 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
   useEffect(() => {
     loadCategories(true); // Apenas categorias ativas
     loadCollections(true); // Apenas coleções ativas
-  }, [loadCategories, loadCollections]);
+    loadSuppliers(); // Carregar fornecedores para o dropdown
+  }, [loadCategories, loadCollections, loadSuppliers]);
 
   useEffect(() => {
     if (produto?.id) {
@@ -117,10 +116,10 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
       setCreatingCategory(true);
       const newCat = await categoriesService.create({
         name: newCategoryName.trim(),
-        is_active: true
+        is_active: true,
       });
       await loadCategories(true);
-      setForm(prev => ({ ...prev, category_id: newCat.id.toString() }));
+      setForm((prev) => ({ ...prev, category_id: newCat.id.toString() }));
       setNewCategoryName('');
       setShowQuickCategory(false);
     } catch (err) {
@@ -162,6 +161,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
             current_stock: '0', // Reset to 0 so user enters amount to ADD
             min_stock: foundProduct.min_stock?.toString() || '',
             category_id: foundProduct.category_id?.toString() || '',
+            supplier_id: foundProduct.supplier_id?.toString() || '',
             colecao_id: foundProduct.colecao_id || '',
             collection: foundProduct.collection || '',
             is_active: foundProduct.is_active ?? true,
@@ -185,7 +185,6 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
       setLoadingSku(false);
     }
   };
-
 
   async function handleImageUpload(file: File, url: string): Promise<void> {
     if (!produto?.id) {
@@ -232,8 +231,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
     const { name, value, type } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]:
-        type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
     }));
   }
 
@@ -257,11 +255,12 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
       current_stock: parseInt(form.current_stock) || 0,
       min_stock: parseInt(form.min_stock) || 0,
       category_id: form.category_id ? parseInt(form.category_id) : undefined,
+      supplier_id: form.supplier_id ? parseInt(form.supplier_id) : undefined,
       colecao_id: form.colecao_id || undefined,
       collection: form.collection || undefined,
       is_active: form.is_active,
       is_featured: form.is_featured,
-      pendingFiles: pendingFiles.map(p => p.file),
+      pendingFiles: pendingFiles.map((p) => p.file),
       existingProductId: existingProduct?.id,
     };
 
@@ -276,10 +275,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
           <h2 className="text-2xl font-playfair font-bold text-zinc-900">
             {produto ? 'Editar Produto' : 'Novo Produto'}
           </h2>
-          <button
-            onClick={onClose}
-            className="text-zinc-400 hover:text-zinc-600 transition"
-          >
+          <button onClick={onClose} className="text-zinc-400 hover:text-zinc-600 transition">
             ✕
           </button>
         </div>
@@ -289,7 +285,6 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
           {error && <ErrorMessage message={error} className="mb-4" />}
 
           <form id="product-form" onSubmit={handleSubmit} className="space-y-6">
-
             {/* --- Identificação --- */}
             <div className="bg-zinc-50 p-4 rounded-lg border border-zinc-100 space-y-4">
               <h3 className="font-semibold text-zinc-800 flex items-center gap-2">
@@ -312,7 +307,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
                     value={form.sku}
                     onChange={handleChange}
                     onBlur={handleSkuLookup}
-                    className="w-full border-2 border-[var(--lumike-gold)]/30 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[var(--lumike-gold)] outline-none font-mono font-medium"
+                    className="w-full border-2 border-(--lumike-gold)/30 rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumike-gold) outline-none font-mono font-medium"
                     required
                     autoFocus
                   />
@@ -428,7 +423,9 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
                   placeholder="R$ 0,00"
                   value={form.cost_price}
                   decimalsLimit={2}
-                  onValueChange={(value) => setForm(prev => ({ ...prev, cost_price: value || '' }))}
+                  onValueChange={(value) =>
+                    setForm((prev) => ({ ...prev, cost_price: value || '' }))
+                  }
                   prefix="R$ "
                   className="w-full border rounded-lg px-3 py-2"
                   decimalSeparator=","
@@ -448,7 +445,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
                   placeholder="R$ 0,00"
                   value={form.price}
                   decimalsLimit={2}
-                  onValueChange={(value) => setForm(prev => ({ ...prev, price: value || '' }))}
+                  onValueChange={(value) => setForm((prev) => ({ ...prev, price: value || '' }))}
                   prefix="R$ "
                   className="w-full border rounded-lg px-3 py-2 font-bold text-zinc-800"
                   decimalSeparator=","
@@ -468,7 +465,9 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
                   placeholder="R$ 0,00"
                   value={form.preco_promocional}
                   decimalsLimit={2}
-                  onValueChange={(value) => setForm(prev => ({ ...prev, preco_promocional: value || '' }))}
+                  onValueChange={(value) =>
+                    setForm((prev) => ({ ...prev, preco_promocional: value || '' }))
+                  }
                   prefix="R$ "
                   className="w-full border rounded-lg px-3 py-2 text-green-700 font-medium"
                   decimalSeparator=","
@@ -479,7 +478,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
             </div>
 
             {/* --- Organização --- */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <LabelWithTooltip
@@ -490,7 +489,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
                     <button
                       type="button"
                       onClick={() => setShowQuickCategory(true)}
-                      className="text-xs text-[var(--lumike-gold)] hover:underline flex items-center gap-1"
+                      className="text-xs text-(--lumike-gold) hover:underline flex items-center gap-1"
                     >
                       <Plus className="h-3 w-3" /> Nova
                     </button>
@@ -517,7 +516,10 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
                     </button>
                     <button
                       type="button"
-                      onClick={() => { setShowQuickCategory(false); setNewCategoryName(''); }}
+                      onClick={() => {
+                        setShowQuickCategory(false);
+                        setNewCategoryName('');
+                      }}
                       className="p-1 text-red-600 bg-red-50 rounded hover:bg-red-100"
                     >
                       <X className="h-5 w-5" />
@@ -532,10 +534,32 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
                   >
                     <option value="">Selecione...</option>
                     {categories.map((category) => (
-                      <option key={category.id} value={category.id}>{category.name}</option>
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
                     ))}
                   </select>
                 )}
+              </div>
+
+              <div>
+                <LabelWithTooltip
+                  label="Fornecedor"
+                  tooltip="Origem do produto para acompanhamento de ROI."
+                />
+                <select
+                  name="supplier_id"
+                  value={form.supplier_id}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-3 py-2"
+                >
+                  <option value="">Selecione...</option>
+                  {suppliers.map((supplier) => (
+                    <option key={supplier.id} value={supplier.id}>
+                      {supplier.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
@@ -595,7 +619,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
                   name="is_active"
                   checked={form.is_active}
                   onChange={handleChange}
-                  className="w-5 h-5 rounded border-zinc-300 text-[var(--lumike-gold)] focus:ring-[var(--lumike-gold)]"
+                  className="w-5 h-5 rounded border-zinc-300 text-(--lumike-gold) focus:ring-(--lumike-gold)"
                 />
                 <div className="flex flex-col">
                   <span className="text-sm font-medium text-zinc-800">Ativo</span>
@@ -609,7 +633,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
                   name="is_featured"
                   checked={form.is_featured}
                   onChange={handleChange}
-                  className="w-5 h-5 rounded border-zinc-300 text-[var(--lumike-gold)] focus:ring-[var(--lumike-gold)]"
+                  className="w-5 h-5 rounded border-zinc-300 text-(--lumike-gold) focus:ring-(--lumike-gold)"
                 />
                 <div className="flex flex-col">
                   <span className="text-sm font-medium text-zinc-800">Destaque</span>
@@ -617,7 +641,6 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
                 </div>
               </label>
             </div>
-
           </form>
         </div>
 
@@ -634,7 +657,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
             type="submit"
             form="product-form"
             disabled={loading}
-            className="px-6 py-2 bg-[var(--lumike-gold)] text-white rounded-lg hover:opacity-90 transition font-medium disabled:opacity-50 shadow-sm"
+            className="px-6 py-2 bg-(--lumike-gold) text-white rounded-lg hover:opacity-90 transition font-medium disabled:opacity-50 shadow-sm"
           >
             {loading ? 'Salvando...' : 'Salvar Produto'}
           </button>
