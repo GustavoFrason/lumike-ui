@@ -2,7 +2,6 @@
 
 import { Card } from '@/components/ui/card';
 import { Heart, ShoppingBag } from 'lucide-react';
-import Link from 'next/link';
 
 export default function WishlistPage() {
   return (

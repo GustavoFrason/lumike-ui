@@ -5,10 +5,9 @@ import Image from 'next/image';
 import axios from 'axios';
 import { Product } from '@/lib/services/products.service';
 import { formatCurrency } from '@/lib/formatters';
-import { WhatsAppButton } from '@/components/ui/whatsapp-button';
 // import { Heart } from 'lucide-react'; // Removing local Heart import if not used elsewhere, or keep it.
 import { FavoriteButton } from '@/components/ui/favorite-button';
-import { cn, normalizeImageUrl } from '@/lib/utils';
+import { normalizeImageUrl } from '@/lib/utils';
 
 interface ProductCardProps {
   product: Product;
@@ -28,7 +27,7 @@ export function ProductCard({ product }: ProductCardProps) {
       {/* Image Container */}
       <Link
         href={productUrl}
-        className="block relative aspect-[3/4] bg-off-white overflow-hidden mb-4"
+        className="block relative aspect-3/4 bg-off-white overflow-hidden mb-4"
       >
         {mainImage ? (
           <>

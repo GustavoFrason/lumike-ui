@@ -17,7 +17,21 @@ import { formatCurrency } from '@/lib/formatters';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
-export function FinancialSummaryChart({ data }: { data: any[] }) {
+export interface DailyStat {
+  date: string;
+  income: number;
+  expense: number;
+}
+
+export interface CategoryStat {
+  name: string;
+  value: number;
+  type: 'IN' | 'OUT';
+  // recharts (Pie data) exige um índice de string genérico no tipo do dado.
+  [key: string]: unknown;
+}
+
+export function FinancialSummaryChart({ data }: { data: DailyStat[] }) {
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -44,7 +58,7 @@ export function FinancialSummaryChart({ data }: { data: any[] }) {
               borderRadius: '8px',
               fontSize: '12px',
             }}
-            formatter={(value: any) => formatCurrency(Number(value || 0))}
+            formatter={(value: number | string | undefined) => formatCurrency(Number(value || 0))}
           />
           <Legend wrapperStyle={{ paddingTop: '20px' }} />
           <Bar
@@ -67,7 +81,7 @@ export function FinancialSummaryChart({ data }: { data: any[] }) {
   );
 }
 
-export function CategoryPieChart({ data }: { data: any[] }) {
+export function CategoryPieChart({ data }: { data: CategoryStat[] }) {
   if (!data || data.length === 0) {
     return (
       <div className="h-[300px] flex items-center justify-center text-gray-400 text-sm">
@@ -94,7 +108,7 @@ export function CategoryPieChart({ data }: { data: any[] }) {
             ))}
           </Pie>
           <Tooltip
-            formatter={(value: any) => formatCurrency(Number(value || 0))}
+            formatter={(value: number | string | undefined) => formatCurrency(Number(value || 0))}
             contentStyle={{
               backgroundColor: '#fff',
               border: '1px solid #e5e7eb',

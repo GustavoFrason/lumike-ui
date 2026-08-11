@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Backups e artefatos de debug (saída de lint/typecheck/test redirecionada
+# pra arquivo durante depuração — não deve ser versionada)
+*_error*.log
+build_error.log
+lint*.txt
+lint*.log
+typecheck*.txt
+typecheck*.log
+test_output.txt
+test_results.json

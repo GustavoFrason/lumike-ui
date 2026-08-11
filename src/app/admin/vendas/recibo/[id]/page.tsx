@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { ordersService, Order } from '@/lib/services/orders.service';
 import { formatDate, formatCurrency } from '@/lib/formatters';
+import { ShieldCheck } from 'lucide-react';
 
 export default function ReceiptPage() {
   // Recebemos a Order completa para evitar novo fetch, mas como é nova pág, precisamos buscar.
@@ -40,72 +41,101 @@ export default function ReceiptPage() {
     return <div className="text-red-600 p-8">{error || 'Pedido não encontrado'}</div>;
 
   return (
-    <div className="max-w-[80mm] mx-auto p-4 bg-white text-black font-mono text-sm leading-tight print:max-w-none print:w-full print:p-0">
+    <div className="max-w-[80mm] mx-auto p-6 bg-white text-zinc-900 font-sans text-sm leading-relaxed print:max-w-none print:w-full print:p-0">
       {/* Header */}
-      <div className="text-center mb-4 border-b pb-4">
-        <h1 className="text-xl font-bold mb-1">LUMIKE</h1>
-        <p className="text-xs">Semijoias & Acessórios</p>
-        <p className="text-xs">CNPJ: 00.000.000/0001-00</p>
-        <p className="text-xs mb-2">Tel: (11) 99999-9999</p>
+      <div className="text-center mb-6 pb-6 border-b-2 border-double border-zinc-200">
+        <h1 className="text-3xl font-playfair font-black tracking-widest text-zinc-900 mb-1">LUMIKE</h1>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-medium">Semijoias & Acessórios</p>
+        <div className="mt-4 space-y-0.5 text-[10px] text-zinc-400">
+          <p>CNPJ: 00.000.000/0001-00</p>
+          <p>Rua Exemplo, 123 - São Paulo/SP</p>
+          <p>Tel: (11) 99999-9999</p>
+        </div>
 
-        <p className="font-bold">RECIBO #{order.id}</p>
-        <p className="text-xs">{formatDate(order.created_at)}</p>
+        <div className="mt-6 flex flex-col items-center">
+            <span className="bg-zinc-900 text-white text-[10px] font-bold px-3 py-1 rounded-full mb-1">RECIBO DE VENDA</span>
+            <p className="text-xs font-serif italic text-zinc-500">Nº {order.id}</p>
+            <p className="text-[10px] text-zinc-400">{formatDate(order.created_at)}</p>
+        </div>
       </div>
 
       {/* Customer */}
-      <div className="mb-4 border-b pb-4">
-        <p>
-          <strong>Cliente:</strong> {order.customers?.name || 'Consumidor Final'}
+      <div className="mb-6 space-y-1">
+        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Cliente</p>
+        <p className="text-sm font-semibold text-zinc-800">
+          {order.customers?.name || 'Consumidor Final'}
         </p>
-        {order.customers?.phone && <p>Tel: {order.customers.phone}</p>}
+        {order.customers?.phone && <p className="text-xs text-zinc-500">{order.customers.phone}</p>}
       </div>
 
       {/* Items */}
-      <div className="mb-4 border-b pb-4">
-        <table className="w-full text-left">
-          <thead>
-            <tr>
-              <th className="pb-2">Item</th>
-              <th className="pb-2 text-right">Val</th>
-            </tr>
-          </thead>
-          <tbody>
+      <div className="mb-6">
+        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-2">Itens do Pedido</p>
+        <div className="space-y-4">
             {order.items?.map((item, index) => (
-              <tr key={index}>
-                <td className="py-1">
-                  <div className="font-bold">{item.products?.name}</div>
-                  <div className="text-xs text-zinc-500">
-                    {item.quantity}x {formatCurrency(item.unit_price)}
-                  </div>
-                </td>
-                <td className="text-right align-top">
+              <div key={index} className="flex justify-between items-start gap-4">
+                <div className="flex-1">
+                  <p className="font-semibold text-zinc-800 leading-tight">{item.products?.name}</p>
+                  <p className="text-[10px] text-zinc-500 mt-0.5">
+                    {item.quantity} un. × {formatCurrency(item.unit_price)}
+                  </p>
+                </div>
+                <p className="font-bold text-zinc-900 text-right">
                   {formatCurrency(item.quantity * item.unit_price)}
-                </td>
-              </tr>
+                </p>
+              </div>
             ))}
-          </tbody>
-        </table>
+        </div>
       </div>
 
       {/* Totals */}
-      <div className="mb-8 text-right">
-        <p className="text-lg font-bold">TOTAL: {formatCurrency(order.total_amount)}</p>
-        <p className="text-xs text-zinc-500 mt-1">Forma de Pagto: A Combinar</p>
+      <div className="mb-10 pt-4 border-t border-zinc-100 flex flex-col items-end">
+        <div className="flex justify-between w-full text-zinc-500 text-xs mb-1">
+            <span>Subtotal</span>
+            <span>{formatCurrency(order.total_amount)}</span>
+        </div>
+        <div className="flex justify-between w-full items-baseline">
+            <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Total</span>
+            <span className="text-2xl font-black text-zinc-900">{formatCurrency(order.total_amount)}</span>
+        </div>
+        <p className="text-[10px] text-zinc-400 italic mt-2">
+            Pagamento: {order.payment_method?.toUpperCase()}
+        </p>
       </div>
 
       {/* Footer */}
-      <div className="text-center text-xs">
-        <p>Obrigado pela preferência!</p>
-        <p className="mt-1">Trocas somente com etiqueta e este cupom em até 7 dias.</p>
-        <p className="mt-4">www.lumike.com.br</p>
+      <div className="text-center space-y-6">
+        <div className="relative">
+            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                <div className="w-full border-t border-zinc-100"></div>
+            </div>
+            <div className="relative flex justify-center">
+                <span className="bg-white px-3 text-zinc-300">
+                    <ShieldCheck className="h-4 w-4" />
+                </span>
+            </div>
+        </div>
+
+        <div className="space-y-2">
+            <p className="text-sm font-serif italic text-zinc-800">Obrigado pela preferência!</p>
+            <div className="text-[10px] text-zinc-400 leading-relaxed max-w-[200px] mx-auto">
+                <p>Nossas peças possuem garantia de 6 meses no banho.</p>
+                <p className="mt-1 font-bold text-zinc-500">Trocas somente com etiqueta e este cupom em até 7 dias.</p>
+            </div>
+        </div>
+        
+        <div className="pt-4">
+            <p className="text-[10px] font-bold tracking-[0.3em] text-zinc-900">WWW.LUMIKE.COM.BR</p>
+            <p className="text-[9px] text-zinc-400 mt-1">@lumike_acessorios</p>
+        </div>
       </div>
 
       {/* Print Button (Hide on Print) */}
       <button
         onClick={() => window.print()}
-        className="mt-8 w-full bg-black text-white py-2 rounded print:hidden"
+        className="mt-12 w-full bg-zinc-900 text-white py-3 rounded-xl font-bold shadow-lg shadow-zinc-200 transition-all hover:bg-zinc-800 active:scale-[0.98] print:hidden"
       >
-        Imprimir
+        Imprimir Recibo
       </button>
     </div>
   );

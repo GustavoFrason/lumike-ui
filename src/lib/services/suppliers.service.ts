@@ -16,14 +16,19 @@ export interface ROIAnalysis {
   id: number;
   supplier_id: number;
   supplier_name: string;
-  total_cost: number;
+  total_invested: number;
   total_revenue: number;
-  roi: number;
-  roi_percentage: number;
+  gross_profit: number;
+  roi: number; // This is the percentage
+}
+
+export interface PaginatedSuppliers {
+  data: Supplier[];
+  pagination: { page: number; limit: number; total: number };
 }
 
 export const suppliersService = {
-  async findAll(page = 1, limit = 50) {
+  async findAll(page = 1, limit = 50): Promise<PaginatedSuppliers> {
     const response = await api.get(`/fornecedores?page=${page}&limit=${limit}`);
     return response.data;
   },
@@ -50,7 +55,7 @@ export const suppliersService = {
 
   async getROIAnalysis(): Promise<ROIAnalysis[]> {
     const response = await api.get('/fornecedores/roi-analysis');
-    return (response.data || []).map((item: any) => ({
+    return (response.data || []).map((item: Omit<ROIAnalysis, 'id'>) => ({
       ...item,
       id: item.supplier_id,
     }));

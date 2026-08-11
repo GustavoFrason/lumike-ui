@@ -21,6 +21,18 @@ export function formatCurrency(value: number, hideZeroCents: boolean = false): s
 }
 
 /**
+ * Converte uma string de moeda BR (ex: "1.234,56", vinda do CurrencyInputATM)
+ * de volta para número. Estava duplicada em 5 telas (produtos, vendas,
+ * compras, contas a pagar, compra de acessórios) — cada uma com sua própria
+ * cópia de `.replace(/\./g, '').replace(',', '.')`.
+ */
+export function parseCurrencyBR(value: string | undefined | null): number {
+  if (!value) return 0;
+  const parsed = parseFloat(value.replace(/\./g, '').replace(',', '.'));
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+/**
  * Formata uma data para o padrão brasileiro
  */
 export function formatDate(date: string | Date): string {

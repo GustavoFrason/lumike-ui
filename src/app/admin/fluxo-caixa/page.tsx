@@ -6,14 +6,32 @@ import { Loading } from '@/components/ui/loading';
 import { formatCurrency } from '@/lib/formatters';
 import { ArrowUpCircle, ArrowDownCircle, Info, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { TransactionModal } from './TransactionModal';
-import { FinancialSummaryChart, CategoryPieChart } from './charts';
+import { TransactionModal, CreateCashFlowEntry } from './TransactionModal';
+import { FinancialSummaryChart, CategoryPieChart, DailyStat, CategoryStat } from './charts';
 import { api } from '@/lib/api';
+import { getErrorMessage } from '@/lib/utils';
+
+export interface CashFlowEntry {
+  id: number;
+  type: 'IN' | 'OUT';
+  category: string;
+  amount: number;
+  description: string | null;
+  order_id: number | null;
+  user_id: number | null;
+  created_at: string;
+  users?: { name: string } | null;
+}
+
+interface CashFlowStats {
+  dailyStats: DailyStat[];
+  categoryStats: CategoryStat[];
+}
 
 export default function FluxoCaixaPage() {
-  const [entries, setEntries] = useState<any[]>([]);
+  const [entries, setEntries] = useState<CashFlowEntry[]>([]);
   const [balance, setBalance] = useState(0);
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<CashFlowStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -42,17 +60,17 @@ export default function FluxoCaixaPage() {
     loadData();
   }, [refreshTrigger]);
 
-  const handleCreateEntry = async (data: any) => {
+  const handleCreateEntry = async (data: CreateCashFlowEntry) => {
     try {
       await api.post('/cash-flow', data);
       setRefreshTrigger((prev) => prev + 1); // Reload list
     } catch (error) {
-      console.error('Erro ao criar lançamento:', error);
+      console.error('Erro ao criar lançamento:', getErrorMessage(error));
       throw error; // Let modal handle/show error if needed
     }
   };
 
-  const columns: Column<any>[] = [
+  const columns: Column<CashFlowEntry>[] = [
     {
       key: 'type',
       header: 'Tipo',

@@ -26,7 +26,9 @@ export default function StockAlertsPage() {
         });
 
         // Mapeia os dados para extrair os produtos e filtra nulos
-        const alerts = response.data.map((alert: any) => alert.product).filter(Boolean);
+        const alerts: Product[] = response.data
+          .map((alert: { product: Product | null }) => alert.product)
+          .filter((p: Product | null): p is Product => p !== null);
         setOutOfStockFavorites(alerts);
       } catch (error) {
         console.error('Erro ao buscar alertas de estoque:', error);

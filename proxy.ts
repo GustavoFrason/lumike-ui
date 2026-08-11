@@ -23,7 +23,15 @@ export default async function proxy(request: NextRequest) {
     }
   }
 
-  const isAdmin = userRole === 'admin' || userRole === 'superadmin';
+  // Papéis de staff com acesso ao painel: 'superadmin' nunca existiu no banco
+  // (ver StaffRole no backend — os papéis reais são admin/gestor/vendedor).
+  // 'vendedor' não entra aqui: tem acesso ao PDV via API, mas não ao /admin completo.
+  const isAdmin = userRole === 'admin' || userRole === 'gestor';
+
+  // Aviso: esta checagem só decodifica o JWT (sem verificar assinatura) para
+  // decidir o redirecionamento — é uma otimização de UX (evita renderizar a
+  // casca do admin antes de redirecionar), não uma fronteira de segurança.
+  // A autorização real é sempre imposta pelo RolesGuard no backend.
 
   // 1. Redirecionamento Inteligente da Tela de Login
   if (pathname.startsWith('/login')) {

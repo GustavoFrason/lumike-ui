@@ -9,7 +9,7 @@ import { DataTable } from '@/components/ui/data-table';
 import { ActionButtons } from '@/components/ui/action-buttons';
 import { Pagination } from '@/components/ui/pagination';
 import { PaginationInfo } from '@/components/ui/pagination-info';
-import { Supplier } from '@/lib/services/suppliers.service';
+import { PaginatedSuppliers, Supplier } from '@/lib/services/suppliers.service';
 import { PlusCircle } from 'lucide-react';
 
 const ITEMS_PER_PAGE = 20;
@@ -28,7 +28,7 @@ export default function FornecedoresPage() {
   const [modalAberto, setModalAberto] = useState(false);
   const [fornecedorSelecionado, setFornecedorSelecionado] = useState<Supplier | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState<any>(null);
+  const [pagination, setPagination] = useState<PaginatedSuppliers['pagination'] | null>(null);
 
   useEffect(() => {
     async function fetchData() {

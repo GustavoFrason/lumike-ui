@@ -5,8 +5,12 @@ import { suppliersService, ROIAnalysis } from '@/lib/services/suppliers.service'
 import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { DataTable } from '@/components/ui/data-table';
-import { formatCurrency } from '@/lib/formatters';
-import { TrendingUp, PieChart, ShoppingBag } from 'lucide-react';
+import { getErrorMessage } from '@/lib/utils';
+import { Target } from 'lucide-react';
+import { RoiKpiCards } from './components/RoiKpiCards';
+import { RoiPerformanceChart } from './components/RoiPerformanceChart';
+import { RoiProfitPieChart } from './components/RoiProfitPieChart';
+import { roiColumns } from './components/roi-columns';
 
 export default function AnaliseROIPage() {
   const [data, setData] = useState<ROIAnalysis[]>([]);
@@ -18,8 +22,8 @@ export default function AnaliseROIPage() {
       try {
         const roiData = await suppliersService.getROIAnalysis();
         setData(roiData || []);
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'Erro ao carregar análise de ROI');
+      } catch (err) {
+        setError(getErrorMessage(err, 'Erro ao carregar análise de ROI'));
       } finally {
         setLoading(false);
       }
@@ -27,124 +31,80 @@ export default function AnaliseROIPage() {
     loadROI();
   }, []);
 
-  const totalCost = data.reduce((sum, item) => sum + item.total_cost, 0);
+  const totalInvested = data.reduce((sum, item) => sum + item.total_invested, 0);
   const totalRevenue = data.reduce((sum, item) => sum + item.total_revenue, 0);
-  const averageROI = totalCost > 0 ? (totalRevenue - totalCost) / totalCost : 0;
+  const totalProfit = totalRevenue - totalInvested;
+  const averageROI = totalInvested > 0 ? (totalProfit / totalInvested) * 100 : 0;
+
+  // Best Supplier
+  const bestSupplier = [...data].sort((a, b) => b.roi - a.roi)[0];
+
+  const chartData = data
+    .map((item) => ({
+      name: item.supplier_name,
+      Investido: item.total_invested,
+      Retorno: item.total_revenue,
+      Lucro: item.gross_profit,
+      ROI: item.roi,
+    }))
+    .slice(0, 8); // Top 8 for visual clarity
+
+  const pieData = data
+    .filter((i) => i.gross_profit > 0)
+    .map((item) => ({
+      name: item.supplier_name,
+      value: item.gross_profit,
+    }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 5);
 
   if (loading)
-    return <Loading size="lg" text="Calculando ROI por fornecedor..." className="py-12" />;
+    return <Loading size="lg" text="Cruzando dados de compras e vendas..." className="py-24" />;
 
   return (
-    <section className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-zinc-900">Análise de ROI por Fornecedor</h1>
-        <p className="text-sm text-zinc-500">
-          Acompanhe a lucratividade de cada parceiro comercial.
-        </p>
+    <section className="space-y-8 animate-in fade-in duration-500 pb-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-playfair font-bold text-zinc-900">Inteligência de ROI</h1>
+          <p className="text-zinc-500 font-medium">
+            Análise de performance financeira por parceiro comercial.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 px-4 py-2 bg-zinc-100 rounded-full border border-zinc-200">
+          <Target className="h-4 w-4 text-zinc-400" />
+          <span className="text-xs font-bold text-zinc-600 uppercase tracking-widest">
+            Até o momento (Lifetime)
+          </span>
+        </div>
       </div>
 
       <ErrorMessage message={error || ''} />
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="bg-red-50 p-3 rounded-lg text-red-600">
-              <ShoppingBag className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
-                Custo Total (Compras)
-              </p>
-              <p className="text-2xl font-bold text-zinc-900">{formatCurrency(totalCost)}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="bg-green-50 p-3 rounded-lg text-green-600">
-              <TrendingUp className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
-                Receita Total (Vendas)
-              </p>
-              <p className="text-2xl font-bold text-zinc-900">{formatCurrency(totalRevenue)}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="bg-(--lumike-gold)/10 p-3 rounded-lg text-(--lumike-gold)">
-              <PieChart className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
-                ROI Médio
-              </p>
-              <p className="text-2xl font-bold text-zinc-900">{(averageROI * 100).toFixed(1)}%</p>
-            </div>
-          </div>
-        </div>
+      <RoiKpiCards
+        totalInvested={totalInvested}
+        totalRevenue={totalRevenue}
+        totalProfit={totalProfit}
+        averageROI={averageROI}
+        bestSupplier={bestSupplier}
+      />
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <RoiPerformanceChart chartData={chartData} />
+        <RoiProfitPieChart pieData={pieData} totalProfit={totalProfit} />
       </div>
 
-      <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b bg-zinc-50">
-          <h3 className="font-semibold text-zinc-800">Desempenho por Fornecedor</h3>
+      {/* Detailed Table */}
+      <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden border-b-0">
+        <div className="px-6 py-5 border-b bg-zinc-50 flex items-center justify-between">
+          <h3 className="font-playfair font-bold text-zinc-800 text-lg">Extrato Analítico</h3>
+          <span className="text-xs text-zinc-400 font-bold uppercase tracking-widest">
+            {data.length} Parceiros
+          </span>
         </div>
         <DataTable
           data={data}
-          columns={[
-            {
-              key: 'supplier_name',
-              header: 'Fornecedor',
-              render: (item) => (
-                <span className="font-semibold text-zinc-900">{item.supplier_name}</span>
-              ),
-            },
-            {
-              key: 'total_cost',
-              header: 'Custo Total',
-              render: (item) => (
-                <span className="text-zinc-600">{formatCurrency(item.total_cost)}</span>
-              ),
-            },
-            {
-              key: 'total_revenue',
-              header: 'Receita Total',
-              render: (item) => (
-                <span className="text-zinc-600">{formatCurrency(item.total_revenue)}</span>
-              ),
-            },
-            {
-              key: 'roi',
-              header: 'Lucro (ROI)',
-              render: (item) => (
-                <span className={`font-bold ${item.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {formatCurrency(item.roi)}
-                </span>
-              ),
-            },
-            {
-              key: 'roi_percentage',
-              header: '% ROI',
-              render: (item) => (
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 h-2 bg-zinc-100 rounded-full overflow-hidden min-w-[80px]">
-                    <div
-                      className={`h-full ${item.roi_percentage >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
-                      style={{ width: `${Math.min(Math.max(item.roi_percentage / 5, 0), 100)}%` }} // Scaled visual for ROI (e.g. 500% = 100% bar)
-                    />
-                  </div>
-                  <span
-                    className={`text-xs font-bold ${item.roi_percentage >= 0 ? 'text-green-600' : 'text-red-600'} min-w-[50px] text-right`}
-                  >
-                    {item.roi_percentage.toFixed(1)}%
-                  </span>
-                </div>
-              ),
-            },
-          ]}
+          columns={roiColumns}
           emptyTitle="Nenhuma análise disponível"
           emptyDescription="Os dados aparecerão aqui após registrar compras e realizar vendas de produtos vinculados aos fornecedores."
         />

@@ -54,7 +54,7 @@ export function TestimonialsSection() {
               </div>
 
               <blockquote className="text-lg font-playfair italic mb-8 flex-1">
-                "{t.content}"
+                &quot;{t.content}&quot;
               </blockquote>
 
               <div>

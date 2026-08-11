@@ -31,6 +31,7 @@ export interface Order {
   total_amount: number;
   boca_value?: number;
   boca_paid_now?: number;
+  seller_id?: number;
   notes?: string;
   created_at: string;
   updated_at: string;
@@ -51,6 +52,7 @@ export interface CreateOrderItemDto {
 
 export interface CreateOrderDto {
   customer_id?: number;
+  seller_id?: number;
   notes?: string;
   payment_method: 'dinheiro' | 'cartao' | 'parcelado' | 'boca' | 'aberto';
   payment_status: 'pago' | 'parcial' | 'aberto';

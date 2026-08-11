@@ -49,7 +49,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
               borderRadius: '8px',
               fontSize: '12px',
             }}
-            formatter={(value: any) =>
+            formatter={(value: number | string | undefined) =>
               value !== undefined ? [formatCurrency(Number(value)), 'Faturamento'] : null
             }
             labelFormatter={(label) => `Data: ${label}`}

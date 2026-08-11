@@ -1,4 +1,4 @@
-import { formatCurrency, formatDate, formatDateTime } from '../formatters';
+import { formatCurrency, formatDate, formatDateTime, parseCurrencyBR } from '../formatters';
 
 describe('formatters', () => {
   describe('formatCurrency', () => {
@@ -17,6 +17,26 @@ describe('formatters', () => {
       const result = formatCurrency(-50).replace(/\xa0/g, ' ');
       expect(result).toContain('-R$');
       expect(result).toContain('50,00');
+    });
+  });
+
+  describe('parseCurrencyBR', () => {
+    it('converts a BR-formatted string back to a number', () => {
+      expect(parseCurrencyBR('1.234,56')).toBe(1234.56);
+    });
+
+    it('handles a value with no thousands separator', () => {
+      expect(parseCurrencyBR('39,99')).toBe(39.99);
+    });
+
+    it('returns 0 for empty, undefined or null input', () => {
+      expect(parseCurrencyBR('')).toBe(0);
+      expect(parseCurrencyBR(undefined)).toBe(0);
+      expect(parseCurrencyBR(null)).toBe(0);
+    });
+
+    it('returns 0 for a non-numeric string instead of NaN', () => {
+      expect(parseCurrencyBR('abc')).toBe(0);
     });
   });
 

@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { suppliersService, Supplier } from '../services/suppliers.service';
+import { getErrorMessage } from '../utils';
 
 export function useSuppliers() {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -13,8 +14,8 @@ export function useSuppliers() {
       const response = await suppliersService.findAll(page, limit);
       setSuppliers(response.data || []);
       return response;
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao carregar fornecedores');
+    } catch (err) {
+      setError(getErrorMessage(err, 'Erro ao carregar fornecedores'));
     } finally {
       setLoading(false);
     }
@@ -26,8 +27,8 @@ export function useSuppliers() {
     try {
       const response = await suppliersService.create(data);
       return response;
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao criar fornecedor');
+    } catch (err) {
+      setError(getErrorMessage(err, 'Erro ao criar fornecedor'));
       throw err;
     } finally {
       setLoading(false);
@@ -40,8 +41,8 @@ export function useSuppliers() {
     try {
       const response = await suppliersService.update(id, data);
       return response;
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao atualizar fornecedor');
+    } catch (err) {
+      setError(getErrorMessage(err, 'Erro ao atualizar fornecedor'));
       throw err;
     } finally {
       setLoading(false);
@@ -53,8 +54,8 @@ export function useSuppliers() {
     setError(null);
     try {
       await suppliersService.remove(id);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao excluir fornecedor');
+    } catch (err) {
+      setError(getErrorMessage(err, 'Erro ao excluir fornecedor'));
       throw err;
     } finally {
       setLoading(false);

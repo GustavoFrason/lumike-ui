@@ -1,26 +1,13 @@
-import { NextResponse } from 'next/server';
-import axios from 'axios';
-import { cookies } from 'next/headers';
+/**
+ * /api/orders/[id]/cancel
+ * ------------------------------------
+ * Proxy para cancelamento de pedido.
+ */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import { NextRequest } from 'next/server';
+import { handlePost } from '@/lib/api-helpers';
 
-export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const body = await request.json();
-  const cookieStore = await cookies();
-  const token = cookieStore.get('auth_token')?.value;
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-
-  try {
-    const response = await axios.post(`${API_URL}/orders/${id}/cancel`, body, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return NextResponse.json(response.data);
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.response?.data?.message || 'Internal Server Error' },
-      { status: error.response?.status || 500 },
-    );
-  }
+  return handlePost(request, `/orders/${id}/cancel`, 'Erro ao cancelar pedido');
 }

@@ -23,8 +23,8 @@ export function useCustomers() {
   const { execute: executeDelete, ...deleteApi } = useApi<{ message: string }>();
 
   const loadCustomers = useCallback(
-    async (page = 1, limit = 50) => {
-      return executeList(() => customersService.getAll(page, limit));
+    async (page = 1, limit = 50, search?: string) => {
+      return executeList(() => customersService.getAll(page, limit, search));
     },
     [executeList],
   );

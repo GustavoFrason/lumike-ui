@@ -70,7 +70,8 @@ export function LoginForm() {
           return;
         }
 
-        if (user.role === 'admin' || user.role === 'superadmin') {
+        // Papéis de staff reais (ver StaffRole no backend): 'superadmin' nunca existiu no banco.
+        if (user.role === 'admin' || user.role === 'gestor') {
           router.replace('/admin');
         } else {
           router.replace('/minha-conta');

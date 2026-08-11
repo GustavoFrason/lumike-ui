@@ -19,14 +19,26 @@ export interface Debtor {
   orders: DebtOrder[];
 }
 
+export interface OrderPayment {
+  id: number;
+  order_id: number;
+  amount: number;
+  payment_method: string;
+  received_by_user_id: number | null;
+  receiver_name: string | null;
+  created_at: string;
+  type: 'payment' | 'refund';
+  notes: string | null;
+}
+
 export const accountsReceivableService = {
   async getDebtors(): Promise<Debtor[]> {
     const { data } = await api.get<Debtor[]>('/accounts-receivable');
     return data;
   },
 
-  async getOrderPayments(orderId: number): Promise<any[]> {
-    const { data } = await api.get<any[]>(`/accounts-receivable/history/${orderId}`);
+  async getOrderPayments(orderId: number): Promise<OrderPayment[]> {
+    const { data } = await api.get<OrderPayment[]>(`/accounts-receivable/history/${orderId}`);
     return data;
   },
 

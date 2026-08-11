@@ -1,23 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useProducts } from '@/lib/hooks/use-products';
 import { useInventory } from '@/lib/hooks/use-inventory';
-import { DataTable, Column } from '@/components/ui/data-table';
+import { DataTable } from '@/components/ui/data-table';
 import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
-import { StatusBadge } from '@/components/ui/status-badge';
 import { StockMovementModal } from './StockMovementModal';
-import { Package, TrendingUp, TrendingDown } from 'lucide-react';
+import { TransferStockModal } from './TransferStockModal';
+import { StockAdjustmentModal } from './StockAdjustmentModal';
+import { User as UserIcon } from 'lucide-react';
 import { Product } from '@/lib/services/products.service';
-import { formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
+import { getStockColumns } from './components/stock-columns';
+import { ProductStockDetailPanel } from './components/ProductStockDetailPanel';
 
 export default function EstoquePage() {
   const { products, loadingProducts, loadProducts } = useProducts();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [movementType, setMovementType] = useState<'entry' | 'exit' | null>(null);
   const [modalAberto, setModalAberto] = useState(false);
+  const [transferModalAberto, setTransferModalAberto] = useState(false);
+  const [adjustmentModalAberto, setAdjustmentModalAberto] = useState(false);
   const [onlyLowStock, setOnlyLowStock] = useState(false);
 
   const inventory = useInventory(selectedProduct?.id);
@@ -30,17 +35,24 @@ export default function EstoquePage() {
     ? products.filter((p) => p.current_stock <= p.min_stock)
     : products;
 
+  const { loadHistory, loadStock } = inventory;
+
   useEffect(() => {
     if (selectedProduct?.id) {
-      inventory.loadHistory();
-      inventory.loadStock();
+      loadHistory();
+      loadStock();
     }
-  }, [selectedProduct?.id, inventory]);
+  }, [selectedProduct?.id, loadHistory, loadStock]);
 
   function handleNovaMovimentacao(type: 'entry' | 'exit', product: Product) {
     setSelectedProduct(product);
     setMovementType(type);
     setModalAberto(true);
+  }
+
+  function handleTransferencia(product: Product) {
+    setSelectedProduct(product);
+    setTransferModalAberto(true);
   }
 
   async function handleSalvarMovimentacao(quantity: number, reference?: string) {
@@ -55,78 +67,51 @@ export default function EstoquePage() {
       setModalAberto(false);
       await inventory.loadHistory();
       await inventory.loadStock();
-      await loadProducts(1, 100, true); // Atualiza lista de produtos
+      await loadProducts(1, 100, true);
     } catch {
       // Erro já é tratado pelo hook
     }
   }
 
-  const productColumns: Column<Product>[] = [
-    {
-      key: 'name',
-      header: 'Produto',
-      render: (produto) => <span className="font-medium">{produto.name}</span>,
-    },
-    {
-      key: 'stock',
-      header: 'Estoque Atual',
-      render: (produto) => (
-        <div>
-          <span
-            className={
-              produto.current_stock <= produto.min_stock
-                ? 'text-red-600 font-semibold'
-                : 'text-zinc-700'
-            }
-          >
-            {produto.current_stock}
-          </span>
-          {produto.min_stock > 0 && (
-            <span className="text-zinc-400 text-xs ml-1">(mín: {produto.min_stock})</span>
-          )}
-        </div>
-      ),
-    },
-    {
-      key: 'status',
-      header: 'Status',
-      render: (produto) => (
-        <StatusBadge
-          status={produto.current_stock <= produto.min_stock ? 'pending' : 'active'}
-          label={produto.current_stock <= produto.min_stock ? 'Estoque Baixo' : 'Normal'}
-        />
-      ),
-    },
-    {
-      key: 'actions',
-      header: 'Ações',
-      className: 'text-right',
-      render: (produto) => (
-        <div className="flex items-center justify-end gap-2">
-          <button
-            onClick={() => handleNovaMovimentacao('entry', produto)}
-            className="text-green-600 hover:text-green-700 text-sm flex items-center gap-1"
-          >
-            <TrendingUp className="h-4 w-4" />
-            Entrada
-          </button>
-          <button
-            onClick={() => handleNovaMovimentacao('exit', produto)}
-            className="text-red-600 hover:text-red-700 text-sm flex items-center gap-1"
-          >
-            <TrendingDown className="h-4 w-4" />
-            Saída
-          </button>
-          <button
-            onClick={() => setSelectedProduct(produto)}
-            className="text-[var(--lumike-gold)] hover:underline text-sm"
-          >
-            Histórico
-          </button>
-        </div>
-      ),
-    },
-  ];
+  async function handleSalvarTransferencia(data: {
+    from_user_id: number | null;
+    to_user_id: number | null;
+    quantity: number;
+    notes?: string;
+  }) {
+    if (!selectedProduct) return;
+
+    try {
+      await inventory.transferStock(data);
+      setTransferModalAberto(false);
+      await inventory.loadHistory();
+      await inventory.loadStock();
+      await loadProducts(1, 100, true);
+    } catch {
+      // Erro já é tratado pelo hook
+    }
+  }
+
+  async function handleSalvarConferencia(data: {
+    user_id: number | null;
+    counted_quantity: number;
+    reason: string;
+  }) {
+    if (!selectedProduct) return;
+
+    try {
+      const result = await inventory.adjustFromCount(data);
+      setAdjustmentModalAberto(false);
+      await inventory.loadHistory();
+      await inventory.loadStock();
+      await loadProducts(1, 100, true);
+      if (result && result.delta !== 0) {
+        alert(`Estoque ajustado: diferença de ${result.delta > 0 ? '+' : ''}${result.delta} unidade(s).`);
+      }
+    } catch {
+      // Erro já é tratado pelo hook
+    }
+  }
 
   if (loadingProducts) {
     return (
@@ -137,133 +122,81 @@ export default function EstoquePage() {
   }
 
   return (
-    <section className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Gestão de Estoque</h1>
-        <div className="flex items-center gap-2">
-          <label
-            className="text-sm text-zinc-600 font-medium cursor-pointer"
-            onClick={() => setOnlyLowStock(!onlyLowStock)}
+    <section className="space-y-6 animate-in fade-in duration-500">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-serif text-zinc-900 font-medium">Gestão de Estoque</h1>
+          <p className="text-zinc-500 mt-1">
+            Monitore e transfira mercadorias entre estoque Lumike e revendedores
+          </p>
+          <Link
+            href="/admin/estoque/revendedores"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-(--lumike-gold) hover:underline mt-2"
           >
-            Apenas Estoque Baixo:
-          </label>
+            <UserIcon className="h-3.5 w-3.5" /> Ver inventário por revendedora
+          </Link>
+        </div>
+        <div className="flex items-center gap-4 bg-white p-2 rounded-2xl border border-zinc-100 shadow-sm">
+          <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest pl-2">Filtrar:</label>
           <button
             onClick={() => setOnlyLowStock(!onlyLowStock)}
             className={cn(
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-              onlyLowStock ? 'bg-red-600' : 'bg-zinc-200',
+              'px-4 py-2 rounded-xl text-xs font-bold transition-all',
+              onlyLowStock
+                ? 'bg-red-50 text-red-600 border border-red-100'
+                : 'bg-zinc-50 text-zinc-500 border border-zinc-100 hover:bg-zinc-100',
             )}
           >
-            <span
-              className={cn(
-                'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                onlyLowStock ? 'translate-x-5' : 'translate-x-0',
-              )}
-            />
+            Estoque Baixo
           </button>
         </div>
       </div>
 
       <ErrorMessage
-        message={inventory.errorAdding || inventory.errorRemoving || inventory.errorHistory || ''}
+        message={
+          inventory.errorAdding ||
+          inventory.errorRemoving ||
+          inventory.errorHistory ||
+          inventory.errorTransferring ||
+          ''
+        }
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Lista de Produtos */}
         <div className="lg:col-span-2">
           <DataTable
             data={filteredProducts}
             loading={loadingProducts}
-            columns={productColumns}
-            emptyTitle={
-              onlyLowStock ? 'Nenhum produto com estoque baixo' : 'Nenhum produto encontrado'
-            }
+            columns={getStockColumns({
+              onEntry: (produto) => handleNovaMovimentacao('entry', produto),
+              onExit: (produto) => handleNovaMovimentacao('exit', produto),
+              onTransfer: handleTransferencia,
+              onAdjust: (produto) => {
+                setSelectedProduct(produto);
+                setAdjustmentModalAberto(true);
+              },
+              onSelect: setSelectedProduct,
+            })}
+            emptyTitle={onlyLowStock ? 'Nenhum produto com estoque baixo' : 'Nenhum produto encontrado'}
             emptyDescription={
-              onlyLowStock
-                ? 'Parabéns! Todos os seus produtos estão com níveis de estoque saudáveis.'
-                : 'Cadastre produtos para gerenciar o estoque e as movimentações.'
-            }
-            emptyAction={
-              onlyLowStock && (
-                <button
-                  onClick={() => setOnlyLowStock(false)}
-                  className="px-4 py-2 bg-zinc-100 text-zinc-700 rounded-lg hover:bg-zinc-200 transition"
-                >
-                  Ver Todos os Produtos
-                </button>
-              )
+              onlyLowStock ? 'Seu estoque está em dia!' : 'Cadastre produtos para gerenciar o estoque.'
             }
           />
         </div>
 
-        {/* Histórico do Produto Selecionado */}
-        <div className="lg:col-span-1">
-          {selectedProduct ? (
-            <div className="bg-white rounded-lg shadow-sm border border-zinc-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">{selectedProduct.name}</h2>
-                <button
-                  onClick={() => setSelectedProduct(null)}
-                  className="text-zinc-400 hover:text-zinc-600"
-                >
-                  ✕
-                </button>
-              </div>
-
-              {inventory.stock && (
-                <div className="mb-4 p-3 bg-[var(--lumike-beige)] rounded-lg">
-                  <p className="text-sm text-zinc-600">Estoque Atual</p>
-                  <p className="text-2xl font-bold text-[var(--lumike-gold)]">
-                    {inventory.stock.quantidade}
-                  </p>
-                </div>
-              )}
-
-              <div>
-                <h3 className="text-sm font-medium text-zinc-700 mb-2">Histórico Recente</h3>
-                {inventory.loadingHistory ? (
-                  <Loading size="sm" />
-                ) : inventory.history.length > 0 ? (
-                  <div className="space-y-2">
-                    {inventory.history.slice(0, 5).map((movement) => (
-                      <div
-                        key={movement.id}
-                        className="flex flex-col gap-1 p-3 bg-zinc-50 rounded border border-zinc-100"
-                      >
-                        <div className="flex items-center justify-between text-sm">
-                          <span
-                            className={cn(
-                              'font-bold',
-                              movement.movement === 'IN' ? 'text-green-600' : 'text-red-600',
-                            )}
-                          >
-                            {movement.movement === 'IN' ? '+' : '-'}
-                            {Math.abs(movement.quantity)}
-                          </span>
-                          <span className="text-zinc-400 text-[10px]">
-                            {formatDate(movement.created_at)}
-                          </span>
-                        </div>
-                        {movement.reference && (
-                          <p className="text-[11px] text-zinc-500 italic">{movement.reference}</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-zinc-500">Nenhuma movimentação</p>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="bg-white rounded-lg shadow-sm border border-zinc-200 p-6 text-center text-zinc-500">
-              <Package className="h-12 w-12 mx-auto mb-2 text-zinc-400" />
-              <p className="text-sm">Selecione um produto para ver o histórico</p>
-            </div>
-          )}
+        {/* Detalhes e Distribuição */}
+        <div className="lg:col-span-1 space-y-6">
+          <ProductStockDetailPanel
+            selectedProduct={selectedProduct}
+            inventory={inventory}
+            onClose={() => setSelectedProduct(null)}
+            onTransfer={handleTransferencia}
+          />
         </div>
       </div>
 
+      {/* Modais */}
       {modalAberto && selectedProduct && movementType && (
         <StockMovementModal
           produto={selectedProduct}
@@ -271,6 +204,26 @@ export default function EstoquePage() {
           onClose={() => setModalAberto(false)}
           onSave={handleSalvarMovimentacao}
           loading={inventory.adding || inventory.removing}
+        />
+      )}
+
+      {transferModalAberto && selectedProduct && (
+        <TransferStockModal
+          produto={selectedProduct}
+          stockInfo={inventory.stock}
+          onClose={() => setTransferModalAberto(false)}
+          onSave={handleSalvarTransferencia}
+          loading={inventory.transferring}
+        />
+      )}
+
+      {adjustmentModalAberto && selectedProduct && (
+        <StockAdjustmentModal
+          produto={selectedProduct}
+          stockInfo={inventory.stock}
+          onClose={() => setAdjustmentModalAberto(false)}
+          onSave={handleSalvarConferencia}
+          loading={inventory.adjusting}
         />
       )}
     </section>

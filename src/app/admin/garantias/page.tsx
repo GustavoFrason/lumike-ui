@@ -2,11 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { Breadcrumb } from '@/components/admin/Breadcrumb';
-import { Shield, Clock, CheckCircle, AlertCircle, Plus, Search, Loader2 } from 'lucide-react';
+import { Shield, Clock, CheckCircle, AlertCircle, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { Loading } from '@/components/ui/loading';
-import { warrantiesService, Warranty, WarrantyStatus } from '@/lib/services/warranties.service';
+import {
+  warrantiesService,
+  Warranty,
+  WarrantyStats,
+  WarrantyStatus,
+} from '@/lib/services/warranties.service';
 import { WarrantyModal } from './WarrantyModal';
 
 const statusMap: Record<WarrantyStatus, { label: string; color: string }> = {
@@ -27,7 +32,7 @@ const typeMap: Record<string, string> = {
 
 export default function GarantiasPage() {
   const [warranties, setWarranties] = useState<Warranty[]>([]);
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<WarrantyStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);

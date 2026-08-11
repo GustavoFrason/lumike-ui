@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { usePurchases } from '@/lib/hooks/use-purchases';
 import { DataTable } from '@/components/ui/data-table';
 import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { formatCurrency, formatDate } from '@/lib/formatters';
-import { ShoppingCart, PlusCircle, Package } from 'lucide-react';
+import { PlusCircle, Package } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PurchasesListPage() {
@@ -54,10 +54,10 @@ export default function PurchasesListPage() {
               ),
             },
             {
-              key: 'purchase_date',
+              key: 'created_at',
               header: 'Data',
               render: (item) => (
-                <span className="text-zinc-600">{formatDate(item.purchase_date)}</span>
+                <span className="text-zinc-600">{formatDate(item.created_at)}</span>
               ),
             },
             {

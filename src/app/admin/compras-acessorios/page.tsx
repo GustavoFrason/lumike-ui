@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   accessoryPurchasesService,
   AccessoryPurchase,
+  CreateAccessoryPurchaseDto,
 } from '@/lib/services/accessory-purchases.service';
 import { Loading } from '@/components/ui/loading';
 import { formatCurrency, formatDate } from '@/lib/formatters';
@@ -32,7 +33,7 @@ export default function AccessoryPurchasesPage() {
     loadItems();
   }, [loadItems]);
 
-  async function handleSave(data: any) {
+  async function handleSave(data: CreateAccessoryPurchaseDto) {
     await accessoryPurchasesService.create(data);
     await loadItems();
   }
@@ -42,7 +43,7 @@ export default function AccessoryPurchasesPage() {
     try {
       await accessoryPurchasesService.remove(id);
       setItems(items.filter((i) => i.id !== id));
-    } catch (err) {
+    } catch {
       alert('Erro ao excluir');
     }
   }

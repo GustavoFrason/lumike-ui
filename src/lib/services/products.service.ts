@@ -182,8 +182,7 @@ export const productsService = {
     return data;
   },
 
-  async bulkUpdateStatus(ids: number[], is_active: boolean): Promise<any> {
-    const { data } = await api.patch('/products/bulk-status', { ids, is_active });
-    return data;
+  async bulkUpdateStatus(ids: number[], is_active: boolean): Promise<void> {
+    await api.patch('/products/bulk-status', { ids, is_active });
   },
 };

@@ -1,47 +1,16 @@
-import { NextResponse } from 'next/server';
-import axios from 'axios';
-import { cookies } from 'next/headers';
+/**
+ * /api/cash-flow
+ * ------------------------------------
+ * Proxy para listar e criar lançamentos de fluxo de caixa.
+ */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import { NextRequest } from 'next/server';
+import { handleGet, handlePost } from '@/lib/api-helpers';
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const limit = searchParams.get('limit') || '100';
-  const cookieStore = await cookies();
-  const token = cookieStore.get('auth_token')?.value;
-
-  try {
-    const response = await axios.get(`${API_URL}/cash-flow`, {
-      params: { limit },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return NextResponse.json(response.data);
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.response?.data?.message || 'Internal Server Error' },
-      { status: error.response?.status || 500 },
-    );
-  }
+export async function GET(request: NextRequest) {
+  return handleGet(request, '/cash-flow', 'Erro ao buscar lançamentos de caixa');
 }
 
-export async function POST(request: Request) {
-  const body = await request.json();
-  const cookieStore = await cookies();
-  const token = cookieStore.get('auth_token')?.value;
-
-  try {
-    const response = await axios.post(`${API_URL}/cash-flow`, body, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return NextResponse.json(response.data);
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.response?.data?.message || 'Internal Server Error' },
-      { status: error.response?.status || 500 },
-    );
-  }
+export async function POST(request: NextRequest) {
+  return handlePost(request, '/cash-flow', 'Erro ao criar lançamento de caixa');
 }

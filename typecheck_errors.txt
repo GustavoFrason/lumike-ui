@@ -1,5 +1,0 @@
-﻿
-> lumike-ui@0.1.0 typecheck
-> tsc --noEmit
-
-src/app/admin/produtos/importar/page.tsx(155,30): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?

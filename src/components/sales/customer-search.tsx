@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useDebounce } from 'use-debounce';
-import { Search, Plus, User, Check, X } from 'lucide-react';
+import { Search, Plus, User, X } from 'lucide-react';
 import { customersService, Customer, CreateCustomerDto } from '@/lib/services/customers.service';
-import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
+import { getErrorMessage } from '@/lib/utils';
 
 interface CustomerSearchProps {
   onSelect: (customer: Customer | null) => void;
@@ -74,8 +74,8 @@ export function CustomerSearch({ onSelect, selectedCustomer }: CustomerSearchPro
       setIsCreating(false);
       setNewCustomer({ name: '', phone: '', email: '', cpf: '' });
       setSearchTerm('');
-    } catch (err: any) {
-      setCreateError(err.message || 'Erro ao criar cliente');
+    } catch (err) {
+      setCreateError(getErrorMessage(err, 'Erro ao criar cliente'));
     } finally {
       setCreatingLoading(false);
     }
@@ -115,11 +115,12 @@ export function CustomerSearch({ onSelect, selectedCustomer }: CustomerSearchPro
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
             <input
+              id="customer-search-input"
               type="text"
               placeholder="Buscar cliente (Nome, CPF, Tel)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-12 py-2 border rounded-lg focus:ring-2 focus:ring-[var(--lumike-gold)] focus:outline-none"
+              className="w-full pl-9 pr-12 py-2 border rounded-lg focus:ring-2 focus:ring-(--lumike-gold) focus:outline-none"
             />
             <button
               onClick={() => setIsCreating(true)}
@@ -191,7 +192,7 @@ export function CustomerSearch({ onSelect, selectedCustomer }: CustomerSearchPro
           <button
             onClick={handleCreate}
             disabled={creatingLoading || !newCustomer.name}
-            className="w-full py-2 bg-[var(--lumike-gold)] text-white rounded text-sm font-medium hover:opacity-90 disabled:opacity-50"
+            className="w-full py-2 bg-(--lumike-gold) text-white rounded text-sm font-medium hover:opacity-90 disabled:opacity-50"
           >
             {creatingLoading ? 'Salvando...' : 'Cadastrar Cliente'}
           </button>

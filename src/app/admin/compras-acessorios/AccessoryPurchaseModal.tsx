@@ -3,7 +3,9 @@
 import { useState } from 'react';
 import { CreateAccessoryPurchaseDto } from '@/lib/services/accessory-purchases.service';
 import { ErrorMessage } from '@/components/ui/error-message';
-import CurrencyInput from 'react-currency-input-field';
+import { CurrencyInputATM } from '@/components/ui/currency-input-atm';
+import { parseCurrencyBR } from '@/lib/formatters';
+import { getErrorMessage } from '@/lib/utils';
 
 interface AccessoryPurchaseModalProps {
   onClose: () => void;
@@ -33,8 +35,8 @@ export function AccessoryPurchaseModal({ onClose, onSave }: AccessoryPurchaseMod
     try {
       await onSave(form);
       onClose();
-    } catch (err: any) {
-      setError(err.message || 'Erro ao salvar');
+    } catch (err) {
+      setError(getErrorMessage(err, 'Erro ao salvar'));
     } finally {
       setLoading(false);
     }
@@ -42,12 +44,7 @@ export function AccessoryPurchaseModal({ onClose, onSave }: AccessoryPurchaseMod
 
   function handlePriceChange(value: string | undefined) {
     setPriceStr(value || '');
-    if (value) {
-      const numeric = parseFloat(value.replace(/\./g, '').replace(',', '.'));
-      setForm((prev) => ({ ...prev, unit_price: numeric }));
-    } else {
-      setForm((prev) => ({ ...prev, unit_price: 0 }));
-    }
+    setForm((prev) => ({ ...prev, unit_price: parseCurrencyBR(value) }));
   }
 
   return (
@@ -113,15 +110,12 @@ export function AccessoryPurchaseModal({ onClose, onSave }: AccessoryPurchaseMod
 
           <div>
             <label className="block text-sm font-medium mb-1">Valor Unitário</label>
-            <CurrencyInput
+            <CurrencyInputATM
               placeholder="R$ 0,00"
               value={priceStr}
               onValueChange={handlePriceChange}
               prefix="R$ "
-              decimalSeparator=","
-              groupSeparator="."
               className="w-full border rounded px-3 py-2 font-mono"
-              intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
               required
             />
           </div>
@@ -149,7 +143,7 @@ export function AccessoryPurchaseModal({ onClose, onSave }: AccessoryPurchaseMod
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-[var(--lumike-gold)] text-white rounded hover:opacity-90 font-medium"
+              className="px-4 py-2 bg-(--lumike-gold) text-white rounded hover:opacity-90 font-medium"
             >
               {loading ? 'Salvando...' : 'Registrar Compra'}
             </button>

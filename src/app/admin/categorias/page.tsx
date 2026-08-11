@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { imagesService } from '@/lib/services/images.service';
 import { DataTable, Column } from '@/components/ui/data-table';

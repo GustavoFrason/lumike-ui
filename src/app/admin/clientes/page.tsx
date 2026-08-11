@@ -9,8 +9,11 @@ import { ActionButtons } from '@/components/ui/action-buttons';
 import { Pagination } from '@/components/ui/pagination';
 import { PaginationInfo } from '@/components/ui/pagination-info';
 import { CustomerModal } from './CustomerModal';
-import { formatDate } from '@/lib/formatters';
+import { formatDate, formatCurrency } from '@/lib/formatters';
 import { UpdateCustomerDto } from '@/lib/services/customers.service';
+import { accountsReceivableService, Debtor } from '@/lib/services/accounts-receivable.service';
+import { useDebounce } from 'use-debounce';
+import { Search, Users, Wallet, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 20;
@@ -36,10 +39,21 @@ export default function ClientesPage() {
   const [modalAberto, setModalAberto] = useState(false);
   const [clienteSelecionado, setClienteSelecionado] = useState<Customer | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch] = useDebounce(searchTerm, 500);
+  const [debtors, setDebtors] = useState<Debtor[]>([]);
 
   useEffect(() => {
-    loadCustomers(currentPage, ITEMS_PER_PAGE);
-  }, [loadCustomers, currentPage]);
+    loadCustomers(currentPage, ITEMS_PER_PAGE, debouncedSearch || undefined);
+  }, [loadCustomers, currentPage, debouncedSearch]);
+
+  // Carregar dados de devedores para os KPIs
+  useEffect(() => {
+    accountsReceivableService.getDebtors().then(setDebtors).catch(console.error);
+  }, []);
+
+  const totalDebt = debtors.reduce((sum, d) => sum + d.total_debt, 0);
+  const totalWithDebt = debtors.length;
 
   function handleNovoCliente() {
     setClienteSelecionado(null);
@@ -85,7 +99,7 @@ export default function ClientesPage() {
       render: (cliente) => (
         <Link
           href={`/admin/clientes/${cliente.id}`}
-          className="font-medium text-[var(--lumike-taupe-dark)] hover:text-[var(--lumike-gold)] hover:underline"
+          className="font-medium text-(--lumike-taupe-dark) hover:text-(--lumike-gold) hover:underline"
         >
           {cliente.name}
         </Link>
@@ -135,14 +149,72 @@ export default function ClientesPage() {
 
   return (
     <section className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Clientes</h1>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold font-serif text-zinc-900">Clientes</h1>
+          <p className="text-sm text-zinc-500">Gerencie sua base de clientes e acompanhe débitos</p>
+        </div>
         <button
           onClick={handleNovoCliente}
-          className="px-4 py-2 bg-[var(--lumike-gold)] text-white rounded-lg hover:opacity-90 transition"
+          className="px-4 py-2 bg-(--lumike-gold) text-white rounded-lg hover:opacity-90 transition shadow-sm font-medium flex items-center justify-center gap-2"
         >
-          + Novo Cliente
+          <span>+ Novo Cliente</span>
         </button>
+      </div>
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white p-4 rounded-xl border border-zinc-100 shadow-sm">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-blue-50 rounded-lg">
+              <Users className="h-5 w-5 text-blue-600" />
+            </div>
+            <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Total de Clientes</p>
+          </div>
+          <p className="text-2xl font-bold text-zinc-900 font-mono">
+            {pagination?.total || customers.length}
+          </p>
+        </div>
+
+        <div className="p-4 rounded-xl border border-red-100 shadow-sm bg-red-50/30 text-red-600">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-red-100 rounded-lg">
+              <Wallet className="h-5 w-5 text-red-600" />
+            </div>
+            <p className="text-xs font-bold text-red-400 uppercase tracking-wider">Inadimplência Total</p>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <p className="text-2xl font-bold text-red-600 font-mono">{formatCurrency(totalDebt)}</p>
+            <span className="text-xs text-red-400 font-medium">({totalWithDebt} devedores)</span>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-xl border border-zinc-100 shadow-sm">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-amber-50 rounded-lg">
+              <TrendingUp className="h-5 w-5 text-amber-600" />
+            </div>
+            <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Conversão de Ativos</p>
+          </div>
+          <p className="text-2xl font-bold text-zinc-900 font-mono">
+            {Math.round((customers.length / (pagination?.total || 1)) * 100)}%
+          </p>
+          <p className="text-[10px] text-zinc-400 mt-1 italic">*Baseado na amostragem atual</p>
+        </div>
+      </div>
+
+      {/* Filtros */}
+      <div className="bg-white p-4 rounded-xl border border-zinc-100 shadow-sm space-y-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+          <input
+            type="text"
+            placeholder="Buscar por nome, e-mail, CPF ou telefone..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm text-zinc-900 focus:ring-2 focus:ring-(--lumike-gold) focus:bg-white focus:outline-none transition-all"
+          />
+        </div>
       </div>
 
       <ErrorMessage
@@ -158,7 +230,7 @@ export default function ClientesPage() {
         emptyAction={
           <button
             onClick={handleNovoCliente}
-            className="px-4 py-2 bg-[var(--lumike-gold)] text-white rounded-lg hover:opacity-90 transition"
+            className="px-4 py-2 bg-(--lumike-gold) text-white rounded-lg hover:opacity-90 transition"
           >
             Criar Primeiro Cliente
           </button>

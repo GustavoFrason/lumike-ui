@@ -2,10 +2,9 @@
 
 import { useState, useEffect, FormEvent } from 'react';
 import Link from 'next/link';
-import { User, Search, Menu, X, Heart, ChevronDown, ShoppingBag } from 'lucide-react'; // Restored ShoppingBag for layout balance even if link is hidden/changed
+import { User, Search, Menu, X, Heart, ShoppingBag } from 'lucide-react'; // Restored ShoppingBag for layout balance even if link is hidden/changed
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 
 interface Category {

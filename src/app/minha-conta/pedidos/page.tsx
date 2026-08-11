@@ -1,7 +1,6 @@
 'use client';
 
-import { Card } from '@/components/ui/card';
-import { Package, Truck, CheckCircle } from 'lucide-react';
+import { Package } from 'lucide-react';
 
 export default function OrdersPage() {
   return (

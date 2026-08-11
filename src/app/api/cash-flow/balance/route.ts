@@ -1,24 +1,12 @@
-import { NextResponse } from 'next/server';
-import axios from 'axios';
-import { cookies } from 'next/headers';
+/**
+ * /api/cash-flow/balance
+ * ------------------------------------
+ * Proxy para o saldo atual do fluxo de caixa.
+ */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import { NextRequest } from 'next/server';
+import { handleGet } from '@/lib/api-helpers';
 
-export async function GET() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('auth_token')?.value;
-
-  try {
-    const response = await axios.get(`${API_URL}/cash-flow/balance`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return NextResponse.json(response.data);
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.response?.data?.message || 'Internal Server Error' },
-      { status: error.response?.status || 500 },
-    );
-  }
+export async function GET(request: NextRequest) {
+  return handleGet(request, '/cash-flow/balance', 'Erro ao buscar saldo de caixa');
 }

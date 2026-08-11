@@ -6,7 +6,7 @@
 
 import { cn } from '@/lib/utils';
 
-export type StatusVariant = 'active' | 'inactive' | 'pending' | 'completed' | 'cancelled';
+export type StatusVariant = 'active' | 'inactive' | 'pending' | 'completed' | 'cancelled' | 'error';
 
 interface StatusBadgeProps {
   status: StatusVariant | boolean;
@@ -34,6 +34,10 @@ const statusConfig: Record<StatusVariant, { label: string; className: string }> 
   cancelled: {
     label: 'Cancelado',
     className: 'bg-red-100 text-red-700',
+  },
+  error: {
+    label: 'Esgotado',
+    className: 'bg-red-500 text-white',
   },
 };
 

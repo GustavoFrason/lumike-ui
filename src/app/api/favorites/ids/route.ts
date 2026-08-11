@@ -25,6 +25,7 @@ export async function GET(req: Request) {
     return NextResponse.json(data);
   } catch (error) {
     console.error('Erro ao buscar IDs favoritos:', error);
-    return NextResponse.json([], { status: 500 });
+    // Retorna array vazio com 200 para degradar graciosamente (ex: API ainda inicializando)
+    return NextResponse.json([]);
   }
 }

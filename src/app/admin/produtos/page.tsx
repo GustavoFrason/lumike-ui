@@ -1,21 +1,21 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { ProductModal } from './ProductModal';
 import { useProducts } from '@/lib/hooks/use-products';
 import { useCategories } from '@/lib/hooks/use-categories';
-import { formatCurrency } from '@/lib/formatters';
 import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { DataTable } from '@/components/ui/data-table';
-import { StatusBadge } from '@/components/ui/status-badge';
-import { ActionButtons } from '@/components/ui/action-buttons';
 import { Pagination } from '@/components/ui/pagination';
 import { PaginationInfo } from '@/components/ui/pagination-info';
-import { Product, UpdateProductDto, productsService } from '@/lib/services/products.service';
+import { Product, CreateProductDto, productsService } from '@/lib/services/products.service';
 import { imagesService } from '@/lib/services/images.service';
-import { Search, Filter } from 'lucide-react';
+import { inventoryService } from '@/lib/services/inventory.service';
 import { WarrantyModal } from '../garantias/WarrantyModal';
+import { ProductFiltersBar } from './components/ProductFiltersBar';
+import { BulkActionsBar } from './components/BulkActionsBar';
+import { getProductColumns } from './components/product-columns';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -46,7 +46,6 @@ export default function ProdutosPage() {
 
   // State for WarrantyModal
   const [showWarrantyModal, setShowWarrantyModal] = useState(false);
-  const [warrantyProduct, setWarrantyProduct] = useState<Product | null>(null);
   const [repairProduto, setRepairProduto] = useState<Product | null>(null);
 
   // Filters
@@ -95,15 +94,39 @@ export default function ProdutosPage() {
     setModalAberto(true);
   }
 
-  async function handleSalvar(produtoData: UpdateProductDto) {
-    const { pendingFiles, ...cleanData } = produtoData as any;
+  async function handleSalvar(
+    produtoData: Partial<Product> & { pendingFiles?: File[]; initial_seller_id?: number },
+  ) {
+    const { pendingFiles, initial_seller_id, ...cleanData } = produtoData;
 
     try {
       if (produtoSelecionado?.id) {
         await updateProduct(produtoSelecionado.id, cleanData);
       } else {
-        // Cria o produto e pega o resultado (que deve conter o ID)
-        const newProduct = await createProduct(cleanData);
+        // Lógica de estoque inicial
+        const originalStock = Number(cleanData.current_stock) || 0;
+        if (initial_seller_id && originalStock > 0) {
+          cleanData.current_stock = 0; // Se vai para vendedor, cria com 0 no central
+        }
+
+        // ProductModal valida os campos obrigatórios antes de chamar onSave
+        // (é o mesmo contrato usado em compras/nova/page.tsx pro cadastro
+        // rápido), então em tempo de execução isso sempre bate com
+        // CreateProductDto.
+        const newProduct = await createProduct(cleanData as CreateProductDto);
+
+        // Se houver revendedor inicial, aloca o saldo
+        if (newProduct?.id && initial_seller_id && originalStock > 0) {
+          try {
+            await inventoryService.addStock(
+              newProduct.id,
+              { quantity: originalStock, reference: 'Estoque inicial da peça' },
+              initial_seller_id,
+            );
+          } catch (err) {
+            console.error('Erro ao registrar estoque inicial:', err);
+          }
+        }
 
         // Se houver imagens pendentes e o produto foi criado com sucesso
         if (newProduct?.id && pendingFiles && pendingFiles.length > 0) {
@@ -179,176 +202,45 @@ export default function ProdutosPage() {
         message={errorProducts || errorCreating || errorUpdating || errorDeleting || ''}
       />
 
-      {/* Filters Bar */}
-      <div className="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm flex flex-col md:flex-row gap-4 items-center">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-          <input
-            type="text"
-            placeholder="Buscar por nome ou SKU..."
-            className="w-full pl-10 pr-4 py-2 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-[var(--lumike-gold)] focus:border-transparent outline-none transition"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-          />
-        </div>
-
-        <div className="flex items-center gap-2 w-full md:w-auto">
-          <Filter className="h-4 w-4 text-zinc-400" />
-          <select
-            className="w-full md:w-48 py-2 px-3 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-[var(--lumike-gold)] focus:border-transparent outline-none transition bg-white text-zinc-700"
-            value={categoryId || ''}
-            onChange={(e) => {
-              setCategoryId(e.target.value ? Number(e.target.value) : undefined);
-              setCurrentPage(1);
-            }}
-          >
-            <option value="">Todas as Categorias</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <ProductFiltersBar
+        search={search}
+        onSearchChange={(value) => {
+          setSearch(value);
+          setCurrentPage(1);
+        }}
+        categoryId={categoryId}
+        onCategoryChange={(id) => {
+          setCategoryId(id);
+          setCurrentPage(1);
+        }}
+        categories={categories}
+      />
 
       {selectedIds.length > 0 && (
-        <div className="bg-zinc-100 p-4 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-4">
-          <span className="text-sm font-medium text-zinc-700">
-            {selectedIds.length} produtos selecionados
-          </span>
-          <div className="flex gap-2">
-            <button
-              onClick={() => handleBulkStatus(true)}
-              className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition"
-            >
-              Ativar Selecionados
-            </button>
-            <button
-              onClick={() => handleBulkStatus(false)}
-              className="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition"
-            >
-              Desativar Selecionados
-            </button>
-            <button
-              onClick={() => setSelectedIds([])}
-              className="px-3 py-1 bg-zinc-400 text-white text-xs rounded hover:bg-zinc-500 transition"
-            >
-              Limpar
-            </button>
-          </div>
-        </div>
+        <BulkActionsBar
+          selectedCount={selectedIds.length}
+          onActivate={() => handleBulkStatus(true)}
+          onDeactivate={() => handleBulkStatus(false)}
+          onClear={() => setSelectedIds([])}
+        />
       )}
 
       <DataTable
         data={products}
         loading={loadingProducts}
-        columns={[
-          {
-            key: 'selection',
-            header: (
-              <input
-                type="checkbox"
-                checked={selectedIds.length === products.length && products.length > 0}
-                onChange={toggleSelectAll}
-                className="rounded border-zinc-300 text-[var(--lumike-gold)] focus:ring-[var(--lumike-gold)]"
-              />
-            ),
-            render: (produto) => (
-              <input
-                type="checkbox"
-                checked={selectedIds.includes(produto.id)}
-                onChange={() => toggleSelect(produto.id)}
-                className="rounded border-zinc-300 text-[var(--lumike-gold)] focus:ring-[var(--lumike-gold)]"
-              />
-            ),
-            className: 'w-10',
+        columns={getProductColumns({
+          selectedIds,
+          allSelected: selectedIds.length === products.length && products.length > 0,
+          onToggleSelect: toggleSelect,
+          onToggleSelectAll: toggleSelectAll,
+          onEdit: handleEditar,
+          onDelete: handleExcluir,
+          onRepair: (produto) => {
+            setRepairProduto(produto);
+            setShowWarrantyModal(true);
           },
-          {
-            key: 'id',
-            header: 'ID',
-            render: (produto) => (
-              <span className="text-zinc-500 text-xs font-mono">#{produto.id}</span>
-            ),
-            className: 'w-16',
-          },
-          {
-            key: 'name',
-            header: 'Nome',
-            render: (produto) => <span className="font-medium">{produto.name}</span>,
-          },
-          {
-            key: 'sku',
-            header: 'SKU / SKU2',
-            render: (produto) => (
-              <div className="flex flex-col">
-                <span className="text-zinc-700 font-mono text-sm">{produto.sku || '-'}</span>
-                {produto.sku2 && (
-                  <span className="text-zinc-400 text-xs font-mono">{produto.sku2}</span>
-                )}
-              </div>
-            ),
-          },
-          {
-            key: 'price',
-            header: 'Preço',
-            render: (produto) =>
-              produto.preco_promocional ? (
-                <div>
-                  <span className="line-through text-zinc-400">
-                    {formatCurrency(produto.price)}
-                  </span>
-                  <span className="ml-2 text-[var(--lumike-gold)] font-semibold">
-                    {formatCurrency(produto.preco_promocional)}
-                  </span>
-                </div>
-              ) : (
-                formatCurrency(produto.price)
-              ),
-          },
-          {
-            key: 'stock',
-            header: 'Estoque',
-            render: (produto) => (
-              <div>
-                <span
-                  className={
-                    produto.current_stock <= produto.min_stock ? 'text-red-600 font-semibold' : ''
-                  }
-                >
-                  {produto.current_stock}
-                </span>
-                {produto.min_stock > 0 && (
-                  <span className="text-zinc-400 text-xs ml-1">(mín: {produto.min_stock})</span>
-                )}
-              </div>
-            ),
-          },
-          {
-            key: 'status',
-            header: 'Status',
-            render: (produto) => <StatusBadge status={produto.is_active} />,
-          },
-          {
-            key: 'actions',
-            header: 'Ações',
-            className: 'text-right',
-            render: (produto) => (
-              <ActionButtons
-                onEdit={() => handleEditar(produto)}
-                onDelete={() => handleExcluir(produto.id)}
-                onRepair={() => {
-                  setRepairProduto(produto);
-                  setShowWarrantyModal(true);
-                }}
-                disabled={updating || deleting}
-              />
-            ),
-          },
-        ]}
+          actionsDisabled: updating || deleting,
+        })}
         emptyTitle={
           search || categoryId
             ? 'Nenhum produto corresponde aos filtros'

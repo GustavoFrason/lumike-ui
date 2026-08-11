@@ -4,7 +4,6 @@
  * Se já estiver autenticado, redireciona direto ao dashboard.
  */
 
-import { redirect } from 'next/navigation';
 import { getAuthCookie } from '@/lib/cookies';
 import { LoginForm } from '@/components/forms/LoginForm';
 

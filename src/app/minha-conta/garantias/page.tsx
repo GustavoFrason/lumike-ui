@@ -2,7 +2,6 @@
 
 import { Card } from '@/components/ui/card';
 import { ShieldCheck, Download, ExternalLink } from 'lucide-react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 export default function WarrantiesPage() {

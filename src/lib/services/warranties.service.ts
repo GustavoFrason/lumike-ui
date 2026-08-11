@@ -26,7 +26,7 @@ export interface Warranty {
   updated_at: string;
   finished_at?: string;
   customers?: { name: string; email: string; whatsapp?: string };
-  products?: { name: string; sku: string; images?: any[] };
+  products?: { name: string; sku: string; images?: { url: string; ordem?: number }[] };
   orders?: { created_at: string; total_amount: number };
 }
 
@@ -47,8 +47,16 @@ export interface UpdateWarrantyDto {
   description?: string;
 }
 
+export interface WarrantyStats {
+  total: number;
+  pending: number;
+  analyzing: number;
+  factory: number;
+  ready: number;
+}
+
 export const warrantiesService = {
-  async findAll(page = 1, limit = 50, filters: any = {}) {
+  async findAll(page = 1, limit = 50, filters: Record<string, string> = {}) {
     const params = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
@@ -78,7 +86,7 @@ export const warrantiesService = {
     return response.data;
   },
 
-  async getStats() {
+  async getStats(): Promise<WarrantyStats> {
     const response = await api.get('/garantias/stats');
     return response.data;
   },

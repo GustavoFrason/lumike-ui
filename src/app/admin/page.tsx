@@ -11,8 +11,9 @@ import { RevenueChart } from '@/components/admin/RevenueChart';
 import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { formatCurrency } from '@/lib/formatters';
-import { TrendingUp, Package, Users, AlertTriangle, CreditCard, Target, Zap } from 'lucide-react';
+import { TrendingUp, Package, AlertTriangle, CreditCard, Target, Zap } from 'lucide-react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export default function AdminPage() {
   const [kpis, setKpis] = useState<DashboardKPIs | null>(null);
@@ -70,12 +71,12 @@ export default function AdminPage() {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="p-6 rounded-lg bg-[var(--lumike-beige)] border">
+        <div className="p-6 rounded-lg bg-(--lumike-beige) border">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-medium">Total de Vendas</h2>
-            <TrendingUp className="h-5 w-5 text-[var(--lumike-gold)]" />
+            <TrendingUp className="h-5 w-5 text-(--lumike-gold)" />
           </div>
-          <p className="text-3xl font-bold text-[var(--lumike-gold)]">
+          <p className="text-3xl font-bold text-(--lumike-gold)">
             {kpis ? formatCurrency(kpis.total_vendas) : 'R$ 0,00'}
           </p>
           <p className="text-xs text-zinc-500 mt-1">
@@ -83,22 +84,22 @@ export default function AdminPage() {
           </p>
         </div>
 
-        <div className="p-6 rounded-lg bg-[var(--lumike-beige)] border">
+        <div className="p-6 rounded-lg bg-(--lumike-beige) border">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-medium">Ticket Médio</h2>
-            <CreditCard className="h-5 w-5 text-[var(--lumike-gold)]" />
+            <CreditCard className="h-5 w-5 text-(--lumike-gold)" />
           </div>
-          <p className="text-3xl font-bold text-[var(--lumike-gold)]">
+          <p className="text-3xl font-bold text-(--lumike-gold)">
             {kpis ? formatCurrency(kpis.ticket_medio) : 'R$ 0,00'}
           </p>
         </div>
 
-        <div className="p-6 rounded-lg bg-[var(--lumike-beige)] border">
+        <div className="p-6 rounded-lg bg-(--lumike-beige) border">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-medium">Taxa de Conversão</h2>
-            <Target className="h-5 w-5 text-[var(--lumike-gold)]" />
+            <Target className="h-5 w-5 text-(--lumike-gold)" />
           </div>
-          <p className="text-3xl font-bold text-[var(--lumike-gold)]">
+          <p className="text-3xl font-bold text-(--lumike-gold)">
             {(kpis?.taxa_conversao ?? 0).toFixed(1)}%
           </p>
         </div>
@@ -106,7 +107,7 @@ export default function AdminPage() {
         <div className="p-6 rounded-lg bg-white border">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-medium">Marketing Leads</h2>
-            <Zap className="h-5 w-5 text-[var(--lumike-gold)]" />
+            <Zap className="h-5 w-5 text-(--lumike-gold)" />
           </div>
           <p className="text-2xl font-bold text-zinc-900">{kpis?.total_leads || 0}</p>
         </div>
@@ -114,7 +115,7 @@ export default function AdminPage() {
         <div className="p-6 rounded-lg bg-white border">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-medium">Produtos Ativos</h2>
-            <Package className="h-5 w-5 text-[var(--lumike-gold)]" />
+            <Package className="h-5 w-5 text-(--lumike-gold)" />
           </div>
           <p className="text-2xl font-bold text-zinc-900">{kpis?.produtos_ativos || 0}</p>
         </div>
@@ -122,7 +123,7 @@ export default function AdminPage() {
         <div className="p-6 rounded-lg bg-white border">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-medium">Clientes Registrados</h2>
-            <Users className="h-5 w-5 text-[var(--lumike-gold)]" />
+            <Zap className="h-5 w-5 text-(--lumike-gold)" />
           </div>
           <p className="text-2xl font-bold text-zinc-900">{kpis?.clientes || 0}</p>
         </div>
@@ -166,7 +167,7 @@ export default function AdminPage() {
             {lowStock.length > 0 && (
               <Link
                 href="/admin/estoque"
-                className="text-sm text-[var(--lumike-gold)] hover:underline"
+                className="text-sm text-(--lumike-gold) hover:underline"
               >
                 Ver todos
               </Link>
@@ -174,21 +175,31 @@ export default function AdminPage() {
           </div>
           {lowStock.length > 0 ? (
             <div className="space-y-3">
-              {lowStock.map((alert) => (
-                <div
-                  key={alert.product_id}
-                  className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg"
-                >
-                  <div>
-                    <p className="font-medium text-red-900">{alert.product_name}</p>
-                    <p className="text-xs text-red-700">
-                      Estoque: {alert.current_stock} | Mínimo: {alert.min_stock} | Faltam:{' '}
-                      {alert.missing}
-                    </p>
+              {lowStock.map((alert) => {
+                const isOut = alert.current_stock <= 0;
+                return (
+                  <div
+                    key={alert.product_id}
+                    className={cn(
+                      "flex items-center justify-between p-3 border rounded-lg transition-colors",
+                      isOut 
+                        ? "bg-red-600 border-red-700 text-white shadow-md shadow-red-100 animate-pulse" 
+                        : "bg-red-50 border-red-200 text-red-900"
+                    )}
+                  >
+                    <div>
+                      <p className={cn("font-bold", isOut ? "text-white" : "text-red-900")}>
+                        {alert.product_name} {isOut && "(ESGOTADO)"}
+                      </p>
+                      <p className={cn("text-xs", isOut ? "text-red-100" : "text-red-700")}>
+                        Estoque: {alert.current_stock} | Mínimo: {alert.min_stock} | Faltam:{' '}
+                        {alert.missing}
+                      </p>
+                    </div>
+                    <AlertTriangle className={cn("h-5 w-5 shrink-0", isOut ? "text-white" : "text-red-600")} />
                   </div>
-                  <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0" />
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <p className="text-sm text-zinc-500">Nenhum alerta de estoque baixo</p>

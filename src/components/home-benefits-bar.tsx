@@ -1,6 +1,6 @@
 'use client';
 
-import { Truck, Gem, CreditCard, Package, TicketPercent, ShieldCheck } from 'lucide-react';
+import { Truck, CreditCard, Package, TicketPercent, ShieldCheck } from 'lucide-react';
 
 export function BenefitsBar() {
   const benefits = [

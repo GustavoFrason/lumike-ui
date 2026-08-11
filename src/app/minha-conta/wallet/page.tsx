@@ -3,7 +3,6 @@
 import { Card } from '@/components/ui/card';
 import { Ticket, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 
 // Mock data for now
 const COUPONS = [

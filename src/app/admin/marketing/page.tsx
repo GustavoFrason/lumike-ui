@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
-import { Loader2, Copy, Download } from 'lucide-react';
+import { Loader2, Download } from 'lucide-react';
 
 interface Lead {
   id: string;

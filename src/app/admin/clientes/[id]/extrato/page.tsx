@@ -13,7 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Printer, Download } from 'lucide-react';
+import { ArrowLeft, Printer } from 'lucide-react';
 
 interface Transaction {
   date: string;

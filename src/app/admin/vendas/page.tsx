@@ -2,16 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { useOrders, Order } from '@/lib/hooks/use-orders';
-import { DataTable, Column } from '@/components/ui/data-table';
+import { DataTable } from '@/components/ui/data-table';
 import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
-import { StatusBadge } from '@/components/ui/status-badge';
 import { Pagination } from '@/components/ui/pagination';
 import { PaginationInfo } from '@/components/ui/pagination-info';
-import { formatCurrency, formatDate } from '@/lib/formatters';
-import { Printer, ShieldCheck, MessageCircle, Download } from 'lucide-react';
+import { getOrderPaymentBreakdown } from '@/lib/order-utils';
+import { Download } from 'lucide-react';
 import Link from 'next/link';
 import { OrderDetailsModal } from '@/components/admin/OrderDetailsModal';
+import { SalesKpiCards } from './components/SalesKpiCards';
+import { SalesFiltersBar } from './components/SalesFiltersBar';
+import { getSalesColumns } from './components/sales-columns';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -28,7 +30,7 @@ const statusColors: Record<string, 'pending' | 'active' | 'completed' | 'cancell
   paid: 'completed',
   completed: 'completed',
   cancelled: 'cancelled',
-  parcelado_boca: 'active',
+  parcelado_boca: 'pending', // Alterado para pending (amarelo) para indicar atenção
 };
 
 export default function VendasPage() {
@@ -48,11 +50,41 @@ export default function VendasPage() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     loadOrders(currentPage, ITEMS_PER_PAGE, statusFilter || undefined);
   }, [loadOrders, currentPage, statusFilter]);
+
+  // Filtragem no frontend (Complementar ao backend)
+  const filteredOrders = orders.filter((order) => {
+    const matchesSearch =
+      !searchTerm ||
+      order.id.toString().includes(searchTerm) ||
+      order.customers?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const orderDate = new Date(order.created_at).toISOString().split('T')[0];
+    const matchesDate =
+      (!dateRange.start || orderDate >= dateRange.start) && (!dateRange.end || orderDate <= dateRange.end);
+
+    return matchesSearch && matchesDate;
+  });
+
+  // Cálculos de KPIs baseados na lista filtrada
+  const kpis = {
+    total: filteredOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0),
+    pendente: filteredOrders.reduce((sum, o) => {
+      // Se cancelado, não conta como pendente
+      if (o.status === 'cancelled') return sum;
+      return sum + getOrderPaymentBreakdown(o).saldo;
+    }, 0),
+    ticketMedio:
+      filteredOrders.length > 0
+        ? filteredOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0) / filteredOrders.length
+        : 0,
+  };
 
   function handleWhatsApp(pedido: Order) {
     if (!pedido.customers?.phone) {
@@ -82,10 +114,7 @@ export default function VendasPage() {
     const csvContent = [
       headers.join(','),
       ...orders.map((order) => {
-        const currentSaldo =
-          order.payment_status === 'pago' ? 0 : (order.boca_value ?? order.total_amount);
-        const valorPago = Math.max(0, order.total_amount - currentSaldo);
-        const saldo = currentSaldo;
+        const { valorPago, saldo } = getOrderPaymentBreakdown(order);
 
         return [
           `#${order.id}`,
@@ -143,128 +172,6 @@ export default function VendasPage() {
     }
   }
 
-  const columns: Column<Order>[] = [
-    {
-      key: 'id',
-      header: 'Pedido',
-      render: (pedido) => <span className="font-medium">#{pedido.id}</span>,
-    },
-    {
-      key: 'customer',
-      header: 'Cliente',
-      render: (pedido) => <span>{pedido.customers?.name || 'Cliente não informado'}</span>,
-    },
-    {
-      key: 'created_at',
-      header: 'Data',
-      render: (pedido) => formatDate(pedido.created_at),
-    },
-    {
-      key: 'total_amount',
-      header: 'Valor',
-      render: (pedido) => (
-        <span className="font-semibold">{formatCurrency(pedido.total_amount)}</span>
-      ),
-    },
-    {
-      key: 'valor_pago',
-      header: 'Valor Pago',
-      render: (pedido) => {
-        // Calcular valor pago acumulado
-        const saldo =
-          pedido.payment_status === 'pago' ? 0 : (pedido.boca_value ?? pedido.total_amount);
-        const valorPago = Math.max(0, pedido.total_amount - saldo);
-
-        return (
-          <span className={`font-medium ${valorPago > 0 ? 'text-green-600' : 'text-zinc-400'}`}>
-            {formatCurrency(valorPago)}
-          </span>
-        );
-      },
-    },
-    {
-      key: 'saldo',
-      header: 'Saldo',
-      render: (pedido) => {
-        // Calcular saldo pendente (usando boca_value como saldo universal)
-        const saldo =
-          pedido.payment_status === 'pago' ? 0 : (pedido.boca_value ?? pedido.total_amount);
-
-        return (
-          <span className={`font-semibold ${saldo > 0 ? 'text-red-600' : 'text-green-600'}`}>
-            {formatCurrency(saldo)}
-          </span>
-        );
-      },
-    },
-    {
-      key: 'status',
-      header: 'Status',
-      render: (pedido) => (
-        <StatusBadge
-          status={statusColors[pedido.status] || 'pending'}
-          label={statusLabels[pedido.status] || pedido.status}
-        />
-      ),
-    },
-    {
-      key: 'actions',
-      header: 'Ações',
-      className: 'text-right',
-      render: (pedido) => (
-        <div className="flex items-center justify-end gap-2">
-          <button
-            onClick={() => handleWhatsApp(pedido)}
-            className="p-1 text-green-600 hover:text-green-700"
-            title="Enviar WhatsApp"
-          >
-            <MessageCircle className="h-4 w-4" />
-          </button>
-          <select
-            value={pedido.status}
-            onChange={(e) => handleStatusChange(pedido.id, e.target.value)}
-            className="text-xs border rounded px-2 py-1"
-            disabled={updating}
-          >
-            <option value="pending">Análise</option>
-            <option value="parcelado_boca">Parcelado Boca</option>
-            <option value="completed">Concluído</option>
-            <option value="cancelled">Cancelado</option>
-          </select>
-          <button
-            onClick={() => setSelectedOrder(pedido)}
-            className="text-blue-600 hover:underline text-xs font-medium"
-          >
-            Ver Detalhes
-          </button>
-          <button
-            onClick={() => handleExcluir(pedido.id)}
-            className="text-red-600 hover:text-red-700 text-sm"
-            disabled={deleting}
-          >
-            Excluir
-          </button>
-          <Link
-            href={`/admin/vendas/recibo/${pedido.id}`}
-            target="_blank"
-            className="p-1 text-zinc-400 hover:text-zinc-600"
-            title="Imprimir Recibo"
-          >
-            <Printer className="h-4 w-4" />
-          </Link>
-          <Link
-            href={`/admin/vendas/garantia/${pedido.id}`}
-            target="_blank"
-            className="p-1 text-[var(--lumike-gold)] hover:text-yellow-600"
-            title="Certificado de Garantia"
-          >
-            <ShieldCheck className="h-4 w-4" />
-          </Link>
-        </div>
-      ),
-    },
-  ];
-
   if (loadingOrders) {
     return (
       <section className="space-y-6">
@@ -286,36 +193,45 @@ export default function VendasPage() {
           </button>
           <Link
             href="/admin/vendas/nova"
-            className="px-4 py-2 bg-[var(--lumike-gold)] text-white rounded-lg hover:bg-yellow-600 transition text-sm font-medium"
+            className="px-4 py-2 bg-(--lumike-gold) text-white rounded-lg hover:bg-yellow-600 transition text-sm font-medium"
           >
             Nova Venda
           </Link>
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="border rounded-lg px-3 py-2 text-sm"
-          >
-            <option value="">Todos os status</option>
-            <option value="pending">Análise</option>
-            <option value="parcelado_boca">Parcelado Boca</option>
-            <option value="completed">Concluído</option>
-            <option value="cancelled">Cancelado</option>
-          </select>
         </div>
       </div>
+
+      <SalesKpiCards total={kpis.total} ticketMedio={kpis.ticketMedio} pendente={kpis.pendente} />
+
+      <SalesFiltersBar
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        dateRange={dateRange}
+        onDateRangeChange={setDateRange}
+        statusFilter={statusFilter}
+        onStatusFilterChange={(value) => {
+          setStatusFilter(value);
+          setCurrentPage(1);
+        }}
+      />
 
       <ErrorMessage message={errorOrders || errorUpdating || errorDeleting || ''} />
 
       <DataTable
-        data={orders}
+        data={filteredOrders}
         loading={loadingOrders}
-        columns={columns}
+        columns={getSalesColumns({
+          statusLabels,
+          statusColors,
+          updating,
+          deleting,
+          onWhatsApp: handleWhatsApp,
+          onStatusChange: handleStatusChange,
+          onViewDetails: setSelectedOrder,
+          onDelete: handleExcluir,
+        })}
         onRowClick={(pedido) => setSelectedOrder(pedido)}
         emptyTitle="Nenhuma venda encontrada"
-        emptyDescription="As vendas aparecerão aqui quando forem criadas"
+        emptyDescription="Tente ajustar seus filtros para encontrar o que procura"
       />
 
       {pagination && pagination.total > ITEMS_PER_PAGE && (

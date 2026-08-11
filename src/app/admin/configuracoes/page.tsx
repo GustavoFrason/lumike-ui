@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Breadcrumb } from '@/components/admin/Breadcrumb';
 import { settingsService, Setting } from '@/lib/services/settings.service';
 import Image from 'next/image';
-import { Palette, Store, Share2, Upload, Save, Loader2 } from 'lucide-react';
+import { Palette, Store, Share2, Upload, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type Tab = 'appearance' | 'store' | 'integrations';

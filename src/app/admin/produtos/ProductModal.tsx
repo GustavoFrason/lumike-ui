@@ -3,59 +3,36 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Product, productsService } from '@/lib/services/products.service';
 import { categoriesService } from '@/lib/services/categories.service';
-import { ImageUpload } from '@/components/ui/image-upload';
+import { usersService, User as UserModel } from '@/lib/services/users.service';
 import { imagesService } from '@/lib/services/images.service';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { useCollections } from '@/lib/hooks/use-collections';
 import { useSuppliers } from '@/lib/hooks/use-suppliers';
-import { Plus, Check, X, Info, Truck } from 'lucide-react';
-import CurrencyInput from 'react-currency-input-field';
-
+import { parseCurrencyBR } from '@/lib/formatters';
 import { ErrorMessage } from '@/components/ui/error-message';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useInventory } from '@/lib/hooks/use-inventory';
+import { TransferStockModal } from '../estoque/TransferStockModal';
+import { ProductFormState } from './components/types';
+import { ProductIdentificationSection } from './components/ProductIdentificationSection';
+import { ProductDetailsSection } from './components/ProductDetailsSection';
+import { ProductPricingSection } from './components/ProductPricingSection';
+import { ProductOrganizationSection } from './components/ProductOrganizationSection';
+import { ProductImagesAndToggles } from './components/ProductImagesAndToggles';
 
 interface ModalProps {
-  produto: Product | null;
+  produto: Partial<Product> | null;
   onClose: () => void;
   onSave: (produto: Partial<Product> & { pendingFiles?: File[] }) => void;
   loading?: boolean;
   error?: string | null;
 }
 
-interface LabelWithTooltipProps {
-  label: string;
-  tooltip: string;
-  required?: boolean;
-  children?: React.ReactNode;
-}
-
-function LabelWithTooltip({ label, tooltip, required, children }: LabelWithTooltipProps) {
-  return (
-    <div className="flex items-center gap-1.5 mb-1.5">
-      <label className="block text-sm font-medium text-zinc-700">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <TooltipProvider>
-        <Tooltip delayDuration={300}>
-          <TooltipTrigger asChild>
-            <Info className="h-3.5 w-3.5 text-zinc-400 hover:text-(--lumike-gold) cursor-help transition-colors" />
-          </TooltipTrigger>
-          <TooltipContent className="bg-zinc-800 text-zinc-50 border-zinc-700 max-w-xs">
-            <p className="text-xs">{tooltip}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      {children}
-    </div>
-  );
-}
-
 export function ProductModal({ produto, onClose, onSave, loading = false, error }: ModalProps) {
-  const { categories, loadCategories, loadingCategories } = useCategories();
-  const { collections, loadCollections, loadingCollections } = useCollections();
+  const { categories, loadCategories } = useCategories();
+  const { loadCollections } = useCollections();
   const { suppliers, loadSuppliers } = useSuppliers();
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<ProductFormState>({
     name: produto?.name || '',
     sku: produto?.sku || '',
     sku2: produto?.sku2 || '',
@@ -80,6 +57,14 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
   const [loadingSku, setLoadingSku] = useState(false);
   const [existingProduct, setExistingProduct] = useState<Product | null>(null);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [transferModalAberto, setTransferModalAberto] = useState(false);
+
+  // Initial Stock Destination
+  const [sellers, setSellers] = useState<UserModel[]>([]);
+  const [initialSellerId, setInitialSellerId] = useState<string>('');
+
+  const inventory = useInventory(produto?.id);
 
   // Quick Category
   const [showQuickCategory, setShowQuickCategory] = useState(false);
@@ -95,19 +80,27 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
     }
   }, []);
 
-  // Removed variants loader
-
   // Carrega categorias e coleções ao montar o componente
   useEffect(() => {
     loadCategories(true); // Apenas categorias ativas
     loadCollections(true); // Apenas coleções ativas
     loadSuppliers(); // Carregar fornecedores para o dropdown
-  }, [loadCategories, loadCollections, loadSuppliers]);
+
+    // Carregar revendedores se for produto novo
+    if (!produto?.id) {
+      usersService
+        .getSellers()
+        .then((data) => setSellers(data.filter((s) => s.is_active)))
+        .catch((err) => console.error('Erro ao carregar revendedores:', err));
+    }
+  }, [loadCategories, loadCollections, loadSuppliers, produto?.id]);
 
   useEffect(() => {
     if (produto?.id) {
       loadProductImages(produto.id);
+      inventory.loadStock();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [produto?.id, loadProductImages]);
 
   async function handleQuickAddCategory() {
@@ -229,42 +222,113 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) {
     const { name, value, type } = e.target;
+    let finalValue = value;
+
+    // SKU to Uppercase
+    if (name === 'sku' || name === 'sku2') {
+      finalValue = value.toUpperCase();
+    }
+
     setForm((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : finalValue,
     }));
+  }
+
+  function handlePriceFieldChange(
+    field: 'cost_price' | 'price' | 'preco_promocional',
+    value: string,
+  ) {
+    setValidationErrors((prev) => ({ ...prev, [field]: '' }));
+    setForm((prev) => ({ ...prev, [field]: value }));
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setValidationErrors({});
+
+    const errors: Record<string, string> = {};
+
+    // Basic Validations
+    if (!form.name.trim()) errors.name = 'Nome é obrigatório';
+    if (!form.sku.trim()) errors.sku = 'SKU é obrigatório';
+    if (!form.price) errors.price = 'Preço de venda é obrigatório';
+
+    const priceNum = parseCurrencyBR(form.price);
+    const promoPriceNum = form.preco_promocional ? parseCurrencyBR(form.preco_promocional) : undefined;
+    const costPriceNum = form.cost_price ? parseCurrencyBR(form.cost_price) : undefined;
+
+    if (priceNum <= 0) {
+      errors.price = 'O preço de venda deve ser maior que zero';
+    }
+
+    if (promoPriceNum !== undefined && promoPriceNum >= priceNum) {
+      errors.preco_promocional = 'O preço promocional deve ser menor que o preço de venda';
+    }
+
+    if (parseInt(form.current_stock) < 0) {
+      errors.current_stock = 'O estoque não pode ser negativo';
+    }
+
+    if (parseInt(form.min_stock) < 0) {
+      errors.min_stock = 'O estoque mínimo não pode ser negativo';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+
+    // New: Check for images if active or featured
+    if ((form.is_active || form.is_featured) && productImages.length === 0 && pendingFiles.length === 0) {
+      if (
+        !confirm(
+          'Deseja salvar este produto sem imagens? Ele está marcado como Ativo/Destaque e pode não aparecer corretamente no site.',
+        )
+      ) {
+        return;
+      }
+    }
 
     const produtoData = {
-      name: form.name,
-      sku: form.sku || undefined,
-      sku2: form.sku2 || undefined,
-      short_description: form.short_description,
-      description: form.description || undefined,
-      price: parseFloat(form.price.replace(/\./g, '').replace(',', '.')) || 0,
-      preco_promocional: form.preco_promocional
-        ? parseFloat(form.preco_promocional.replace(/\./g, '').replace(',', '.'))
-        : undefined,
-      cost_price: form.cost_price
-        ? parseFloat(form.cost_price.replace(/\./g, '').replace(',', '.'))
-        : undefined,
+      name: form.name.trim(),
+      sku: form.sku.trim(),
+      sku2: form.sku2.trim() || undefined,
+      short_description: form.short_description.trim(),
+      description: form.description.trim() || undefined,
+      price: priceNum,
+      preco_promocional: promoPriceNum,
+      cost_price: costPriceNum,
       purchase_date: form.purchase_date,
       current_stock: parseInt(form.current_stock) || 0,
       min_stock: parseInt(form.min_stock) || 0,
       category_id: form.category_id ? parseInt(form.category_id) : undefined,
       supplier_id: form.supplier_id ? parseInt(form.supplier_id) : undefined,
       colecao_id: form.colecao_id || undefined,
-      collection: form.collection || undefined,
+      collection: form.collection.trim() || undefined,
       is_active: form.is_active,
       is_featured: form.is_featured,
       pendingFiles: pendingFiles.map((p) => p.file),
       existingProductId: existingProduct?.id,
+      initial_seller_id: initialSellerId ? parseInt(initialSellerId) : undefined,
     };
 
     onSave(produtoData);
+  }
+
+  async function handleSalvarTransferencia(data: {
+    from_user_id: number | null;
+    to_user_id: number | null;
+    quantity: number;
+    notes?: string;
+  }) {
+    try {
+      await inventory.transferStock(data);
+      setTransferModalAberto(false);
+      await inventory.loadStock();
+    } catch {
+      // Erro já tratado pelo hook
+    }
   }
 
   return (
@@ -285,362 +349,54 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
           {error && <ErrorMessage message={error} className="mb-4" />}
 
           <form id="product-form" onSubmit={handleSubmit} className="space-y-6">
-            {/* --- Identificação --- */}
-            <div className="bg-zinc-50 p-4 rounded-lg border border-zinc-100 space-y-4">
-              <h3 className="font-semibold text-zinc-800 flex items-center gap-2">
-                📦 Identificação e Estoque
-              </h3>
+            <ProductIdentificationSection
+              form={form}
+              onChange={handleChange}
+              onSkuBlur={handleSkuLookup}
+              validationErrors={validationErrors}
+              loadingSku={loadingSku}
+              existingProduct={existingProduct}
+              produto={produto}
+              stock={inventory.stock}
+              loadingStock={inventory.loadingStock}
+              onOpenTransfer={() => setTransferModalAberto(true)}
+            />
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <LabelWithTooltip
-                    label="SKU (Principal)"
-                    tooltip="Código único do produto impresso na etiqueta (Code 128)."
-                    required
-                  >
-                    {loadingSku && <span className="ml-2 text-xs text-zinc-400">Buscando...</span>}
-                  </LabelWithTooltip>
-                  <input
-                    type="text"
-                    name="sku"
-                    placeholder="Ex: AN1234"
-                    value={form.sku}
-                    onChange={handleChange}
-                    onBlur={handleSkuLookup}
-                    className="w-full border-2 border-(--lumike-gold)/30 rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumike-gold) outline-none font-mono font-medium"
-                    required
-                    autoFocus
-                  />
-                  {existingProduct && (
-                    <div className="text-xs bg-amber-50 text-amber-700 px-2 py-1 rounded mt-1 border border-amber-200">
-                      ⚠ Produto existente. O valor abaixo será somado ao estoque atual.
-                    </div>
-                  )}
-                </div>
+            <ProductDetailsSection form={form} onChange={handleChange} validationErrors={validationErrors} />
 
-                <div>
-                  <LabelWithTooltip
-                    label="SKU Zarpellon (Opcional)"
-                    tooltip="Código de referência da planilha da Zarpellon (SKU2)."
-                  />
-                  <input
-                    type="text"
-                    name="sku2"
-                    placeholder="Ex: 102030"
-                    value={form.sku2}
-                    onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-2 font-mono text-zinc-600"
-                  />
-                </div>
+            <ProductPricingSection
+              form={form}
+              validationErrors={validationErrors}
+              onPriceFieldChange={handlePriceFieldChange}
+            />
 
-                <div>
-                  <LabelWithTooltip
-                    label="Data de Compra"
-                    tooltip="Data que o produto foi comprado na Zarpellon ou fornecedor."
-                    required
-                  />
-                  <input
-                    type="date"
-                    name="purchase_date"
-                    value={form.purchase_date}
-                    onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-2"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
+            <ProductOrganizationSection
+              form={form}
+              onChange={handleChange}
+              validationErrors={validationErrors}
+              produto={produto}
+              existingProduct={existingProduct}
+              categories={categories}
+              suppliers={suppliers}
+              sellers={sellers}
+              initialSellerId={initialSellerId}
+              onInitialSellerIdChange={setInitialSellerId}
+              showQuickCategory={showQuickCategory}
+              onToggleQuickCategory={setShowQuickCategory}
+              newCategoryName={newCategoryName}
+              onNewCategoryNameChange={setNewCategoryName}
+              creatingCategory={creatingCategory}
+              onQuickAddCategory={handleQuickAddCategory}
+            />
 
-            {/* --- Detalhes Principais --- */}
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-2">
-                  <LabelWithTooltip
-                    label="Nome do Produto"
-                    tooltip="Nome completo exibido no site e vitrine."
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Nome do produto"
-                    value={form.name}
-                    onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-2 font-medium"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <LabelWithTooltip
-                    label="Descrição Resumida (Etiqueta)"
-                    tooltip="Descrição curta para etiqueta e Nota Fiscal. Máx 40 caracteres."
-                    required
-                  />
-                  <div className="relative">
-                    <input
-                      type="text"
-                      name="short_description"
-                      placeholder="Ex: Anel Solitário Ouro"
-                      value={form.short_description}
-                      onChange={handleChange}
-                      maxLength={40}
-                      className="w-full border rounded-lg px-3 py-2 pr-12"
-                      required
-                    />
-                    <span className="absolute right-3 top-2 text-xs text-zinc-400 pointer-events-none">
-                      {form.short_description.length}/40
-                    </span>
-                  </div>
-                </div>
-
-                <div className="md:col-span-2">
-                  <LabelWithTooltip
-                    label="Descrição Completa (Site)"
-                    tooltip="Texto rico para a página de detalhes do produto. Use termos atrativos."
-                  />
-                  <textarea
-                    name="description"
-                    placeholder="Detalhes, história e diferenciais da peça..."
-                    value={form.description}
-                    onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-2 min-h-[80px]"
-                    rows={3}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* --- Financeiro --- */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-green-50/50 p-4 rounded-lg border border-green-100">
-              <div>
-                <LabelWithTooltip
-                  label="Preço de Custo"
-                  tooltip="Valor pago ao fornecedor. Usado para cálculo de lucro."
-                />
-                <CurrencyInput
-                  name="cost_price"
-                  placeholder="R$ 0,00"
-                  value={form.cost_price}
-                  decimalsLimit={2}
-                  onValueChange={(value) =>
-                    setForm((prev) => ({ ...prev, cost_price: value || '' }))
-                  }
-                  prefix="R$ "
-                  className="w-full border rounded-lg px-3 py-2"
-                  decimalSeparator=","
-                  groupSeparator="."
-                  intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
-                />
-              </div>
-
-              <div>
-                <LabelWithTooltip
-                  label="Preço de Venda"
-                  tooltip="Valor final para o cliente."
-                  required
-                />
-                <CurrencyInput
-                  name="price"
-                  placeholder="R$ 0,00"
-                  value={form.price}
-                  decimalsLimit={2}
-                  onValueChange={(value) => setForm((prev) => ({ ...prev, price: value || '' }))}
-                  prefix="R$ "
-                  className="w-full border rounded-lg px-3 py-2 font-bold text-zinc-800"
-                  decimalSeparator=","
-                  groupSeparator="."
-                  intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
-                  required
-                />
-              </div>
-
-              <div>
-                <LabelWithTooltip
-                  label="Preço Promocional"
-                  tooltip="Se preenchido, aparecerá como 'De/Por' no site."
-                />
-                <CurrencyInput
-                  name="preco_promocional"
-                  placeholder="R$ 0,00"
-                  value={form.preco_promocional}
-                  decimalsLimit={2}
-                  onValueChange={(value) =>
-                    setForm((prev) => ({ ...prev, preco_promocional: value || '' }))
-                  }
-                  prefix="R$ "
-                  className="w-full border rounded-lg px-3 py-2 text-green-700 font-medium"
-                  decimalSeparator=","
-                  groupSeparator="."
-                  intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
-                />
-              </div>
-            </div>
-
-            {/* --- Organização --- */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <LabelWithTooltip
-                    label="Categoria"
-                    tooltip="Grupo onde este produto será exibido (ex: Anéis, Colares)."
-                  />
-                  {!showQuickCategory && (
-                    <button
-                      type="button"
-                      onClick={() => setShowQuickCategory(true)}
-                      className="text-xs text-(--lumike-gold) hover:underline flex items-center gap-1"
-                    >
-                      <Plus className="h-3 w-3" /> Nova
-                    </button>
-                  )}
-                </div>
-
-                {showQuickCategory ? (
-                  <div className="flex gap-2 animate-in fade-in">
-                    <input
-                      type="text"
-                      placeholder="Nome da categoria"
-                      className="flex-1 border rounded-lg px-3 py-1 text-sm"
-                      value={newCategoryName}
-                      onChange={(e) => setNewCategoryName(e.target.value)}
-                      autoFocus
-                    />
-                    <button
-                      type="button"
-                      onClick={handleQuickAddCategory}
-                      disabled={creatingCategory || !newCategoryName.trim()}
-                      className="p-1 text-green-600 bg-green-50 rounded hover:bg-green-100"
-                    >
-                      <Check className="h-5 w-5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowQuickCategory(false);
-                        setNewCategoryName('');
-                      }}
-                      className="p-1 text-red-600 bg-red-50 rounded hover:bg-red-100"
-                    >
-                      <X className="h-5 w-5" />
-                    </button>
-                  </div>
-                ) : (
-                  <select
-                    name="category_id"
-                    value={form.category_id}
-                    onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-2"
-                  >
-                    <option value="">Selecione...</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </div>
-
-              <div>
-                <LabelWithTooltip
-                  label="Fornecedor"
-                  tooltip="Origem do produto para acompanhamento de ROI."
-                />
-                <select
-                  name="supplier_id"
-                  value={form.supplier_id}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg px-3 py-2"
-                >
-                  <option value="">Selecione...</option>
-                  {suppliers.map((supplier) => (
-                    <option key={supplier.id} value={supplier.id}>
-                      {supplier.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <LabelWithTooltip
-                    label="Estoque Inicial"
-                    tooltip="Quantidade atual em estoque."
-                  />
-                  <input
-                    type="number"
-                    name="current_stock"
-                    placeholder="0"
-                    min="0"
-                    value={form.current_stock}
-                    onChange={handleChange}
-                    className={`w-full border rounded-lg px-3 py-2 text-center font-mono ${existingProduct ? 'bg-amber-100 border-amber-300' : ''}`}
-                    required
-                  />
-                </div>
-                <div>
-                  <LabelWithTooltip
-                    label="Coleção (Texto)"
-                    tooltip="Nome da coleção (opcional, ex: Verão 2025)."
-                  />
-                  <input
-                    type="text"
-                    name="collection"
-                    placeholder="Ex: Verão 2025"
-                    value={form.collection}
-                    onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-2"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* --- Imagens --- */}
-            <div>
-              <LabelWithTooltip
-                label="Imagens do Produto"
-                tooltip="Fotos do produto. A primeira será a capa."
-              />
-              <ImageUpload
-                onUpload={handleImageUpload}
-                onRemove={handleImageRemove}
-                existingImages={productImages}
-                maxImages={10}
-                disabled={loading || uploadingImages}
-              />
-            </div>
-
-            {/* --- Toggles --- */}
-            <div className="flex flex-col sm:flex-row gap-6 p-4 bg-zinc-50 rounded-lg">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="is_active"
-                  checked={form.is_active}
-                  onChange={handleChange}
-                  className="w-5 h-5 rounded border-zinc-300 text-(--lumike-gold) focus:ring-(--lumike-gold)"
-                />
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium text-zinc-800">Ativo</span>
-                  <span className="text-xs text-zinc-500">Visível no catálogo</span>
-                </div>
-              </label>
-
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="is_featured"
-                  checked={form.is_featured}
-                  onChange={handleChange}
-                  className="w-5 h-5 rounded border-zinc-300 text-(--lumike-gold) focus:ring-(--lumike-gold)"
-                />
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium text-zinc-800">Destaque</span>
-                  <span className="text-xs text-zinc-500">Aparece na Home</span>
-                </div>
-              </label>
-            </div>
+            <ProductImagesAndToggles
+              form={form}
+              onChange={handleChange}
+              productImages={productImages}
+              onImageUpload={handleImageUpload}
+              onImageRemove={handleImageRemove}
+              disabled={loading || uploadingImages}
+            />
           </form>
         </div>
 
@@ -663,6 +419,16 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
           </button>
         </div>
       </div>
+
+      {transferModalAberto && produto && (
+        <TransferStockModal
+          produto={produto}
+          stockInfo={inventory.stock}
+          onClose={() => setTransferModalAberto(false)}
+          onSave={handleSalvarTransferencia}
+          loading={inventory.transferring}
+        />
+      )}
     </div>
   );
 }

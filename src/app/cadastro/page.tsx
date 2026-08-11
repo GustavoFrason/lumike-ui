@@ -3,11 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios'; // Using axios for consistency with LoginForm
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { getErrorMessage } from '@/lib/utils';
+import { RegisterForm } from './components/RegisterForm';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -155,8 +154,8 @@ export default function RegisterPage() {
       } else {
         setError(response.data.message || 'Erro ao cadastrar.');
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao conectar com o servidor.');
+    } catch (err) {
+      setError(getErrorMessage(err, 'Erro ao conectar com o servidor.'));
     } finally {
       setLoading(false);
     }
@@ -174,144 +173,24 @@ export default function RegisterPage() {
           </p>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-deep-black pl-1">Nome Completo</label>
-              <Input
-                name="name"
-                type="text"
-                placeholder="Ex: João Silva"
-                value={formData.name}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                className={`bg-white ${fieldErrors.name ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
-              />
-              {fieldErrors.name && (
-                <p className="text-[10px] text-red-500 font-medium pl-1">{fieldErrors.name}</p>
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-deep-black pl-1">E-mail</label>
-              <Input
-                name="email"
-                type="email"
-                placeholder="Ex: joao@email.com"
-                value={formData.email}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                className={`bg-white ${fieldErrors.email ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
-              />
-              {fieldErrors.email && (
-                <p className="text-[10px] text-red-500 font-medium pl-1">{fieldErrors.email}</p>
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-deep-black pl-1">
-                WhatsApp (Opcional)
-              </label>
-              <Input
-                name="whatsapp"
-                type="text"
-                placeholder="Ex: (41) 99999-9999"
-                value={formData.whatsapp}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                maxLength={15}
-                className={`bg-white ${fieldErrors.whatsapp ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
-              />
-              {fieldErrors.whatsapp && (
-                <p className="text-[10px] text-red-500 font-medium pl-1">{fieldErrors.whatsapp}</p>
-              )}
-            </div>
-
-            <div className="relative space-y-1">
-              <label className="text-sm font-medium text-deep-black pl-1">Senha</label>
-              <Input
-                name="senha"
-                type="password"
-                placeholder="Crie uma senha forte"
-                value={formData.senha}
-                onChange={handleChange}
-                onFocus={() => setShowPasswordRules(true)}
-                required
-                className="bg-white"
-              />
-
-              {/* Password Strength Indicator */}
-              {showPasswordRules && (
-                <div className="mt-2 p-3 bg-gray-50/50 border border-gray-100 rounded text-xs text-medium-gray space-y-1 transition-all">
-                  <p className="font-bold mb-1 text-deep-black">Sua senha deve ter:</p>
-                  <div
-                    className={`flex items-center gap-2 ${passwordCriteria.length ? 'text-green-600' : 'text-gray-400'}`}
-                  >
-                    <div
-                      className={`w-1.5 h-1.5 rounded-full ${passwordCriteria.length ? 'bg-green-600' : 'bg-gray-300'}`}
-                    />
-                    Mínimo de 8 caracteres
-                  </div>
-                  <div
-                    className={`flex items-center gap-2 ${passwordCriteria.uppercase ? 'text-green-600' : 'text-gray-400'}`}
-                  >
-                    <div
-                      className={`w-1.5 h-1.5 rounded-full ${passwordCriteria.uppercase ? 'bg-green-600' : 'bg-gray-300'}`}
-                    />
-                    Pelo menos 1 letra maiúscula
-                  </div>
-                  <div
-                    className={`flex items-center gap-2 ${passwordCriteria.symbol ? 'text-green-600' : 'text-gray-400'}`}
-                  >
-                    <div
-                      className={`w-1.5 h-1.5 rounded-full ${passwordCriteria.symbol ? 'bg-green-600' : 'bg-gray-300'}`}
-                    />
-                    Pelo menos 1 símbolo (!@#...)
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-deep-black pl-1">Confirmar Senha</label>
-              <Input
-                name="confirmSenha"
-                type="password"
-                placeholder="Repita a senha"
-                value={formData.confirmSenha}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                className={`bg-white ${fieldErrors.confirmSenha ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
-              />
-              {fieldErrors.confirmSenha && (
-                <p className="text-[10px] text-red-500 font-medium pl-1">
-                  {fieldErrors.confirmSenha}
-                </p>
-              )}
-            </div>
-
-            {error && (
-              <p className="text-red-500 text-sm text-center bg-red-50 p-2 rounded">{error}</p>
-            )}
-
-            <Button
-              type="submit"
-              disabled={loading || !isFormValid}
-              className="w-full bg-deep-black hover:bg-primary-gold text-white font-bold uppercase tracking-widest mt-2 h-12 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? <Loader2 className="animate-spin h-4 w-4" /> : 'Cadastrar'}
-            </Button>
-          </form>
+          <RegisterForm
+            formData={formData}
+            fieldErrors={fieldErrors}
+            passwordCriteria={passwordCriteria}
+            showPasswordRules={showPasswordRules}
+            onShowPasswordRules={() => setShowPasswordRules(true)}
+            error={error}
+            loading={loading}
+            isFormValid={!!isFormValid}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            onSubmit={handleSubmit}
+          />
         </CardContent>
         <CardFooter className="flex justify-center border-t pt-6">
           <p className="text-sm text-medium-gray">
             Já tem uma conta?{' '}
-            <Link
-              href="/login"
-              className="font-bold text-deep-black hover:text-primary-gold underline"
-            >
+            <Link href="/login" className="font-bold text-deep-black hover:text-primary-gold underline">
               Fazer Login
             </Link>
           </p>

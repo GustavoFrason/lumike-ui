@@ -1,8 +1,30 @@
+import axios from 'axios';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+/**
+ * Extrai uma mensagem de erro legível de um `catch (err)` — cobre o
+ * formato de erro da API via axios (err.response.data.message), Error
+ * padrão do JS, e string solta, com fallback para o resto.
+ *
+ * Essa lógica (`err.response?.data?.message || err.message || fallback`)
+ * estava copiada, com `err: any`, em pelo menos 10 lugares diferentes.
+ */
+export function getErrorMessage(err: unknown, fallback = 'Erro inesperado'): string {
+  if (axios.isAxiosError(err)) {
+    return err.response?.data?.message || err.message || fallback;
+  }
+  if (err instanceof Error) {
+    return err.message || fallback;
+  }
+  if (typeof err === 'string') {
+    return err;
+  }
+  return fallback;
 }
 
 export function normalizeImageUrl(url: string | null | undefined): string {

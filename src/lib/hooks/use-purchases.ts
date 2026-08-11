@@ -1,8 +1,9 @@
 import { useState, useCallback } from 'react';
-import { purchasesService, CreatePurchaseDto } from '../services/purchases.service';
+import { purchasesService, CreatePurchaseDto, Purchase } from '../services/purchases.service';
+import { getErrorMessage } from '../utils';
 
 export function usePurchases() {
-  const [purchases, setPurchases] = useState<any[]>([]);
+  const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,8 +14,8 @@ export function usePurchases() {
       const response = await purchasesService.findAll();
       setPurchases(response.data || []);
       return response;
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao carregar compras');
+    } catch (err) {
+      setError(getErrorMessage(err, 'Erro ao carregar compras'));
     } finally {
       setLoading(false);
     }
@@ -26,8 +27,8 @@ export function usePurchases() {
     try {
       const response = await purchasesService.create(data);
       return response;
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao registrar compra');
+    } catch (err) {
+      setError(getErrorMessage(err, 'Erro ao registrar compra'));
       throw err;
     } finally {
       setLoading(false);

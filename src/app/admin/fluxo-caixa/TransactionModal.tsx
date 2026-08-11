@@ -2,21 +2,31 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { X, Check } from 'lucide-react';
+import { X } from 'lucide-react';
+import { getErrorMessage } from '@/lib/utils';
+
+export type CashFlowType = 'IN' | 'OUT';
+export type CashFlowCategory = 'venda' | 'estorno' | 'compra' | 'ajuste' | 'outros';
+
+export interface CreateCashFlowEntry {
+  type: CashFlowType;
+  category: CashFlowCategory;
+  amount: number;
+  description: string;
+}
 
 interface ModalProps {
   onClose: () => void;
-  onSave: (data: any) => Promise<void>;
+  onSave: (data: CreateCashFlowEntry) => Promise<void>;
 }
 
 export function TransactionModal({ onClose, onSave }: ModalProps) {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
-    type: 'OUT',
-    category: 'compra',
+    type: 'OUT' as CashFlowType,
+    category: 'compra' as CashFlowCategory,
     amount: '',
     description: '',
-    date: new Date().toISOString().split('T')[0],
   });
 
   const handleChange = (
@@ -36,7 +46,7 @@ export function TransactionModal({ onClose, onSave }: ModalProps) {
       });
       onClose();
     } catch (error) {
-      console.error('Erro ao salvar:', error);
+      console.error('Erro ao salvar:', getErrorMessage(error));
       // Optionally show error toast here
     } finally {
       setLoading(false);
