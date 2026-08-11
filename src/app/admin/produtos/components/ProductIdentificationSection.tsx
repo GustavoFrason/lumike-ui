@@ -39,49 +39,50 @@ export function ProductIdentificationSection({
         <div>
           <LabelWithTooltip
             label="SKU (Principal)"
-            tooltip="Código único do produto impresso na etiqueta (Code 128)."
+            tooltip="Código interno da plataforma — é o próprio ID do produto no banco, gerado automaticamente. Não é editável."
+          />
+          <input
+            type="text"
+            name="sku"
+            placeholder="Gerado automaticamente ao salvar"
+            value={form.sku}
+            disabled
+            readOnly
+            className="w-full border rounded-lg px-3 py-2 font-mono font-medium bg-zinc-100 text-zinc-500 cursor-not-allowed"
+          />
+        </div>
+
+        <div>
+          <LabelWithTooltip
+            label="SKU Zarpellon"
+            tooltip="Código da peça no fornecedor (impresso na etiqueta/planilha de compra). É o identificador usado pra reconhecer o produto na hora de comprar de novo."
             required
           >
             {loadingSku && <span className="ml-2 text-xs text-zinc-400">Buscando...</span>}
           </LabelWithTooltip>
           <input
             type="text"
-            name="sku"
-            placeholder="Ex: AN1234"
-            value={form.sku}
+            name="sku2"
+            placeholder="Ex: 102030"
+            value={form.sku2}
             onChange={onChange}
             onBlur={onSkuBlur}
             className={`w-full border-2 rounded-lg px-3 py-2 focus:ring-2 outline-none font-mono font-medium ${
-              validationErrors.sku
+              validationErrors.sku2
                 ? 'border-red-300 focus:ring-red-200'
                 : 'border-(--lumike-gold)/30 focus:ring-(--lumike-gold)'
             }`}
             required
             autoFocus
           />
-          {validationErrors.sku && (
-            <p className="text-[10px] text-red-500 mt-1 font-medium">{validationErrors.sku}</p>
+          {validationErrors.sku2 && (
+            <p className="text-[10px] text-red-500 mt-1 font-medium">{validationErrors.sku2}</p>
           )}
           {existingProduct && (
             <div className="text-xs bg-amber-50 text-amber-700 px-2 py-1 rounded mt-1 border border-amber-200">
               ⚠ Produto existente. O valor abaixo será somado ao estoque atual.
             </div>
           )}
-        </div>
-
-        <div>
-          <LabelWithTooltip
-            label="SKU Zarpellon (Opcional)"
-            tooltip="Código de referência da planilha da Zarpellon (SKU2)."
-          />
-          <input
-            type="text"
-            name="sku2"
-            placeholder="Ex: 102030"
-            value={form.sku2}
-            onChange={onChange}
-            className="w-full border rounded-lg px-3 py-2 font-mono text-zinc-600"
-          />
         </div>
 
         <div>

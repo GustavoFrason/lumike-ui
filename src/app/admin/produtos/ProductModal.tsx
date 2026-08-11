@@ -123,21 +123,24 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
   }
 
   const handleSkuLookup = async () => {
-    const sku = form.sku.trim();
+    // SKU (Principal) não é mais digitado (é o id, somente leitura) — quem
+    // dispara a busca por "esse produto já existe?" agora é o SKU do
+    // fornecedor (sku2).
+    const sku2 = form.sku2.trim();
 
     // Skip if empty or if we're editing (produto.id exists)
-    if (!sku || produto?.id) return;
+    if (!sku2 || produto?.id) return;
 
     setLoadingSku(true);
     try {
-      // Search for product by SKU
-      const result = await productsService.getAll(1, 1, undefined, sku);
+      // Search for product by supplier SKU
+      const result = await productsService.getAll(1, 1, undefined, sku2);
 
       if (result.data.length > 0) {
         const foundProduct = result.data[0];
 
         // Exact SKU match (case-insensitive)
-        if (foundProduct.sku?.toLowerCase() === sku.toLowerCase()) {
+        if (foundProduct.sku2?.toLowerCase() === sku2.toLowerCase()) {
           setExistingProduct(foundProduct);
 
           // Auto-fill ALL fields
@@ -251,7 +254,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
 
     // Basic Validations
     if (!form.name.trim()) errors.name = 'Nome é obrigatório';
-    if (!form.sku.trim()) errors.sku = 'SKU é obrigatório';
+    if (!form.sku2.trim()) errors.sku2 = 'SKU Zarpellon é obrigatório';
     if (!form.price) errors.price = 'Preço de venda é obrigatório';
 
     const priceNum = parseCurrencyBR(form.price);
@@ -298,8 +301,11 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
 
     const produtoData = {
       name: form.name.trim(),
+      // sku: não enviamos valor digitado — vazio no create (trigger
+      // fn_generate_product_sku preenche com o id) ou o valor já existente
+      // no edit (campo somente leitura, nunca é alterado pelo usuário).
       sku: form.sku.trim(),
-      sku2: form.sku2.trim() || undefined,
+      sku2: form.sku2.trim(),
       short_description: form.short_description.trim(),
       description: form.description.trim() || undefined,
       price: priceNum,

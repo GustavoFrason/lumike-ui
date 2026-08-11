@@ -50,7 +50,8 @@ export default function NovaCompraPage() {
     .filter(
       (p) =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.sku?.toLowerCase().includes(searchTerm.toLowerCase()),
+        p.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.sku2?.toLowerCase().includes(searchTerm.toLowerCase()),
     )
     .slice(0, 10);
 
@@ -252,14 +253,17 @@ export default function NovaCompraPage() {
       {isProductModalOpen && (
         <ProductModal
           produto={
+            // sku é somente leitura agora (vira o id ao salvar) — o código
+            // que temos em mãos aqui (da NF-e ou digitado na busca) é o
+            // código do fornecedor, então pré-preenche sku2.
             quickProductTarget
               ? {
                   name: quickProductTarget.name,
-                  sku: quickProductTarget.sku,
+                  sku2: quickProductTarget.sku,
                   cost_price: quickProductTarget.unit_cost,
                 }
               : searchTerm
-                ? { name: searchTerm, sku: searchTerm.toUpperCase() }
+                ? { name: searchTerm, sku2: searchTerm.toUpperCase() }
                 : null
           }
           onClose={() => {

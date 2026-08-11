@@ -37,7 +37,8 @@ export default function EtiquetasPage() {
   const filteredProducts = products.filter(
     (p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.sku?.toLowerCase().includes(searchTerm.toLowerCase()),
+      p.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.sku2?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   function updateQuantity(productId: number, delta: number) {

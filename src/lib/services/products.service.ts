@@ -41,8 +41,11 @@ export interface Product {
 }
 
 export interface CreateProductDto {
+  // Não é digitado — vira o id autoincrementado via trigger no banco
+  // quando vem vazio (ver ProductModal / fn_generate_product_sku).
   sku?: string;
-  sku2?: string;
+  // SKU do fornecedor (rótulo no admin: "SKU Zarpellon") — obrigatório.
+  sku2: string;
   name: string;
   short_description: string;
   description?: string;
