@@ -54,9 +54,7 @@ export function UpdateStockTable({ rows, onUpdate, onRemove }: UpdateStockTableP
                     type="number"
                     min="1"
                     value={row.quantity}
-                    onChange={(e) =>
-                      onUpdate(row.row_number, { quantity: Number(e.target.value) })
-                    }
+                    onChange={(e) => onUpdate(row.row_number, { quantity: Number(e.target.value) })}
                     className="w-full border rounded px-2 py-1 text-center"
                   />
                 </td>

@@ -19,9 +19,7 @@ export function ImportPreviewSummary({ preview }: ImportPreviewSummaryProps) {
       </div>
       <div className="p-3 bg-green-50/50 rounded-xl border border-green-100 text-center">
         <p className="text-[10px] font-bold text-green-600 uppercase">Entrada de Estoque</p>
-        <p className="text-lg font-bold text-green-700 font-serif">
-          {preview.atualizacoes.length}
-        </p>
+        <p className="text-lg font-bold text-green-700 font-serif">{preview.atualizacoes.length}</p>
       </div>
       <div className="p-3 bg-zinc-100 rounded-xl border border-zinc-200 text-center">
         <p className="text-[10px] font-bold text-zinc-500 uppercase">Não-Catalogáveis</p>
