@@ -4,7 +4,11 @@ import { useState, useEffect } from 'react';
 import { X, Loader2, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
-import { warrantiesService, CreateWarrantyDto, WarrantyOrigin } from '@/lib/services/warranties.service';
+import {
+  warrantiesService,
+  CreateWarrantyDto,
+  WarrantyOrigin,
+} from '@/lib/services/warranties.service';
 import { Customer } from '@/lib/services/customers.service';
 import { Order } from '@/lib/services/orders.service';
 import { Product } from '@/lib/services/products.service';
@@ -148,14 +152,20 @@ export function WarrantyModal({ onClose, onSave, initialData }: WarrantyModalPro
               Acompanhamento e rastreabilidade de peças para manutenção.
             </p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-zinc-200 rounded-full transition-colors">
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-zinc-200 rounded-full transition-colors"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col max-h-[85vh]">
           <div className="p-6 space-y-6 overflow-y-auto">
-            <OriginToggle origin={form.origin} onChange={(origin) => setForm({ ...form, origin })} />
+            <OriginToggle
+              origin={form.origin}
+              onChange={(origin) => setForm({ ...form, origin })}
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {form.origin === 'sold' && (

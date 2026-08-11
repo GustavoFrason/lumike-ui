@@ -33,12 +33,15 @@ export function CartPanel({ cart, total, onUpdateQuantity, onRemoveFromCart }: C
               <div className="flex-1">
                 <p className="font-medium line-clamp-1">{item.product.name}</p>
                 <p className="text-zinc-500 text-xs">
-                  {formatCurrency(item.product.preco_promocional || item.product.price)} x {item.quantity}
+                  {formatCurrency(item.product.preco_promocional || item.product.price)} x{' '}
+                  {item.quantity}
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1">
                 <span className="font-medium">
-                  {formatCurrency((item.product.preco_promocional || item.product.price) * item.quantity)}
+                  {formatCurrency(
+                    (item.product.preco_promocional || item.product.price) * item.quantity,
+                  )}
                 </span>
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button

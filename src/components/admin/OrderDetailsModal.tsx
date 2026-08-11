@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { Order, OrderItem } from '@/lib/services/orders.service';
-import { accountsReceivableService, OrderPayment } from '@/lib/services/accounts-receivable.service';
+import {
+  accountsReceivableService,
+  OrderPayment,
+} from '@/lib/services/accounts-receivable.service';
 import { WarrantyModal } from '@/app/admin/garantias/WarrantyModal';
 import { OrderHeader } from './order-details/OrderHeader';
 import { CustomerInfoSection } from './order-details/CustomerInfoSection';

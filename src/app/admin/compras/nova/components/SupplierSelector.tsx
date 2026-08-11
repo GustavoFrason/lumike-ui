@@ -7,7 +7,11 @@ interface SupplierSelectorProps {
   onSelectSupplier: (id: number | '') => void;
 }
 
-export function SupplierSelector({ suppliers, selectedSupplierId, onSelectSupplier }: SupplierSelectorProps) {
+export function SupplierSelector({
+  suppliers,
+  selectedSupplierId,
+  onSelectSupplier,
+}: SupplierSelectorProps) {
   return (
     <div className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm">
       <label className="text-sm font-semibold text-zinc-700 mb-2 flex items-center gap-2">

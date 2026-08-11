@@ -14,11 +14,14 @@ export function StockNotifyForm({ product }: StockNotifyFormProps) {
     const userId = Number(JSON.parse(atob(token.split('.')[1])).sub);
 
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/stock-notifications`, {
-        email: 'user-logged-in',
-        product_id: product.id,
-        user_id: userId,
-      });
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/stock-notifications`,
+        {
+          email: 'user-logged-in',
+          product_id: product.id,
+          user_id: userId,
+        },
+      );
       window.location.href = '/minha-conta/avisos-estoque';
     } catch (error) {
       console.error('Erro ao registrar:', error);

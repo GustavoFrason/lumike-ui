@@ -8,18 +8,31 @@ interface XmlUploadPromptProps {
   onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function XmlUploadPrompt({ loading, error, fileInputRef, onFileUpload }: XmlUploadPromptProps) {
+export function XmlUploadPrompt({
+  loading,
+  error,
+  fileInputRef,
+  onFileUpload,
+}: XmlUploadPromptProps) {
   return (
     <div className="py-12 flex flex-col items-center text-center">
       <div className="h-20 w-20 bg-zinc-50 rounded-full flex items-center justify-center mb-6 border-2 border-dashed border-zinc-200 group-hover:border-(--lumike-gold) transition-colors">
         <FileUp className="h-10 w-10 text-zinc-300" />
       </div>
-      <h3 className="text-lg font-bold text-zinc-900 mb-2">Selecione o arquivo XML da Nota Fiscal</h3>
+      <h3 className="text-lg font-bold text-zinc-900 mb-2">
+        Selecione o arquivo XML da Nota Fiscal
+      </h3>
       <p className="text-sm text-zinc-500 max-w-sm mb-6">
         O sistema identificará produtos, quantidades e custos automaticamente.
       </p>
 
-      <input type="file" accept=".xml" ref={fileInputRef} onChange={onFileUpload} className="hidden" />
+      <input
+        type="file"
+        accept=".xml"
+        ref={fileInputRef}
+        onChange={onFileUpload}
+        className="hidden"
+      />
 
       <button
         onClick={() => fileInputRef.current?.click()}

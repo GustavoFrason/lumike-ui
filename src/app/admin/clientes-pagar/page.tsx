@@ -1,7 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { accountsReceivableService, Debtor, OrderPayment } from '@/lib/services/accounts-receivable.service';
+import {
+  accountsReceivableService,
+  Debtor,
+  OrderPayment,
+} from '@/lib/services/accounts-receivable.service';
 import { Loading } from '@/components/ui/loading';
 import { formatCurrency, parseCurrencyBR } from '@/lib/formatters';
 import { DebtorCard } from './components/DebtorCard';

@@ -165,10 +165,7 @@ export default function AdminPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Alertas de Estoque</h2>
             {lowStock.length > 0 && (
-              <Link
-                href="/admin/estoque"
-                className="text-sm text-(--lumike-gold) hover:underline"
-              >
+              <Link href="/admin/estoque" className="text-sm text-(--lumike-gold) hover:underline">
                 Ver todos
               </Link>
             )}
@@ -181,22 +178,24 @@ export default function AdminPage() {
                   <div
                     key={alert.product_id}
                     className={cn(
-                      "flex items-center justify-between p-3 border rounded-lg transition-colors",
-                      isOut 
-                        ? "bg-red-600 border-red-700 text-white shadow-md shadow-red-100 animate-pulse" 
-                        : "bg-red-50 border-red-200 text-red-900"
+                      'flex items-center justify-between p-3 border rounded-lg transition-colors',
+                      isOut
+                        ? 'bg-red-600 border-red-700 text-white shadow-md shadow-red-100 animate-pulse'
+                        : 'bg-red-50 border-red-200 text-red-900',
                     )}
                   >
                     <div>
-                      <p className={cn("font-bold", isOut ? "text-white" : "text-red-900")}>
-                        {alert.product_name} {isOut && "(ESGOTADO)"}
+                      <p className={cn('font-bold', isOut ? 'text-white' : 'text-red-900')}>
+                        {alert.product_name} {isOut && '(ESGOTADO)'}
                       </p>
-                      <p className={cn("text-xs", isOut ? "text-red-100" : "text-red-700")}>
+                      <p className={cn('text-xs', isOut ? 'text-red-100' : 'text-red-700')}>
                         Estoque: {alert.current_stock} | Mínimo: {alert.min_stock} | Faltam:{' '}
                         {alert.missing}
                       </p>
                     </div>
-                    <AlertTriangle className={cn("h-5 w-5 shrink-0", isOut ? "text-white" : "text-red-600")} />
+                    <AlertTriangle
+                      className={cn('h-5 w-5 shrink-0', isOut ? 'text-white' : 'text-red-600')}
+                    />
                   </div>
                 );
               })}

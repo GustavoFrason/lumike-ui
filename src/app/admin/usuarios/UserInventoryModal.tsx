@@ -32,7 +32,7 @@ export function UserInventoryModal({ user, onClose }: UserInventoryModalProps) {
   }
 
   const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalValue = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const totalValue = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
@@ -48,7 +48,7 @@ export function UserInventoryModal({ user, onClose }: UserInventoryModalProps) {
               <p className="text-sm text-zinc-500">{user.name}</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="p-2 hover:bg-zinc-100 rounded-full transition-colors text-zinc-400 hover:text-zinc-600"
           >
@@ -79,13 +79,17 @@ export function UserInventoryModal({ user, onClose }: UserInventoryModalProps) {
                     {items.map((item) => (
                       <tr key={item.product_id} className="hover:bg-zinc-50/50 transition-colors">
                         <td className="px-4 py-4 font-medium text-zinc-900">{item.name}</td>
-                        <td className="px-4 py-4 text-center text-zinc-500 font-mono text-xs">{item.sku}</td>
+                        <td className="px-4 py-4 text-center text-zinc-500 font-mono text-xs">
+                          {item.sku}
+                        </td>
                         <td className="px-4 py-4 text-right">
                           <span className="bg-zinc-100 px-2 py-1 rounded text-xs font-bold text-zinc-700">
                             {item.quantity}
                           </span>
                         </td>
-                        <td className="px-4 py-4 text-right text-zinc-600">{formatCurrency(item.price)}</td>
+                        <td className="px-4 py-4 text-right text-zinc-600">
+                          {formatCurrency(item.price)}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -96,7 +100,9 @@ export function UserInventoryModal({ user, onClose }: UserInventoryModalProps) {
             <div className="flex flex-col items-center justify-center py-20 text-zinc-400 text-center">
               <Package className="h-12 w-12 mb-3 opacity-20" />
               <p className="text-zinc-500 font-medium">Nenhum produto em posse deste usuário.</p>
-              <p className="text-xs max-w-[240px] mt-1">Transfira produtos do estoque central para que apareçam aqui.</p>
+              <p className="text-xs max-w-[240px] mt-1">
+                Transfira produtos do estoque central para que apareçam aqui.
+              </p>
             </div>
           )}
         </div>
@@ -105,17 +111,23 @@ export function UserInventoryModal({ user, onClose }: UserInventoryModalProps) {
         <div className="p-6 border-t border-zinc-100 bg-zinc-50/30 flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="flex gap-6">
             <div className="flex flex-col">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">Total de Itens</span>
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
+                Total de Itens
+              </span>
               <span className="text-lg font-bold text-zinc-900">{totalQuantity}</span>
             </div>
             <div className="flex flex-col border-l border-zinc-200 pl-6">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">Valor Total (Venda)</span>
-              <span className="text-lg font-bold text-(--lumike-gold)">{formatCurrency(totalValue)}</span>
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
+                Valor Total (Venda)
+              </span>
+              <span className="text-lg font-bold text-(--lumike-gold)">
+                {formatCurrency(totalValue)}
+              </span>
             </div>
           </div>
-          
+
           <div className="flex gap-2 w-full md:w-auto">
-            <button 
+            <button
               onClick={() => window.print()}
               disabled={items.length === 0}
               className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2.5 bg-zinc-900 text-white rounded-xl text-sm font-bold hover:bg-zinc-800 transition-all disabled:opacity-50"
@@ -128,12 +140,31 @@ export function UserInventoryModal({ user, onClose }: UserInventoryModalProps) {
 
       <style jsx global>{`
         @media print {
-          body * { visibility: hidden; }
-          .fixed > div { visibility: visible; position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; border: none; }
-          .fixed > div * { visibility: visible; }
-          button { display: none !important; }
-          .max-h-\[90vh\] { max-height: none !important; overflow: visible !important; }
-          .overflow-y-auto { overflow: visible !important; }
+          body * {
+            visibility: hidden;
+          }
+          .fixed > div {
+            visibility: visible;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            box-shadow: none;
+            border: none;
+          }
+          .fixed > div * {
+            visibility: visible;
+          }
+          button {
+            display: none !important;
+          }
+          .max-h-\[90vh\] {
+            max-height: none !important;
+            overflow: visible !important;
+          }
+          .overflow-y-auto {
+            overflow: visible !important;
+          }
         }
       `}</style>
     </div>

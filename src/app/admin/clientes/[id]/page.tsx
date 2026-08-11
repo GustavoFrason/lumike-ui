@@ -65,7 +65,10 @@ export default function CustomerDetailsPage() {
     return (
       <div className="text-center py-12">
         <h2 className="text-xl font-medium text-zinc-900">Cliente não encontrado</h2>
-        <Link href="/admin/clientes" className="text-(--lumike-gold) hover:underline mt-2 inline-block">
+        <Link
+          href="/admin/clientes"
+          className="text-(--lumike-gold) hover:underline mt-2 inline-block"
+        >
           Voltar para lista
         </Link>
       </div>
@@ -78,7 +81,8 @@ export default function CustomerDetailsPage() {
     0,
   );
   const averageTicket = orders.length > 0 ? totalSpent / orders.length : 0;
-  const lastOrderDate = orders.length > 0 ? new Date(orders[0].created_at).toLocaleDateString() : '-';
+  const lastOrderDate =
+    orders.length > 0 ? new Date(orders[0].created_at).toLocaleDateString() : '-';
 
   return (
     <section className="space-y-6">

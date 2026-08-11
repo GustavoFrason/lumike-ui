@@ -31,7 +31,9 @@ export function CustomerOrdersTable({ orders, loadingOrders }: CustomerOrdersTab
       </div>
 
       {loadingOrders ? (
-        <div className="p-12 text-center text-zinc-400 animate-pulse font-medium">Carregando histórico...</div>
+        <div className="p-12 text-center text-zinc-400 animate-pulse font-medium">
+          Carregando histórico...
+        </div>
       ) : orders.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
@@ -47,16 +49,21 @@ export function CustomerOrdersTable({ orders, loadingOrders }: CustomerOrdersTab
               {orders.map((order) => (
                 <tr key={order.id} className="hover:bg-zinc-50/50 transition-colors group">
                   <td className="px-6 py-5">
-                    <p className="font-bold text-zinc-900">{new Date(order.created_at).toLocaleDateString()}</p>
+                    <p className="font-bold text-zinc-900">
+                      {new Date(order.created_at).toLocaleDateString()}
+                    </p>
                     <p className="text-[11px] text-zinc-400 font-mono">#{order.id}</p>
                   </td>
                   <td className="px-6 py-5">
-                    <span className="font-bold text-zinc-900">{formatCurrency(order.total_amount)}</span>
+                    <span className="font-bold text-zinc-900">
+                      {formatCurrency(order.total_amount)}
+                    </span>
                   </td>
                   <td className="px-6 py-5">
                     <span
                       className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        STATUS_CLASSES[order.status] || 'bg-zinc-50 text-zinc-500 border border-zinc-200'
+                        STATUS_CLASSES[order.status] ||
+                        'bg-zinc-50 text-zinc-500 border border-zinc-200'
                       }`}
                     >
                       {STATUS_LABELS[order.status] || order.status}

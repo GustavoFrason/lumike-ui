@@ -11,7 +11,12 @@ interface DebtorOrderRowProps {
   loadingHistory: boolean;
 }
 
-export function DebtorOrderRow({ order, paymentState, history, loadingHistory }: DebtorOrderRowProps) {
+export function DebtorOrderRow({
+  order,
+  paymentState,
+  history,
+  loadingHistory,
+}: DebtorOrderRowProps) {
   const isPaying = paymentState.payingOrderId === order.id;
 
   return (
@@ -35,7 +40,9 @@ export function DebtorOrderRow({ order, paymentState, history, loadingHistory }:
         {isPaying ? (
           <div className="flex flex-col md:flex-row items-end md:items-center gap-2 animate-in fade-in bg-green-50 p-2 rounded border border-green-100">
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] font-bold text-green-700 uppercase">Valor do Pagamento</label>
+              <label className="text-[10px] font-bold text-green-700 uppercase">
+                Valor do Pagamento
+              </label>
               <div className="w-32">
                 <CurrencyInputATM
                   autoFocus
@@ -124,7 +131,9 @@ export function DebtorOrderRow({ order, paymentState, history, loadingHistory }:
         </div>
       )}
       {loadingHistory && (
-        <div className="ml-4 py-1 text-[10px] text-zinc-400 animate-pulse">Carregando histórico...</div>
+        <div className="ml-4 py-1 text-[10px] text-zinc-400 animate-pulse">
+          Carregando histórico...
+        </div>
       )}
     </div>
   );

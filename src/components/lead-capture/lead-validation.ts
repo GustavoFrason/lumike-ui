@@ -23,7 +23,11 @@ export function validateLeadField(name: string, value: string): string {
 
       if (date > today) {
         error = 'A data de nascimento não pode estar no futuro.';
-      } else if (date.getFullYear() < 1900 || date.getMonth() + 1 !== month || date.getDate() !== day) {
+      } else if (
+        date.getFullYear() < 1900 ||
+        date.getMonth() + 1 !== month ||
+        date.getDate() !== day
+      ) {
         error = 'Data inválida.';
       }
     }

@@ -45,10 +45,20 @@ export function RoiPerformanceChart({ chartData }: RoiPerformanceChartProps) {
             <YAxis axisLine={false} tickLine={false} tick={false} />
             <Tooltip
               cursor={{ fill: '#F8FAFC' }}
-              contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+              contentStyle={{
+                borderRadius: '12px',
+                border: 'none',
+                boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+              }}
             />
             <Bar dataKey="Investido" fill="#E4E4E7" radius={[4, 4, 0, 0]} barSize={32} />
-            <Bar dataKey="Retorno" fill="#D4AF37" radius={[4, 4, 0, 0]} barSize={32} animationBegin={200} />
+            <Bar
+              dataKey="Retorno"
+              fill="#D4AF37"
+              radius={[4, 4, 0, 0]}
+              barSize={32}
+              animationBegin={200}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>

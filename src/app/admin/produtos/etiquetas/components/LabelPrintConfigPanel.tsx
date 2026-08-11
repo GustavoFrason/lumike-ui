@@ -8,7 +8,9 @@ interface LabelPrintConfigPanelProps {
 export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConfigPanelProps) {
   return (
     <div className="print:hidden bg-white p-6 rounded-lg border border-zinc-200 space-y-4">
-      <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">Configuração de Impressão</p>
+      <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">
+        Configuração de Impressão
+      </p>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div>
           <label className="text-xs font-medium text-zinc-500">Largura (mm)</label>

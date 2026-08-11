@@ -68,7 +68,11 @@ export function ProductSearchGrid({
       </div>
 
       {/* Lista de Produtos */}
-      <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-3 pb-8' : 'space-y-2 pb-8'}>
+      <div
+        className={
+          viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-3 pb-8' : 'space-y-2 pb-8'
+        }
+      >
         {loadingProducts ? (
           <div className="col-span-2 text-center py-12">
             <Loading />
@@ -92,7 +96,12 @@ export function ProductSearchGrid({
                   )}
                 >
                   {product.images && product.images.length > 0 ? (
-                    <Image src={product.images[0].url} alt={product.name} fill className="object-cover" />
+                    <Image
+                      src={product.images[0].url}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-zinc-300 text-[10px]">
                       N/A
@@ -106,7 +115,12 @@ export function ProductSearchGrid({
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={cn('font-medium text-zinc-900 truncate', viewMode === 'list' && 'text-sm')}>
+                  <p
+                    className={cn(
+                      'font-medium text-zinc-900 truncate',
+                      viewMode === 'list' && 'text-sm',
+                    )}
+                  >
                     {product.name}
                   </p>
                   <div className="flex items-center gap-2 text-sm text-zinc-500">
@@ -125,7 +139,9 @@ export function ProductSearchGrid({
                       </span>
                     )}
                     {isPromo && viewMode === 'list' && (
-                      <span className="bg-red-100 text-red-600 text-[9px] px-1 rounded font-bold">OFF</span>
+                      <span className="bg-red-100 text-red-600 text-[9px] px-1 rounded font-bold">
+                        OFF
+                      </span>
                     )}
                   </div>
                 </div>
@@ -136,7 +152,9 @@ export function ProductSearchGrid({
             );
           })
         ) : (
-          <div className="col-span-2 text-center py-12 text-zinc-400">Nenhum produto encontrado.</div>
+          <div className="col-span-2 text-center py-12 text-zinc-400">
+            Nenhum produto encontrado.
+          </div>
         )}
       </div>
     </div>

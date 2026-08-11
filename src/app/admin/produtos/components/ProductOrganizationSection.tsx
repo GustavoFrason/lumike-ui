@@ -110,7 +110,10 @@ export function ProductOrganizationSection({
         </div>
 
         <div>
-          <LabelWithTooltip label="Fornecedor" tooltip="Origem do produto para acompanhamento de ROI." />
+          <LabelWithTooltip
+            label="Fornecedor"
+            tooltip="Origem do produto para acompanhamento de ROI."
+          />
           <select
             name="supplier_id"
             value={form.supplier_id}
@@ -145,7 +148,9 @@ export function ProductOrganizationSection({
             required
           />
           {validationErrors.current_stock && (
-            <p className="text-[10px] text-red-500 mt-1 font-medium">{validationErrors.current_stock}</p>
+            <p className="text-[10px] text-red-500 mt-1 font-medium">
+              {validationErrors.current_stock}
+            </p>
           )}
         </div>
         {!produto?.id && (
@@ -169,7 +174,10 @@ export function ProductOrganizationSection({
           </div>
         )}
         <div>
-          <LabelWithTooltip label="Coleção (Texto)" tooltip="Nome da coleção (opcional, ex: Verão 2025)." />
+          <LabelWithTooltip
+            label="Coleção (Texto)"
+            tooltip="Nome da coleção (opcional, ex: Verão 2025)."
+          />
           <input
             type="text"
             name="collection"

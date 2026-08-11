@@ -13,7 +13,9 @@ export function SupplierInfoCard({ supplierInfo }: SupplierInfoCardProps) {
           <Package className="h-5 w-5" />
         </div>
         <div>
-          <p className="text-xs font-bold text-amber-600 uppercase tracking-widest">Fornecedor Identificado</p>
+          <p className="text-xs font-bold text-amber-600 uppercase tracking-widest">
+            Fornecedor Identificado
+          </p>
           <p className="font-bold text-zinc-900">{supplierInfo?.name}</p>
           <p className="text-xs text-zinc-500 font-mono">{supplierInfo?.cnpj}</p>
         </div>
@@ -30,7 +32,9 @@ export function SupplierInfoCard({ supplierInfo }: SupplierInfoCardProps) {
           <span className="text-[10px] bg-green-100 text-green-600 px-2 py-0.5 rounded-full font-bold uppercase">
             Cadastrado
           </span>
-          <p className="text-xs text-green-700 font-bold mt-1">ID #{supplierInfo.matchedSupplier.id}</p>
+          <p className="text-xs text-green-700 font-bold mt-1">
+            ID #{supplierInfo.matchedSupplier.id}
+          </p>
         </div>
       )}
     </div>

@@ -39,7 +39,9 @@ export function PurchaseSummary({
 
       <div className="space-y-4">
         <div>
-          <label className="text-xs font-bold uppercase text-zinc-500 block mb-1">Observações</label>
+          <label className="text-xs font-bold uppercase text-zinc-500 block mb-1">
+            Observações
+          </label>
           <textarea
             value={notes}
             onChange={(e) => onNotesChange(e.target.value)}

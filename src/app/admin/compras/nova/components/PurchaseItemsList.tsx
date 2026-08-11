@@ -33,11 +33,15 @@ export function PurchaseItemsList({ items, onUpdateItem, onRemoveItem }: Purchas
               </div>
               <div className="flex items-center gap-6 w-full md:w-auto">
                 <div className="w-24">
-                  <label className="text-[10px] uppercase font-bold text-zinc-400 block mb-1">Qtd</label>
+                  <label className="text-[10px] uppercase font-bold text-zinc-400 block mb-1">
+                    Qtd
+                  </label>
                   <input
                     type="number"
                     value={item.quantity}
-                    onChange={(e) => onUpdateItem(item.product.id, 'quantity', Number(e.target.value))}
+                    onChange={(e) =>
+                      onUpdateItem(item.product.id, 'quantity', Number(e.target.value))
+                    }
                     className="w-full border rounded px-2 py-1.5 focus:ring-1 focus:ring-(--lumike-gold) outline-none"
                     min="1"
                   />

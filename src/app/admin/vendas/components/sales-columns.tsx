@@ -46,7 +46,9 @@ export function getSalesColumns({
     {
       key: 'total_amount',
       header: 'Valor',
-      render: (pedido) => <span className="font-semibold">{formatCurrency(pedido.total_amount)}</span>,
+      render: (pedido) => (
+        <span className="font-semibold">{formatCurrency(pedido.total_amount)}</span>
+      ),
     },
     {
       key: 'valor_pago',

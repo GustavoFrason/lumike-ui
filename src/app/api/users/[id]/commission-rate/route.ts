@@ -8,10 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { proxyRequest } from '@/lib/api-proxy';
 import { createErrorResponse } from '@/lib/api-helpers';
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const body = await request.json();

@@ -22,7 +22,10 @@ export function ProductImagesAndToggles({
   return (
     <>
       <div>
-        <LabelWithTooltip label="Imagens do Produto" tooltip="Fotos do produto. A primeira será a capa." />
+        <LabelWithTooltip
+          label="Imagens do Produto"
+          tooltip="Fotos do produto. A primeira será a capa."
+        />
         <ImageUpload
           onUpload={onImageUpload}
           onRemove={onImageRemove}

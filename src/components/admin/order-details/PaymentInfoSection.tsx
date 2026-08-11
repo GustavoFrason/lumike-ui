@@ -67,7 +67,9 @@ export function PaymentInfoSection({
             </div>
             <div className="flex justify-between text-sm font-bold border-t border-zinc-100 pt-1">
               <span className="text-zinc-900">Saldo Devedor:</span>
-              <span className="text-red-600">{formatCurrency(order.boca_value ?? order.total_amount)}</span>
+              <span className="text-red-600">
+                {formatCurrency(order.boca_value ?? order.total_amount)}
+              </span>
             </div>
           </div>
         ) : (
@@ -93,7 +95,10 @@ export function PaymentInfoSection({
             <span className="text-[10px] font-bold text-green-800 uppercase tracking-wider">
               Novo Recebimento
             </span>
-            <button onClick={onCancelPaying} className="text-zinc-400 hover:text-red-500 transition-colors">
+            <button
+              onClick={onCancelPaying}
+              className="text-zinc-400 hover:text-red-500 transition-colors"
+            >
               <X className="h-3.5 w-3.5" />
             </button>
           </div>

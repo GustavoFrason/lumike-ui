@@ -66,14 +66,18 @@ export function CustomerSidebar({ customer }: CustomerSidebarProps) {
 
           {customer.cpf && (
             <div>
-              <label className="text-[10px] text-zinc-400 font-bold uppercase block mb-0.5">CPF</label>
+              <label className="text-[10px] text-zinc-400 font-bold uppercase block mb-0.5">
+                CPF
+              </label>
               <p className="text-sm text-zinc-700 font-medium">{customer.cpf}</p>
             </div>
           )}
 
           {customer.address && (
             <div>
-              <label className="text-[10px] text-zinc-400 font-bold uppercase block mb-0.5">Endereço</label>
+              <label className="text-[10px] text-zinc-400 font-bold uppercase block mb-0.5">
+                Endereço
+              </label>
               <p className="text-sm text-zinc-700 font-medium leading-relaxed">
                 {customer.address}
                 <br />

@@ -60,12 +60,15 @@ export const inventoryService = {
   /**
    * Transfere estoque entre vendedoras/central
    */
-  async transfer(productId: number, data: { 
-    from_user_id: number | null; 
-    to_user_id: number | null; 
-    quantity: number;
-    notes?: string;
-  }) {
+  async transfer(
+    productId: number,
+    data: {
+      from_user_id: number | null;
+      to_user_id: number | null;
+      quantity: number;
+      notes?: string;
+    },
+  ) {
     await api.post(`/inventory/products/${productId}/transfer`, data);
   },
 

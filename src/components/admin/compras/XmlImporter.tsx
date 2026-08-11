@@ -114,7 +114,9 @@ export function XmlImporter({ onImport, onCancel }: XmlImporterProps) {
             <FileUp className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-xl font-playfair font-bold text-zinc-900">Importação de NF-e Inteligente</h2>
+            <h2 className="text-xl font-playfair font-bold text-zinc-900">
+              Importação de NF-e Inteligente
+            </h2>
             <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider">
               Passo 1: Validação de Lote
             </p>

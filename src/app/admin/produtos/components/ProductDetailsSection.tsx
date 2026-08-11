@@ -7,7 +7,11 @@ interface ProductDetailsSectionProps {
   validationErrors: Record<string, string>;
 }
 
-export function ProductDetailsSection({ form, onChange, validationErrors }: ProductDetailsSectionProps) {
+export function ProductDetailsSection({
+  form,
+  onChange,
+  validationErrors,
+}: ProductDetailsSectionProps) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

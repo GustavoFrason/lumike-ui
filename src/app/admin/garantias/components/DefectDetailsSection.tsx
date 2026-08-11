@@ -26,8 +26,8 @@ export function DefectDetailsSection({ type, onTypeChange }: DefectDetailsSectio
       <div className="space-y-2 flex flex-col justify-end">
         <div className="p-3 bg-amber-50 border border-amber-100 rounded-lg">
           <p className="text-[11px] text-amber-800 leading-tight">
-            <strong>Nota:</strong> Peças em concerto continuam aparecendo no estoque mas são sinalizadas
-            como &quot;Em Reparo&quot;.
+            <strong>Nota:</strong> Peças em concerto continuam aparecendo no estoque mas são
+            sinalizadas como &quot;Em Reparo&quot;.
           </p>
         </div>
       </div>

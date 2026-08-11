@@ -30,11 +30,15 @@ export function OrderItemsTable({ order, onRepair }: OrderItemsTableProps) {
                 <td className="py-3 px-4 text-zinc-900">
                   {item.products?.name}
                   {item.products?.sku && (
-                    <span className="block text-[10px] text-zinc-400">SKU: {item.products.sku}</span>
+                    <span className="block text-[10px] text-zinc-400">
+                      SKU: {item.products.sku}
+                    </span>
                   )}
                 </td>
                 <td className="py-3 px-4 text-center text-zinc-600">{item.quantity}</td>
-                <td className="py-3 px-4 text-right text-zinc-600">{formatCurrency(item.unit_price)}</td>
+                <td className="py-3 px-4 text-right text-zinc-600">
+                  {formatCurrency(item.unit_price)}
+                </td>
                 <td className="py-3 px-4 text-right font-medium text-zinc-900">
                   {formatCurrency(item.total_price)}
                 </td>

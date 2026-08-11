@@ -106,7 +106,9 @@ export default function EstoquePage() {
       await inventory.loadStock();
       await loadProducts(1, 100, true);
       if (result && result.delta !== 0) {
-        alert(`Estoque ajustado: diferença de ${result.delta > 0 ? '+' : ''}${result.delta} unidade(s).`);
+        alert(
+          `Estoque ajustado: diferença de ${result.delta > 0 ? '+' : ''}${result.delta} unidade(s).`,
+        );
       }
     } catch {
       // Erro já é tratado pelo hook
@@ -137,7 +139,9 @@ export default function EstoquePage() {
           </Link>
         </div>
         <div className="flex items-center gap-4 bg-white p-2 rounded-2xl border border-zinc-100 shadow-sm">
-          <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest pl-2">Filtrar:</label>
+          <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest pl-2">
+            Filtrar:
+          </label>
           <button
             onClick={() => setOnlyLowStock(!onlyLowStock)}
             className={cn(
@@ -178,9 +182,13 @@ export default function EstoquePage() {
               },
               onSelect: setSelectedProduct,
             })}
-            emptyTitle={onlyLowStock ? 'Nenhum produto com estoque baixo' : 'Nenhum produto encontrado'}
+            emptyTitle={
+              onlyLowStock ? 'Nenhum produto com estoque baixo' : 'Nenhum produto encontrado'
+            }
             emptyDescription={
-              onlyLowStock ? 'Seu estoque está em dia!' : 'Cadastre produtos para gerenciar o estoque.'
+              onlyLowStock
+                ? 'Seu estoque está em dia!'
+                : 'Cadastre produtos para gerenciar o estoque.'
             }
           />
         </div>

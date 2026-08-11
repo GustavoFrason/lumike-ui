@@ -22,7 +22,7 @@ import {
   Wallet,
   BadgePercent,
   Component,
-  UserCog
+  UserCog,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -38,9 +38,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const menuGroups = [
     {
       label: 'Geral',
-      items: [
-        { href: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-      ]
+      items: [{ href: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={18} /> }],
     },
     {
       label: 'Operações (PDV)',
@@ -49,7 +47,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         { href: '/admin/vendas', label: 'Histórico de Pedidos', icon: <History size={18} /> },
         { href: '/admin/clientes', label: 'Clientes (CRM)', icon: <Users size={18} /> },
         { href: '/admin/garantias', label: 'Garantias', icon: <ShieldCheck size={18} /> },
-      ]
+      ],
     },
     {
       label: 'Inventário & Catálogo',
@@ -59,15 +57,19 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         { href: '/admin/produtos/etiquetas', label: 'Etiquetas QR', icon: <QrCode size={18} /> },
         { href: '/admin/categorias', label: 'Categorias', icon: <Tag size={18} /> },
         { href: '/admin/colecoes', label: 'Coleções', icon: <FolderOpen size={18} /> },
-      ]
+      ],
     },
     {
       label: 'Suprimentos',
       items: [
         { href: '/admin/compras', label: 'Entrada (Lotes)', icon: <ShoppingCart size={18} /> },
         { href: '/admin/fornecedores', label: 'Fornecedores', icon: <Truck size={18} /> },
-        { href: '/admin/compras-acessorios', label: 'Insumos / Acessórios', icon: <Component size={18} /> },
-      ]
+        {
+          href: '/admin/compras-acessorios',
+          label: 'Insumos / Acessórios',
+          icon: <Component size={18} />,
+        },
+      ],
     },
     {
       label: 'Financeiro & BI',
@@ -76,15 +78,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         { href: '/admin/clientes-pagar', label: 'Contas a Receber', icon: <Wallet size={18} /> },
         { href: '/admin/comissoes', label: 'Comissões', icon: <BadgePercent size={18} /> },
         { href: '/admin/analise-roi', label: 'Análise de ROI', icon: <TrendingUp size={18} /> },
-      ]
+      ],
     },
     {
       label: 'Administração',
       items: [
         { href: '/admin/usuarios', label: 'Usuários / Equipe', icon: <UserCog size={18} /> },
         { href: '/admin/configuracoes', label: 'Configurações', icon: <Settings size={18} /> },
-      ]
-    }
+      ],
+    },
   ];
 
   const renderNav = (mobile = false) => (
@@ -120,7 +122,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       <aside className="hidden md:flex flex-col w-64 bg-white border-r shadow-xs h-screen sticky top-0 overflow-hidden">
         <div className="p-8 pb-4">
           <div className="text-xl font-serif font-bold tracking-tight text-zinc-900 italic">
-            LUMIKE <span className="text-(--lumike-gold) not-italic font-sans text-xs align-top ml-1">ADMIN</span>
+            LUMIKE{' '}
+            <span className="text-(--lumike-gold) not-italic font-sans text-xs align-top ml-1">
+              ADMIN
+            </span>
           </div>
         </div>
         {renderNav()}
@@ -146,8 +151,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             >
               <div className="flex items-center justify-between p-6 border-b border-zinc-50">
-                <span className="font-serif font-bold text-zinc-900 tracking-tight italic">LUMIKE</span>
-                <button onClick={onClose} className="p-2 hover:bg-zinc-100 rounded-full transition-colors text-zinc-400">
+                <span className="font-serif font-bold text-zinc-900 tracking-tight italic">
+                  LUMIKE
+                </span>
+                <button
+                  onClick={onClose}
+                  className="p-2 hover:bg-zinc-100 rounded-full transition-colors text-zinc-400"
+                >
                   <X size={20} />
                 </button>
               </div>

@@ -154,7 +154,12 @@ export default function UsuariosPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredUsers.length > 0 ? (
           filteredUsers.map((user) => (
-            <UserCard key={user.id} user={user} onEdit={openEditModal} onViewInventory={openInventory} />
+            <UserCard
+              key={user.id}
+              user={user}
+              onEdit={openEditModal}
+              onViewInventory={openInventory}
+            />
           ))
         ) : (
           <div className="col-span-full py-12 text-center text-zinc-400 italic">

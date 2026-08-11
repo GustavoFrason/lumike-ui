@@ -63,9 +63,9 @@ export function ParsedItemsTable({ parsedItems }: ParsedItemsTableProps) {
       <div className="flex gap-4 p-4 bg-blue-50/30 rounded-xl border border-blue-100">
         <Info className="h-5 w-5 text-blue-400 shrink-0" />
         <p className="text-xs text-blue-700 leading-relaxed font-medium">
-          Dica: O sistema usará o SKU da nota fiscal (`cProd`) para cruzar os dados. Se for um produto
-          novo, será aberto um fluxo de cadastro rápido durante o processamento para garantir que todos
-          os dados extra (fotos, categorias) sejam capturados corretamente.
+          Dica: O sistema usará o SKU da nota fiscal (`cProd`) para cruzar os dados. Se for um
+          produto novo, será aberto um fluxo de cadastro rápido durante o processamento para
+          garantir que todos os dados extra (fotos, categorias) sejam capturados corretamente.
         </p>
       </div>
     </>

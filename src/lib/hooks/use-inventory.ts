@@ -40,7 +40,12 @@ export function useInventory(productId?: number) {
   );
 
   const transferStock = useCallback(
-    async (data: { from_user_id: number | null; to_user_id: number | null; quantity: number; notes?: string }) => {
+    async (data: {
+      from_user_id: number | null;
+      to_user_id: number | null;
+      quantity: number;
+      notes?: string;
+    }) => {
       if (!productId) throw new Error('Product ID é obrigatório');
       return executeTransfer(() => inventoryService.transfer(productId, data));
     },

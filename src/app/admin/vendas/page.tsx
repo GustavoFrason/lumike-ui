@@ -67,7 +67,8 @@ export default function VendasPage() {
 
     const orderDate = new Date(order.created_at).toISOString().split('T')[0];
     const matchesDate =
-      (!dateRange.start || orderDate >= dateRange.start) && (!dateRange.end || orderDate <= dateRange.end);
+      (!dateRange.start || orderDate >= dateRange.start) &&
+      (!dateRange.end || orderDate <= dateRange.end);
 
     return matchesSearch && matchesDate;
   });
@@ -82,7 +83,8 @@ export default function VendasPage() {
     }, 0),
     ticketMedio:
       filteredOrders.length > 0
-        ? filteredOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0) / filteredOrders.length
+        ? filteredOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0) /
+          filteredOrders.length
         : 0,
   };
 

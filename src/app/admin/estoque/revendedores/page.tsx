@@ -31,7 +31,9 @@ export default function RevendedorasInventarioPage() {
         >
           <ChevronLeft className="h-3.5 w-3.5" /> Voltar pro Estoque
         </Link>
-        <h1 className="text-2xl font-serif text-zinc-900 font-medium">Inventário por Revendedora</h1>
+        <h1 className="text-2xl font-serif text-zinc-900 font-medium">
+          Inventário por Revendedora
+        </h1>
         <p className="text-zinc-500 mt-1">
           Tudo que está com cada revendedora agora — use pra conferência semanal ou mensal.
         </p>
@@ -58,7 +60,10 @@ export default function RevendedorasInventarioPage() {
           </div>
 
           {sellers.map((seller) => (
-            <div key={seller.user_id} className="bg-white rounded-2xl border border-zinc-100 overflow-hidden">
+            <div
+              key={seller.user_id}
+              className="bg-white rounded-2xl border border-zinc-100 overflow-hidden"
+            >
               <div className="flex items-center justify-between px-6 py-4 bg-zinc-50/70 border-b border-zinc-100">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 bg-white rounded-xl shadow-xs flex items-center justify-center text-zinc-400">
@@ -86,7 +91,9 @@ export default function RevendedorasInventarioPage() {
                       <td className="px-6 py-3 text-right text-zinc-500">
                         {item.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                       </td>
-                      <td className="px-6 py-3 text-right font-bold text-zinc-800">{item.quantity}</td>
+                      <td className="px-6 py-3 text-right font-bold text-zinc-800">
+                        {item.quantity}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

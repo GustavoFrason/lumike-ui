@@ -12,7 +12,12 @@ interface ProductInfoTabsProps {
   tabsRef: RefObject<HTMLDivElement | null>;
 }
 
-export function ProductInfoTabs({ product, activeTab, onTabChange, tabsRef }: ProductInfoTabsProps) {
+export function ProductInfoTabs({
+  product,
+  activeTab,
+  onTabChange,
+  tabsRef,
+}: ProductInfoTabsProps) {
   return (
     <div ref={tabsRef} className="mt-12 scroll-mt-24">
       <div className="flex border-b border-light-gray">
@@ -52,10 +57,14 @@ export function ProductInfoTabs({ product, activeTab, onTabChange, tabsRef }: Pr
             </motion.div>
           )}
           {activeTab === 'warranty' && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
               <p className="mb-4">
-                Todas as nossas peças possuem garantia vitalícia quanto à autenticidade dos materiais e
-                1 ano de garantia contra defeitos de fabricação e banho.
+                Todas as nossas peças possuem garantia vitalícia quanto à autenticidade dos
+                materiais e 1 ano de garantia contra defeitos de fabricação e banho.
               </p>
               <ul className="list-disc pl-5 space-y-1">
                 <li>Não cobrimos mau uso, quebras ou perda de pedras por queda.</li>
@@ -64,7 +73,11 @@ export function ProductInfoTabs({ product, activeTab, onTabChange, tabsRef }: Pr
             </motion.div>
           )}
           {activeTab === 'shipping' && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
               <p className="mb-4">
                 Enviamos para todo o Brasil via Correios (PAC/Sedex). O prazo de postagem é de até 2
                 dias úteis após a confirmação do pagamento.

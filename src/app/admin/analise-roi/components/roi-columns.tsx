@@ -18,12 +18,16 @@ export const roiColumns: Column<ROIAnalysis>[] = [
   {
     key: 'total_invested',
     header: 'Total Investido',
-    render: (item) => <span className="text-zinc-600 font-medium">{formatCurrency(item.total_invested)}</span>,
+    render: (item) => (
+      <span className="text-zinc-600 font-medium">{formatCurrency(item.total_invested)}</span>
+    ),
   },
   {
     key: 'total_revenue',
     header: 'Receita Bruta',
-    render: (item) => <span className="text-zinc-600 font-medium">{formatCurrency(item.total_revenue)}</span>,
+    render: (item) => (
+      <span className="text-zinc-600 font-medium">{formatCurrency(item.total_revenue)}</span>
+    ),
   },
   {
     key: 'gross_profit',

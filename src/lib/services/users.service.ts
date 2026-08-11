@@ -73,5 +73,5 @@ export const usersService = {
   async getById(id: number): Promise<User> {
     const { data } = await api.get<User>(`/users/${id}`);
     return data;
-  }
+  },
 };

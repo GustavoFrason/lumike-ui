@@ -85,10 +85,14 @@ export function CancelOrderFooter({
               placeholder="0.00"
             />
           </div>
-          <p className="text-[10px] text-red-500 mt-1">Máximo disponível: R$ {totalRecebido.toFixed(2)}</p>
+          <p className="text-[10px] text-red-500 mt-1">
+            Máximo disponível: R$ {totalRecebido.toFixed(2)}
+          </p>
         </div>
         <div>
-          <label className="block text-[10px] font-bold text-red-700 uppercase mb-1">Motivo / Notas</label>
+          <label className="block text-[10px] font-bold text-red-700 uppercase mb-1">
+            Motivo / Notas
+          </label>
           <textarea
             value={cancelNotes}
             onChange={(e) => onCancelNotesChange(e.target.value)}

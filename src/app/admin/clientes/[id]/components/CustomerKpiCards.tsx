@@ -21,7 +21,9 @@ export function CustomerKpiCards({
           <ShoppingBag className="h-4 w-4" />
           <span className="text-[10px] font-bold uppercase tracking-wider">LTV Total</span>
         </div>
-        <p className="text-xl font-bold text-(--lumike-taupe-dark) font-serif">{formatCurrency(totalSpent)}</p>
+        <p className="text-xl font-bold text-(--lumike-taupe-dark) font-serif">
+          {formatCurrency(totalSpent)}
+        </p>
       </div>
 
       <div
@@ -29,11 +31,15 @@ export function CustomerKpiCards({
       >
         <div className="flex items-center gap-2 text-zinc-400 mb-2">
           <Wallet className={`h-4 w-4 ${currentDebt > 0 ? 'text-red-500' : ''}`} />
-          <span className={`text-[10px] font-bold uppercase tracking-wider ${currentDebt > 0 ? 'text-red-400' : ''}`}>
+          <span
+            className={`text-[10px] font-bold uppercase tracking-wider ${currentDebt > 0 ? 'text-red-400' : ''}`}
+          >
             Dívida Atual
           </span>
         </div>
-        <p className={`text-xl font-bold font-serif ${currentDebt > 0 ? 'text-red-600' : 'text-green-600'}`}>
+        <p
+          className={`text-xl font-bold font-serif ${currentDebt > 0 ? 'text-red-600' : 'text-green-600'}`}
+        >
           {formatCurrency(currentDebt)}
         </p>
       </div>
@@ -43,7 +49,9 @@ export function CustomerKpiCards({
           <Calendar className="h-4 w-4" />
           <span className="text-[10px] font-bold uppercase tracking-wider">Ticket Médio</span>
         </div>
-        <p className="text-xl font-bold text-zinc-700 font-serif">{formatCurrency(averageTicket)}</p>
+        <p className="text-xl font-bold text-zinc-700 font-serif">
+          {formatCurrency(averageTicket)}
+        </p>
       </div>
 
       <div className="bg-white p-4 rounded-xl shadow-sm border border-zinc-100">

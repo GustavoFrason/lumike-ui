@@ -23,12 +23,19 @@ export function ProductPricingSection({
   const margin = hasMargin ? (profit / promoPrice) * 100 : 0;
   const isLowMargin = margin < 20;
   const isNegativeMargin = margin < 0;
-  const marginColor = isNegativeMargin ? 'text-red-500' : isLowMargin ? 'text-amber-500' : 'text-green-600';
+  const marginColor = isNegativeMargin
+    ? 'text-red-500'
+    : isLowMargin
+      ? 'text-amber-500'
+      : 'text-green-600';
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-green-50/50 p-4 rounded-lg border border-green-100">
       <div>
-        <LabelWithTooltip label="Preço de Custo" tooltip="Valor pago ao fornecedor. Usado para cálculo de lucro." />
+        <LabelWithTooltip
+          label="Preço de Custo"
+          tooltip="Valor pago ao fornecedor. Usado para cálculo de lucro."
+        />
         <CurrencyInputATM
           name="cost_price"
           placeholder="R$ 0,00"
@@ -50,7 +57,9 @@ export function ProductPricingSection({
           onValueChange={(value) => onPriceFieldChange('price', value || '')}
           prefix="R$ "
           className={`w-full border rounded-lg px-3 py-2 font-bold text-zinc-800 ${
-            validationErrors.price ? 'border-red-300 focus:ring-red-200 shadow-sm shadow-red-50' : ''
+            validationErrors.price
+              ? 'border-red-300 focus:ring-red-200 shadow-sm shadow-red-50'
+              : ''
           }`}
           required
         />
@@ -76,7 +85,9 @@ export function ProductPricingSection({
           }`}
         />
         {validationErrors.preco_promocional && (
-          <p className="text-[10px] text-red-500 mt-1 font-medium">{validationErrors.preco_promocional}</p>
+          <p className="text-[10px] text-red-500 mt-1 font-medium">
+            {validationErrors.preco_promocional}
+          </p>
         )}
       </div>
 

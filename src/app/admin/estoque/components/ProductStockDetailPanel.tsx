@@ -65,7 +65,9 @@ export function ProductStockDetailPanel({
                   <p className="text-[10px] text-zinc-400">Ponto de distribuição central</p>
                 </div>
               </div>
-              <span className="text-lg font-serif font-medium text-zinc-900">{inventory.stock.central}</span>
+              <span className="text-lg font-serif font-medium text-zinc-900">
+                {inventory.stock.central}
+              </span>
             </div>
 
             {/* Vendedores */}
@@ -89,7 +91,9 @@ export function ProductStockDetailPanel({
 
             <div className="pt-2 border-t border-zinc-50 flex items-center justify-between px-2">
               <span className="text-sm font-bold text-zinc-400">Total Geral</span>
-              <span className="text-xl font-serif font-bold text-(--lumike-gold)">{inventory.stock.total}</span>
+              <span className="text-xl font-serif font-bold text-(--lumike-gold)">
+                {inventory.stock.total}
+              </span>
             </div>
 
             <button
@@ -114,20 +118,29 @@ export function ProductStockDetailPanel({
         ) : inventory.history.length > 0 ? (
           <div className="space-y-3">
             {inventory.history.slice(0, 3).map((movement) => (
-              <div key={movement.id} className="bg-white p-3 rounded-xl border border-zinc-100 shadow-xs">
+              <div
+                key={movement.id}
+                className="bg-white p-3 rounded-xl border border-zinc-100 shadow-xs"
+              >
                 <div className="flex items-center justify-between mb-1">
                   <span
                     className={cn(
                       'text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-tighter',
-                      movement.movement === 'IN' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700',
+                      movement.movement === 'IN'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-red-100 text-red-700',
                     )}
                   >
                     {movement.movement === 'IN' ? 'Entrada' : 'Saída'}
                   </span>
-                  <span className="text-[10px] text-zinc-400">{formatDate(movement.created_at)}</span>
+                  <span className="text-[10px] text-zinc-400">
+                    {formatDate(movement.created_at)}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-zinc-500 italic line-clamp-1">{movement.reference || 'Sem ref.'}</p>
+                  <p className="text-xs text-zinc-500 italic line-clamp-1">
+                    {movement.reference || 'Sem ref.'}
+                  </p>
                   <span
                     className={cn(
                       'font-bold text-sm',

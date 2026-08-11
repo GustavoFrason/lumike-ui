@@ -9,7 +9,9 @@ interface OriginToggleProps {
 export function OriginToggle({ origin, onChange }: OriginToggleProps) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">Origem do Concerto</label>
+      <label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
+        Origem do Concerto
+      </label>
       <div className="grid grid-cols-2 gap-4">
         <button
           type="button"

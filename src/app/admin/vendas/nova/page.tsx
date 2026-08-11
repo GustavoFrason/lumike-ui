@@ -332,7 +332,11 @@ export default function NovaVendaPage() {
         </div>
       </div>
 
-      <ScannerModal isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} onScan={handleCameraScan} />
+      <ScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScan={handleCameraScan}
+      />
     </section>
   );
 }

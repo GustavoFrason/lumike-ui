@@ -31,7 +31,9 @@ export function ProductIdentificationSection({
 }: ProductIdentificationSectionProps) {
   return (
     <div className="bg-zinc-50 p-4 rounded-lg border border-zinc-100 space-y-4">
-      <h3 className="font-semibold text-zinc-800 flex items-center gap-2">📦 Identificação e Estoque</h3>
+      <h3 className="font-semibold text-zinc-800 flex items-center gap-2">
+        📦 Identificação e Estoque
+      </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
@@ -135,7 +137,9 @@ export function ProductIdentificationSection({
                 >
                   <div className="flex items-center gap-2">
                     <UserIcon className="h-3.5 w-3.5 text-zinc-400" />
-                    <span className="text-xs font-medium text-zinc-600 truncate max-w-[80px]">{s.name}</span>
+                    <span className="text-xs font-medium text-zinc-600 truncate max-w-[80px]">
+                      {s.name}
+                    </span>
                   </div>
                   <span className="text-sm font-bold text-zinc-900">{s.quantity}</span>
                 </div>

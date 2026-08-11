@@ -59,7 +59,9 @@ export function PaymentSection({
       <div className="space-y-4 mb-6">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-semibold uppercase text-zinc-500 mb-1 block">Método</label>
+            <label className="text-xs font-semibold uppercase text-zinc-500 mb-1 block">
+              Método
+            </label>
             <select
               value={paymentMethod}
               onChange={(e) => onPaymentMethodChange(e.target.value as PaymentMethod)}
@@ -73,7 +75,9 @@ export function PaymentSection({
             </select>
           </div>
           <div>
-            <label className="text-xs font-semibold uppercase text-zinc-500 mb-1 block">Status</label>
+            <label className="text-xs font-semibold uppercase text-zinc-500 mb-1 block">
+              Status
+            </label>
             <select
               value={paymentStatus}
               onChange={(e) => onPaymentStatusChange(e.target.value as PaymentStatus)}
@@ -122,7 +126,9 @@ export function PaymentSection({
                   prefix="R$ "
                   className="w-full border border-green-300 rounded p-2 text-sm bg-white"
                 />
-                <p className="text-xs text-amber-600 mt-1">Este valor entrará no caixa como recebido</p>
+                <p className="text-xs text-amber-600 mt-1">
+                  Este valor entrará no caixa como recebido
+                </p>
               </div>
               <div>
                 <label className="text-xs text-amber-700 font-medium block mb-1">

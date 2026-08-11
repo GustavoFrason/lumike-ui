@@ -87,7 +87,11 @@ export function getProductColumns({
       header: 'Estoque',
       render: (produto) => (
         <div>
-          <span className={produto.current_stock <= produto.min_stock ? 'text-red-600 font-semibold' : ''}>
+          <span
+            className={
+              produto.current_stock <= produto.min_stock ? 'text-red-600 font-semibold' : ''
+            }
+          >
             {produto.current_stock}
           </span>
           {produto.min_stock > 0 && (

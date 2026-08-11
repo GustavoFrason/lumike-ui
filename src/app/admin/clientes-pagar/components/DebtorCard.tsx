@@ -56,7 +56,9 @@ export function DebtorCard({
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-lg font-bold text-red-600">{formatCurrency(debtor.total_debt)}</span>
+          <span className="text-lg font-bold text-red-600">
+            {formatCurrency(debtor.total_debt)}
+          </span>
           {isExpanded ? (
             <ChevronUp className="h-5 w-5 text-zinc-400" />
           ) : (
@@ -82,7 +84,11 @@ export function DebtorCard({
               onClick={handleCollectViaWhatsApp}
               disabled={!debtor.customer_phone}
               className="text-sm text-white bg-[#25D366] hover:bg-[#20BA5A] px-4 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              title={!debtor.customer_phone ? 'Cliente sem WhatsApp cadastrado' : 'Enviar cobrança via WhatsApp'}
+              title={
+                !debtor.customer_phone
+                  ? 'Cliente sem WhatsApp cadastrado'
+                  : 'Enviar cobrança via WhatsApp'
+              }
             >
               <MessageCircle className="h-4 w-4" /> Cobrar via WhatsApp
             </button>

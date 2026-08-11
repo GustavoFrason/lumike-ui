@@ -255,7 +255,9 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
     if (!form.price) errors.price = 'Preço de venda é obrigatório';
 
     const priceNum = parseCurrencyBR(form.price);
-    const promoPriceNum = form.preco_promocional ? parseCurrencyBR(form.preco_promocional) : undefined;
+    const promoPriceNum = form.preco_promocional
+      ? parseCurrencyBR(form.preco_promocional)
+      : undefined;
     const costPriceNum = form.cost_price ? parseCurrencyBR(form.cost_price) : undefined;
 
     if (priceNum <= 0) {
@@ -280,7 +282,11 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
     }
 
     // New: Check for images if active or featured
-    if ((form.is_active || form.is_featured) && productImages.length === 0 && pendingFiles.length === 0) {
+    if (
+      (form.is_active || form.is_featured) &&
+      productImages.length === 0 &&
+      pendingFiles.length === 0
+    ) {
       if (
         !confirm(
           'Deseja salvar este produto sem imagens? Ele está marcado como Ativo/Destaque e pode não aparecer corretamente no site.',
@@ -362,7 +368,11 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
               onOpenTransfer={() => setTransferModalAberto(true)}
             />
 
-            <ProductDetailsSection form={form} onChange={handleChange} validationErrors={validationErrors} />
+            <ProductDetailsSection
+              form={form}
+              onChange={handleChange}
+              validationErrors={validationErrors}
+            />
 
             <ProductPricingSection
               form={form}

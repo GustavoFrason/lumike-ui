@@ -209,8 +209,12 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
 
             <div>
               <label className="text-sm font-medium text-zinc-700 mb-1 flex justify-between">
-                CEP 
-                {searchingCep && <span className="text-[10px] text-(--lumike-gold) animate-pulse uppercase">Buscando...</span>}
+                CEP
+                {searchingCep && (
+                  <span className="text-[10px] text-(--lumike-gold) animate-pulse uppercase">
+                    Buscando...
+                  </span>
+                )}
               </label>
               <input
                 type="text"

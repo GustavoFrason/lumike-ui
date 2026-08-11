@@ -60,7 +60,9 @@ export function StockAdjustmentModal({
         <div className="p-8 border-b border-zinc-50 bg-linear-to-r from-zinc-50/50 to-white">
           <div className="flex items-center gap-3 mb-1">
             <ClipboardCheck className="h-5 w-5 text-(--lumike-gold)" />
-            <h2 className="text-2xl font-serif text-zinc-900 font-medium">Conferência de Estoque</h2>
+            <h2 className="text-2xl font-serif text-zinc-900 font-medium">
+              Conferência de Estoque
+            </h2>
           </div>
           <p className="text-zinc-500 text-sm">
             Produto: <span className="font-bold text-zinc-800">{produto.name}</span>
@@ -75,7 +77,9 @@ export function StockAdjustmentModal({
             <div className="relative">
               <select
                 value={userId === null ? 'central' : userId}
-                onChange={(e) => setUserId(e.target.value === 'central' ? null : Number(e.target.value))}
+                onChange={(e) =>
+                  setUserId(e.target.value === 'central' ? null : Number(e.target.value))
+                }
                 className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all appearance-none"
               >
                 <option value="central">Estoque Lumike</option>

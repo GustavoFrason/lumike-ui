@@ -5,10 +5,17 @@ interface BulkActionsBarProps {
   onClear: () => void;
 }
 
-export function BulkActionsBar({ selectedCount, onActivate, onDeactivate, onClear }: BulkActionsBarProps) {
+export function BulkActionsBar({
+  selectedCount,
+  onActivate,
+  onDeactivate,
+  onClear,
+}: BulkActionsBarProps) {
   return (
     <div className="bg-zinc-100 p-4 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-4">
-      <span className="text-sm font-medium text-zinc-700">{selectedCount} produtos selecionados</span>
+      <span className="text-sm font-medium text-zinc-700">
+        {selectedCount} produtos selecionados
+      </span>
       <div className="flex gap-2">
         <button
           onClick={onActivate}

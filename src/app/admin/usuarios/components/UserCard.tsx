@@ -36,7 +36,9 @@ export function UserCard({ user, onEdit, onViewInventory }: UserCardProps) {
           <span className="text-zinc-400 flex items-center gap-1.5">
             <Shield className="h-3.5 w-3.5" /> Papel
           </span>
-          <span className="font-bold text-zinc-700 capitalize">{user.roles?.name || 'Usuário'}</span>
+          <span className="font-bold text-zinc-700 capitalize">
+            {user.roles?.name || 'Usuário'}
+          </span>
         </div>
         <div className="flex items-center justify-between text-sm">
           <span className="text-zinc-400 flex items-center gap-1.5">
@@ -52,7 +54,11 @@ export function UserCard({ user, onEdit, onViewInventory }: UserCardProps) {
               user.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700',
             )}
           >
-            {user.is_active ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+            {user.is_active ? (
+              <CheckCircle2 className="h-3 w-3" />
+            ) : (
+              <XCircle className="h-3 w-3" />
+            )}
             {user.is_active ? 'Ativo' : 'Inativo'}
           </span>
         </div>

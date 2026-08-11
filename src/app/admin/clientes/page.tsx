@@ -169,7 +169,9 @@ export default function ClientesPage() {
             <div className="p-2 bg-blue-50 rounded-lg">
               <Users className="h-5 w-5 text-blue-600" />
             </div>
-            <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Total de Clientes</p>
+            <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+              Total de Clientes
+            </p>
           </div>
           <p className="text-2xl font-bold text-zinc-900 font-mono">
             {pagination?.total || customers.length}
@@ -181,7 +183,9 @@ export default function ClientesPage() {
             <div className="p-2 bg-red-100 rounded-lg">
               <Wallet className="h-5 w-5 text-red-600" />
             </div>
-            <p className="text-xs font-bold text-red-400 uppercase tracking-wider">Inadimplência Total</p>
+            <p className="text-xs font-bold text-red-400 uppercase tracking-wider">
+              Inadimplência Total
+            </p>
           </div>
           <div className="flex items-baseline gap-2">
             <p className="text-2xl font-bold text-red-600 font-mono">{formatCurrency(totalDebt)}</p>
@@ -194,7 +198,9 @@ export default function ClientesPage() {
             <div className="p-2 bg-amber-50 rounded-lg">
               <TrendingUp className="h-5 w-5 text-amber-600" />
             </div>
-            <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Conversão de Ativos</p>
+            <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+              Conversão de Ativos
+            </p>
           </div>
           <p className="text-2xl font-bold text-zinc-900 font-mono">
             {Math.round((customers.length / (pagination?.total || 1)) * 100)}%
