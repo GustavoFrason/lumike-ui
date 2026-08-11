@@ -4,25 +4,28 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProducts } from '@/lib/hooks/use-products';
 import { useSuppliers } from '@/lib/hooks/use-suppliers';
+import { useCategories } from '@/lib/hooks/use-categories';
 import { purchasesService, CreatePurchaseDto } from '@/lib/services/purchases.service';
 import { CreateProductDto, Product } from '@/lib/services/products.service';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { getErrorMessage } from '@/lib/utils';
 import { ProductModal } from '../../produtos/ProductModal';
 import { imagesService } from '@/lib/services/images.service';
-import { XmlImporter, XmlItem } from '@/components/admin/compras/XmlImporter';
-import { FileUp, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { FileSpreadsheet, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { PurchaseItem } from './components/types';
 import { SupplierSelector } from './components/SupplierSelector';
 import { ProductQuickSearch } from './components/ProductQuickSearch';
 import { PurchaseItemsList } from './components/PurchaseItemsList';
 import { PurchaseSummary } from './components/PurchaseSummary';
+import { ExcelImporter } from './components/excel-importer/ExcelImporter';
+import { ConfirmImportResult } from './components/excel-importer/types';
 
 export default function NovaCompraPage() {
   const router = useRouter();
   const { products, loadProducts } = useProducts();
   const { suppliers, loadSuppliers } = useSuppliers();
+  const { categories, loadCategories } = useCategories();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [items, setItems] = useState<PurchaseItem[]>([]);
@@ -36,15 +39,14 @@ export default function NovaCompraPage() {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const { createProduct, creating: creatingProduct, errorCreating } = useProducts();
 
-  // XML Import
-  const [isXmlImporterOpen, setIsXmlImporterOpen] = useState(false);
-  const [pendingXmlItems, setPendingXmlItems] = useState<XmlItem[]>([]);
-  const [quickProductTarget, setQuickProductTarget] = useState<XmlItem | null>(null);
+  // Import de planilha Excel (Zarpellon)
+  const [isExcelImporterOpen, setIsExcelImporterOpen] = useState(false);
 
   useEffect(() => {
     loadProducts(1, 1000, true);
     loadSuppliers(1, 1000);
-  }, [loadProducts, loadSuppliers]);
+    loadCategories();
+  }, [loadProducts, loadSuppliers, loadCategories]);
 
   const filteredProducts = products
     .filter(
@@ -79,41 +81,16 @@ export default function NovaCompraPage() {
     );
   }
 
-  async function handleXmlImport(xmlItems: XmlItem[], supplier_id?: number) {
-    setIsXmlImporterOpen(false);
-
-    if (supplier_id) {
-      setSelectedSupplierId(supplier_id);
-    }
-
-    const matched = xmlItems.filter((i) => i.status === 'matched');
-    const unmatched = xmlItems.filter((i) => i.status === 'new');
-
-    // Add matched items to current purchase items
-    const newItems = [...items];
-    matched.forEach((item) => {
-      const product = item.system_product;
-      if (!product) return; // não deveria acontecer (status 'matched' implica system_product), defensivo
-      const existingIdx = newItems.findIndex((ni) => ni.product.id === product.id);
-      if (existingIdx >= 0) {
-        newItems[existingIdx].quantity += item.quantity;
-        newItems[existingIdx].unit_cost = item.unit_cost;
-      } else {
-        newItems.push({
-          product,
-          quantity: item.quantity,
-          unit_cost: item.unit_cost,
-        });
-      }
-    });
-
-    setItems(newItems);
-    setPendingXmlItems(unmatched);
+  function handleExcelImportConfirm(result: ConfirmImportResult) {
+    setIsExcelImporterOpen(false);
+    // A compra já foi persistida (produtos + estoque) direto pelo backend —
+    // essa tela só precisa refletir o catálogo atualizado, não empilhar os
+    // itens importados na lista de "Itens da Compra" (que é outra compra,
+    // ainda não salva).
+    loadProducts(1, 1000, true);
     setSuccess(
-      `Nota importada! ${matched.length} produtos vinculados e ${unmatched.length} pendentes.`,
+      `Planilha importada! ${result.created} produto(s) novo(s) e ${result.updated} entrada(s) de estoque.`,
     );
-
-    // Auto-clear success message after 5s
     setTimeout(() => setSuccess(null), 5000);
   }
 
@@ -137,18 +114,12 @@ export default function NovaCompraPage() {
         }
 
         // Add to purchase items
-        const qty = quickProductTarget?.quantity || 1;
-        const cost = quickProductTarget?.unit_cost || produtoData.cost_price || 0;
-
-        setItems((prev) => [...prev, { product: newProduct, quantity: qty, unit_cost: cost }]);
-
-        // Remove from pending XML items if it originated from there
-        if (quickProductTarget) {
-          setPendingXmlItems((prev) => prev.filter((i) => i.sku !== quickProductTarget.sku));
-        }
+        setItems((prev) => [
+          ...prev,
+          { product: newProduct, quantity: 1, unit_cost: produtoData.cost_price || 0 },
+        ]);
 
         setIsProductModalOpen(false);
-        setQuickProductTarget(null);
         setSearchTerm('');
       }
     } catch (err) {
@@ -200,11 +171,11 @@ export default function NovaCompraPage() {
           </h1>
         </div>
         <button
-          onClick={() => setIsXmlImporterOpen(true)}
+          onClick={() => setIsExcelImporterOpen(true)}
           className="flex items-center gap-2 px-4 py-2 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition shadow-sm font-medium"
         >
-          <FileUp className="h-4 w-4" />
-          Importar XML (NF-e)
+          <FileSpreadsheet className="h-4 w-4" />
+          Importar Planilha (Zarpellon)
         </button>
       </div>
 
@@ -252,35 +223,23 @@ export default function NovaCompraPage() {
       {/* Quick Create Product Modal */}
       {isProductModalOpen && (
         <ProductModal
-          produto={
-            // sku é somente leitura agora (vira o id ao salvar) — o código
-            // que temos em mãos aqui (da NF-e ou digitado na busca) é o
-            // código do fornecedor, então pré-preenche sku2.
-            quickProductTarget
-              ? {
-                  name: quickProductTarget.name,
-                  sku2: quickProductTarget.sku,
-                  cost_price: quickProductTarget.unit_cost,
-                }
-              : searchTerm
-                ? { name: searchTerm, sku2: searchTerm.toUpperCase() }
-                : null
-          }
-          onClose={() => {
-            setIsProductModalOpen(false);
-            setQuickProductTarget(null);
-          }}
+          produto={searchTerm ? { name: searchTerm, sku2: searchTerm.toUpperCase() } : null}
+          onClose={() => setIsProductModalOpen(false)}
           onSave={handleQuickProductSave}
           loading={creatingProduct}
           error={errorCreating}
         />
       )}
 
-      {/* XML Importer Modal Overlay */}
-      {isXmlImporterOpen && (
+      {/* Excel Importer Modal Overlay */}
+      {isExcelImporterOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-60 p-4">
-          <div className="w-full max-w-5xl">
-            <XmlImporter onImport={handleXmlImport} onCancel={() => setIsXmlImporterOpen(false)} />
+          <div className="w-full max-w-6xl">
+            <ExcelImporter
+              categories={categories}
+              onConfirm={handleExcelImportConfirm}
+              onCancel={() => setIsExcelImporterOpen(false)}
+            />
           </div>
         </div>
       )}

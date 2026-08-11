@@ -66,21 +66,6 @@ export interface CreateProductDto {
 
 export type UpdateProductDto = Partial<CreateProductDto>;
 
-export interface ImportItem {
-  sku: string;
-  name_xml: string;
-  quantity_xml: number;
-  cost_price_xml: number;
-  existing_product?: { id: number; name: string; current_stock: number } | null;
-  action: 'UPDATE_STOCK' | 'CREATE_NEW';
-}
-
-export interface ImportResponse {
-  nfeId: string;
-  totalItems: number;
-  items: ImportItem[];
-}
-
 export const productsService = {
   /**
    * Lista todos os produtos
@@ -159,29 +144,6 @@ export const productsService = {
    */
   async delete(id: number): Promise<{ message: string }> {
     const { data } = await api.delete<{ message: string }>(`/produtos/${id}/permanent`);
-    return data;
-  },
-
-  async importXml(file: File): Promise<ImportResponse> {
-    return this.importFile(file);
-  },
-
-  async importFile(file: File): Promise<ImportResponse> {
-    const formData = new FormData();
-    formData.append('file', file);
-    const { data } = await api.post<ImportResponse>('/products/import', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    return data;
-  },
-
-  async confirmImport(
-    items: ImportItem[],
-  ): Promise<{ updated: number; created: number; errors: number }> {
-    const { data } = await api.post<{ updated: number; created: number; errors: number }>(
-      '/produtos/import/confirm',
-      items,
-    );
     return data;
   },
 

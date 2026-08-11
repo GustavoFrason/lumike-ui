@@ -1,34 +1,35 @@
-import { FileUp, AlertCircle, Loader2 } from 'lucide-react';
+import { FileSpreadsheet, AlertCircle, Loader2 } from 'lucide-react';
 import { RefObject } from 'react';
 
-interface XmlUploadPromptProps {
+interface ExcelUploadPromptProps {
   loading: boolean;
   error: string | null;
   fileInputRef: RefObject<HTMLInputElement | null>;
   onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function XmlUploadPrompt({
+export function ExcelUploadPrompt({
   loading,
   error,
   fileInputRef,
   onFileUpload,
-}: XmlUploadPromptProps) {
+}: ExcelUploadPromptProps) {
   return (
     <div className="py-12 flex flex-col items-center text-center">
       <div className="h-20 w-20 bg-zinc-50 rounded-full flex items-center justify-center mb-6 border-2 border-dashed border-zinc-200 group-hover:border-(--lumike-gold) transition-colors">
-        <FileUp className="h-10 w-10 text-zinc-300" />
+        <FileSpreadsheet className="h-10 w-10 text-zinc-300" />
       </div>
       <h3 className="text-lg font-bold text-zinc-900 mb-2">
-        Selecione o arquivo XML da Nota Fiscal
+        Selecione a planilha da Zarpellon Joias
       </h3>
       <p className="text-sm text-zinc-500 max-w-sm mb-6">
-        O sistema identificará produtos, quantidades e custos automaticamente.
+        Arquivo .xlsx com as colunas Produto, Descrição, Qtd. e Valor Base. O sistema classifica
+        cada linha automaticamente e deixa tudo editável antes de confirmar.
       </p>
 
       <input
         type="file"
-        accept=".xml"
+        accept=".xlsx,.xls"
         ref={fileInputRef}
         onChange={onFileUpload}
         className="hidden"
@@ -42,12 +43,12 @@ export function XmlUploadPrompt({
         {loading ? (
           <>
             <Loader2 className="h-5 w-5 animate-spin" />
-            Processando Nota...
+            Lendo Planilha...
           </>
         ) : (
           <>
-            <FileUp className="h-5 w-5" />
-            Escolher Arquivo XML
+            <FileSpreadsheet className="h-5 w-5" />
+            Escolher Planilha
           </>
         )}
       </button>

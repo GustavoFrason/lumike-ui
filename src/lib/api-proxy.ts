@@ -49,3 +49,25 @@ export async function proxyRequest(
 
   return response;
 }
+
+/**
+ * Como `proxyRequest`, mas para upload de arquivo (multipart/form-data) — o
+ * `Content-Type` não é setado manualmente aqui de propósito: o `fetch` gera
+ * o boundary correto sozinho quando o body é uma instância de `FormData`.
+ */
+export async function proxyFormData(path: string, formData: FormData): Promise<Response> {
+  const token = await getAuthCookie();
+
+  const headers: HeadersInit = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  } else {
+    console.warn(`[API Proxy] Token não encontrado para upload POST ${path}`);
+  }
+
+  return fetch(`${BACKEND_URL}${path}`, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+}

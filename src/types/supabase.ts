@@ -18,7 +18,13 @@
  *
  * Regenerar: veja lumike-api/scripts/gen-supabase-types.md
  */
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];
 
 export interface Database {
   __InternalSupabase: {
@@ -1215,7 +1221,9 @@ export interface Database {
       fn_adjust_stock: {
         Args: {
           p_delta: number | null;
-          p_movement_override?: Database['public']['Enums']['movement_type'] | null;
+          p_movement_override?:
+            | Database['public']['Enums']['movement_type']
+            | null;
           p_product_id: number | null;
           p_reference?: string | null;
           p_user_id: number | null;
@@ -1255,6 +1263,14 @@ export interface Database {
         };
         Returns: number;
       };
+      fn_import_purchase_excel: {
+        Args: {
+          p_items: Json | null;
+          p_notes: string | null;
+          p_supplier_id: number | null;
+        };
+        Returns: number;
+      };
       fn_transfer_stock: {
         Args: {
           p_from_user_id: number | null;
@@ -1284,9 +1300,20 @@ export interface Database {
     };
     Enums: {
       movement_type: 'IN' | 'OUT' | 'ADJUST';
-      order_status: 'pending' | 'paid' | 'completed' | 'cancelled' | 'parcelado_boca';
+      order_status:
+        | 'pending'
+        | 'paid'
+        | 'completed'
+        | 'cancelled'
+        | 'parcelado_boca';
       warranty_origin: 'sold' | 'stock';
-      warranty_status: 'pending' | 'analyzing' | 'factory' | 'ready' | 'finished' | 'rejected';
+      warranty_status:
+        | 'pending'
+        | 'analyzing'
+        | 'factory'
+        | 'ready'
+        | 'finished'
+        | 'rejected';
       warranty_type: 'plating' | 'break' | 'stone_loss' | 'other';
     };
   };
@@ -1294,9 +1321,11 @@ export interface Database {
 
 type PublicSchema = Database['public'];
 
-export type Tables<T extends keyof PublicSchema['Tables']> = PublicSchema['Tables'][T]['Row'];
+export type Tables<T extends keyof PublicSchema['Tables']> =
+  PublicSchema['Tables'][T]['Row'];
 export type TablesInsert<T extends keyof PublicSchema['Tables']> =
   PublicSchema['Tables'][T]['Insert'];
 export type TablesUpdate<T extends keyof PublicSchema['Tables']> =
   PublicSchema['Tables'][T]['Update'];
-export type Enums<T extends keyof PublicSchema['Enums']> = PublicSchema['Enums'][T];
+export type Enums<T extends keyof PublicSchema['Enums']> =
+  PublicSchema['Enums'][T];
