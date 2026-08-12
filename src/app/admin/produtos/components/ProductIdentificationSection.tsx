@@ -1,4 +1,4 @@
-import { Home, User as UserIcon, RefreshCcw, Loader2 } from 'lucide-react';
+import { Home, User as UserIcon, RefreshCcw, Loader2, BarChart3 } from 'lucide-react';
 import { Product } from '@/lib/services/products.service';
 import { ProductStock } from '@/lib/services/inventory.service';
 import { LabelWithTooltip } from './LabelWithTooltip';
@@ -123,29 +123,46 @@ export function ProductIdentificationSection({
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>
           ) : stock ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-              <div className="bg-white p-2.5 rounded-xl border border-zinc-100 flex items-center justify-between shadow-xs hover:border-(--lumike-gold)/30 transition-all">
-                <div className="flex items-center gap-2">
-                  <Home className="h-3.5 w-3.5 text-(--lumike-gold)" />
-                  <span className="text-xs font-medium text-zinc-600">Estoque Lumike</span>
-                </div>
-                <span className="text-sm font-bold text-zinc-900">{stock.central}</span>
-              </div>
-              {stock.sellers.map((s) => (
-                <div
-                  key={s.user_id}
-                  className="bg-white p-2.5 rounded-xl border border-zinc-100 flex items-center justify-between shadow-xs hover:border-(--lumike-gold)/30 transition-all"
-                >
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                <div className="bg-white p-2.5 rounded-xl border border-zinc-100 flex items-center justify-between shadow-xs hover:border-(--lumike-gold)/30 transition-all">
                   <div className="flex items-center gap-2">
-                    <UserIcon className="h-3.5 w-3.5 text-zinc-400" />
-                    <span className="text-xs font-medium text-zinc-600 truncate max-w-[80px]">
-                      {s.name}
+                    <Home className="h-3.5 w-3.5 text-(--lumike-gold)" />
+                    <span className="text-xs font-medium text-zinc-600">Estoque Lumike</span>
+                  </div>
+                  <span className="text-sm font-bold text-zinc-900">{stock.central}</span>
+                </div>
+                {stock.sellers.map((s) => (
+                  <div
+                    key={s.user_id}
+                    className="bg-white p-2.5 rounded-xl border border-zinc-100 flex items-center justify-between shadow-xs hover:border-(--lumike-gold)/30 transition-all"
+                  >
+                    <div className="flex items-center gap-2">
+                      <UserIcon className="h-3.5 w-3.5 text-zinc-400" />
+                      <span className="text-xs font-medium text-zinc-600 truncate max-w-[80px]">
+                        {s.name}
+                      </span>
+                    </div>
+                    <span className="text-sm font-bold text-zinc-900">{s.quantity}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-2 bg-zinc-900 p-2.5 rounded-xl flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <BarChart3 className="h-3.5 w-3.5 text-(--lumike-gold)" />
+                  <div>
+                    <span className="text-xs font-bold text-white block leading-tight">
+                      Total (todas as localidades)
+                    </span>
+                    <span className="text-[10px] text-zinc-400 leading-tight">
+                      Central + todos os revendedores
                     </span>
                   </div>
-                  <span className="text-sm font-bold text-zinc-900">{s.quantity}</span>
                 </div>
-              ))}
-            </div>
+                <span className="text-base font-bold text-(--lumike-gold)">{stock.total}</span>
+              </div>
+            </>
           ) : (
             <p className="text-[10px] text-zinc-400 italic">Nenhuma distribuição registrada.</p>
           )}
