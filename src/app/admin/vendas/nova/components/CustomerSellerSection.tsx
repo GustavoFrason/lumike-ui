@@ -1,4 +1,4 @@
-import { Tag, Warehouse } from 'lucide-react';
+import { AlertTriangle, Tag, Warehouse } from 'lucide-react';
 import { CustomerSearch } from '@/components/sales/customer-search';
 import { Customer } from '@/lib/services/customers.service';
 import { User } from '@/lib/services/users.service';
@@ -11,6 +11,8 @@ interface CustomerSellerSectionProps {
   onSelectSeller: (sellerId: number | null) => void;
   stockLocationUserId: number | null;
   onSelectStockLocation: (userId: number | null) => void;
+  /** Aviso client-side: itens do carrinho sem saldo na localidade selecionada acima. */
+  stockWarning: string | null;
 }
 
 export function CustomerSellerSection({
@@ -21,6 +23,7 @@ export function CustomerSellerSection({
   onSelectSeller,
   stockLocationUserId,
   onSelectStockLocation,
+  stockWarning,
 }: CustomerSellerSectionProps) {
   return (
     <div className="mb-6 border-b pb-4 space-y-4">
@@ -60,10 +63,17 @@ export function CustomerSellerSection({
             </option>
           ))}
         </select>
-        <p className="text-[11px] text-zinc-400 mt-1">
-          De onde sai o produto — independente do vendedor da comissão acima. Só troque se o
-          revendedor realmente carrega este produto com ele.
-        </p>
+        {stockWarning ? (
+          <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2 py-1.5 mt-1.5 flex items-start gap-1.5">
+            <AlertTriangle className="h-3 w-3 shrink-0 mt-0.5" />
+            <span>{stockWarning}</span>
+          </p>
+        ) : (
+          <p className="text-[11px] text-zinc-400 mt-1">
+            De onde sai o produto — independente do vendedor da comissão acima. Só troque se o
+            revendedor realmente carrega este produto com ele.
+          </p>
+        )}
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import { formatCurrency, parseCurrencyBR } from '@/lib/formatters';
 import { getErrorMessage } from '@/lib/utils';
 import { Save, ArrowLeft } from 'lucide-react';
 import { usersService, User } from '@/lib/services/users.service';
+import { inventoryService } from '@/lib/services/inventory.service';
 import { ScannerModal } from '@/components/scanner-modal';
 import Link from 'next/link';
 import { CartItem, PaymentMethod, PaymentStatus } from './components/types';
@@ -39,6 +40,7 @@ export default function NovaVendaPage() {
   const [sellers, setSellers] = useState<User[]>([]);
   const [selectedSellerId, setSelectedSellerId] = useState<number | null>(null); // comissão, não mexe em estoque
   const [stockLocationUserId, setStockLocationUserId] = useState<number | null>(null); // null = Estoque Central
+  const [stockWarning, setStockWarning] = useState<string | null>(null);
 
   // Payment
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('dinheiro');
@@ -184,6 +186,66 @@ export default function NovaVendaPage() {
     }
   }, [maxInstallments, installments]);
 
+  useEffect(() => {
+    // Aviso client-side, não é a validação de verdade (essa continua
+    // atômica no banco, em fn_adjust_stock) — só evita o vai-e-volta de
+    // preencher tudo e só descobrir na hora de finalizar que "Estoque de
+    // Origem" (que pode ter seguido o Vendedor automaticamente) não tem a
+    // peça. Ex: código só existe no Central, mas o Vendedor escolhido pra
+    // comissão não carrega estoque próprio dele.
+    let cancelled = false;
+
+    async function checkStockCoverage() {
+      if (cart.length === 0) {
+        setStockWarning(null);
+        return;
+      }
+
+      try {
+        const stocks = await Promise.all(
+          cart.map((item) => inventoryService.getStock(item.product.id)),
+        );
+        if (cancelled) return;
+
+        const shortages = cart
+          .map((item, i) => {
+            const stock = stocks[i];
+            const available =
+              stockLocationUserId === null
+                ? stock.central
+                : (stock.sellers.find((s) => s.user_id === stockLocationUserId)?.quantity ?? 0);
+            return available < item.quantity ? { name: item.product.name, available } : null;
+          })
+          .filter((s): s is { name: string; available: number } => s !== null);
+
+        if (shortages.length === 0) {
+          setStockWarning(null);
+          return;
+        }
+
+        const locationLabel =
+          stockLocationUserId === null
+            ? 'Estoque Central'
+            : (sellers.find((s) => s.id === stockLocationUserId)?.name ?? 'localidade selecionada');
+        const items = shortages
+          .map((s) => `"${s.name}" (disponível: ${s.available})`)
+          .join(', ');
+        setStockWarning(
+          `${locationLabel} não tem estoque suficiente de: ${items}. Confira o Estoque de Origem antes de finalizar.`,
+        );
+      } catch {
+        // Falha ao checar não deve travar a venda — quem garante a
+        // integridade de verdade é o backend na hora de confirmar.
+        if (!cancelled) setStockWarning(null);
+      }
+    }
+
+    checkStockCoverage();
+    return () => {
+      cancelled = true;
+    };
+  }, [cart, stockLocationUserId, sellers]);
+
   function handleSellerChange(newSellerId: number | null) {
     // Só "segue" o vendedor se o Estoque de Origem ainda estiver
     // sincronizado com o vendedor atual (inclusive o caso inicial, os
@@ -315,6 +377,7 @@ export default function NovaVendaPage() {
               onSelectSeller={handleSellerChange}
               stockLocationUserId={stockLocationUserId}
               onSelectStockLocation={setStockLocationUserId}
+              stockWarning={stockWarning}
             />
 
             <CartPanel
