@@ -169,10 +169,17 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
             await loadProductImages(foundProduct.id);
           }
         } else {
+          // Não achou match: garante que não sobra sku de uma busca
+          // anterior que tinha achado outro produto (o campo é somente
+          // leitura na tela, mas o valor continuava no estado e ia junto
+          // no submit — causava "duplicate key" tentando criar produto
+          // novo com o sku de outro produto já existente).
           setExistingProduct(null);
+          setForm((prev) => ({ ...prev, sku: '' }));
         }
       } else {
         setExistingProduct(null);
+        setForm((prev) => ({ ...prev, sku: '' }));
       }
     } catch (err) {
       console.error('Erro ao buscar SKU:', err);
@@ -301,10 +308,13 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
 
     const produtoData = {
       name: form.name.trim(),
-      // sku: não enviamos valor digitado — vazio no create (trigger
-      // fn_generate_product_sku preenche com o id) ou o valor já existente
-      // no edit (campo somente leitura, nunca é alterado pelo usuário).
-      sku: form.sku.trim(),
+      // sku: só mandamos valor quando já pertence de verdade a uma linha
+      // existente — edição (produto.id) ou merge com produto achado pelo
+      // sku2 (existingProduct). Produto genuinamente novo nunca manda sku
+      // nenhum, nem vazio: garante que o trigger fn_generate_product_sku
+      // sempre preenche com o id, sem chance de reenviar por engano o sku
+      // de outro produto (ver reset em handleSkuLookup).
+      sku: produto?.id || existingProduct ? form.sku.trim() : undefined,
       sku2: form.sku2.trim(),
       short_description: form.short_description.trim(),
       description: form.description.trim() || undefined,
