@@ -37,7 +37,8 @@ export default function NovaVendaPage() {
   // Customer & Seller
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [sellers, setSellers] = useState<User[]>([]);
-  const [selectedSellerId, setSelectedSellerId] = useState<number | null>(null);
+  const [selectedSellerId, setSelectedSellerId] = useState<number | null>(null); // comissão, não mexe em estoque
+  const [stockLocationUserId, setStockLocationUserId] = useState<number | null>(null); // null = Estoque Central
 
   // Payment
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('dinheiro');
@@ -183,6 +184,18 @@ export default function NovaVendaPage() {
     }
   }, [maxInstallments, installments]);
 
+  function handleSellerChange(newSellerId: number | null) {
+    // Só "segue" o vendedor se o Estoque de Origem ainda estiver
+    // sincronizado com o vendedor atual (inclusive o caso inicial, os
+    // dois em null = Central). Se você já tinha escolhido um Estoque de
+    // Origem diferente de propósito (ex: comissão pra um vendedor, peça
+    // saindo do Central), essa escolha manual não é sobrescrita.
+    setStockLocationUserId((prevLocation) =>
+      prevLocation === selectedSellerId ? newSellerId : prevLocation,
+    );
+    setSelectedSellerId(newSellerId);
+  }
+
   function handlePaymentMethodChange(newMethod: PaymentMethod) {
     setPaymentMethod(newMethod);
     // Auto-ajustar status baseado no método
@@ -230,6 +243,7 @@ export default function NovaVendaPage() {
       const payload: CreateOrderDto = {
         customer_id: selectedCustomer?.id,
         seller_id: selectedSellerId || undefined,
+        stock_location_user_id: stockLocationUserId || undefined,
         notes,
         payment_method: paymentMethod,
         payment_status: paymentStatus,
@@ -298,7 +312,9 @@ export default function NovaVendaPage() {
               onSelectCustomer={setSelectedCustomer}
               sellers={sellers}
               selectedSellerId={selectedSellerId}
-              onSelectSeller={setSelectedSellerId}
+              onSelectSeller={handleSellerChange}
+              stockLocationUserId={stockLocationUserId}
+              onSelectStockLocation={setStockLocationUserId}
             />
 
             <CartPanel

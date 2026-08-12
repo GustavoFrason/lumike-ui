@@ -32,6 +32,7 @@ export interface Order {
   boca_value?: number;
   boca_paid_now?: number;
   seller_id?: number;
+  stock_location_user_id?: number;
   notes?: string;
   created_at: string;
   updated_at: string;
@@ -52,7 +53,10 @@ export interface CreateOrderItemDto {
 
 export interface CreateOrderDto {
   customer_id?: number;
+  /** Quem recebe a comissão — não afeta de onde o estoque sai. */
   seller_id?: number;
+  /** De qual localidade o estoque desta venda é descontado. undefined = Estoque Central. */
+  stock_location_user_id?: number;
   notes?: string;
   payment_method: 'dinheiro' | 'cartao' | 'parcelado' | 'boca' | 'aberto';
   payment_status: 'pago' | 'parcial' | 'aberto';
