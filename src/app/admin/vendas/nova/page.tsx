@@ -227,9 +227,7 @@ export default function NovaVendaPage() {
           stockLocationUserId === null
             ? 'Estoque Central'
             : (sellers.find((s) => s.id === stockLocationUserId)?.name ?? 'localidade selecionada');
-        const items = shortages
-          .map((s) => `"${s.name}" (disponível: ${s.available})`)
-          .join(', ');
+        const items = shortages.map((s) => `"${s.name}" (disponível: ${s.available})`).join(', ');
         setStockWarning(
           `${locationLabel} não tem estoque suficiente de: ${items}. Confira o Estoque de Origem antes de finalizar.`,
         );
