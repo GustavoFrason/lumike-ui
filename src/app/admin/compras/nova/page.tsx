@@ -45,7 +45,7 @@ export default function NovaCompraPage() {
   useEffect(() => {
     loadProducts(1, 1000, true);
     loadSuppliers(1, 1000);
-    loadCategories();
+    loadCategories(true); // só ativas, mesmo padrão do ProductModal/admin/categorias
   }, [loadProducts, loadSuppliers, loadCategories]);
 
   const filteredProducts = products
