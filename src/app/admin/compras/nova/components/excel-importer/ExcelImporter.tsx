@@ -5,6 +5,7 @@ import { FileSpreadsheet } from 'lucide-react';
 import { purchaseImportService } from '@/lib/services/purchase-import.service';
 import { Category } from '@/lib/services/categories.service';
 import { getErrorMessage } from '@/lib/utils';
+import { getTodayInSaoPaulo } from '@/lib/formatters';
 import { ExcelUploadPrompt } from './ExcelUploadPrompt';
 import { ImportPreviewSummary } from './ImportPreviewSummary';
 import { NewProductsTable } from './NewProductsTable';
@@ -25,6 +26,10 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<ImportPreviewResponse | null>(null);
+  // Data real da compra — pode ser retroativa (comprou semana passada,
+  // sobe a planilha só hoje). Default: hoje no fuso de Brasília, não o do
+  // servidor/navegador (ver getTodayInSaoPaulo).
+  const [purchaseDate, setPurchaseDate] = useState(() => getTodayInSaoPaulo());
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -106,7 +111,7 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
     try {
       setConfirming(true);
       setError(null);
-      const result = await purchaseImportService.confirm(items);
+      const result = await purchaseImportService.confirm(items, undefined, purchaseDate);
       onConfirm(result);
     } catch (err) {
       setError(getErrorMessage(err, 'Erro ao confirmar importação.'));
@@ -119,7 +124,7 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
 
   return (
     <div className="bg-white rounded-2xl border border-zinc-200 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-      <div className="p-6 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
+      <div className="p-6 border-b border-zinc-100 flex items-center justify-between gap-4 bg-zinc-50/50">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-(--lumike-gold)/10 rounded-lg text-(--lumike-gold)">
             <FileSpreadsheet className="h-5 w-5" />
@@ -133,12 +138,26 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
             </p>
           </div>
         </div>
-        <button
-          onClick={onCancel}
-          className="text-zinc-400 hover:text-zinc-600 transition p-2 hover:bg-zinc-100 rounded-full"
-        >
-          ✕
-        </button>
+        <div className="flex items-center gap-3">
+          <div>
+            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-0.5">
+              Data da Compra
+            </label>
+            <input
+              type="date"
+              value={purchaseDate}
+              max={getTodayInSaoPaulo()}
+              onChange={(e) => setPurchaseDate(e.target.value)}
+              className="border rounded-lg px-3 py-1.5 text-sm font-medium bg-white"
+            />
+          </div>
+          <button
+            onClick={onCancel}
+            className="text-zinc-400 hover:text-zinc-600 transition p-2 hover:bg-zinc-100 rounded-full"
+          >
+            ✕
+          </button>
+        </div>
       </div>
 
       <div className="p-6 overflow-y-auto max-h-[70vh] scrollbar-thin">

@@ -82,10 +82,15 @@ export const purchaseImportService = {
   },
 
   /** Persiste os itens já revisados pelo usuário (só "novos" + "atualizações"). */
-  async confirm(items: ConfirmImportItem[], notes?: string): Promise<ConfirmImportResult> {
+  async confirm(
+    items: ConfirmImportItem[],
+    notes?: string,
+    purchaseDate?: string,
+  ): Promise<ConfirmImportResult> {
     const { data } = await api.post<ConfirmImportResult>('/compras/import/confirm', {
       items,
       notes,
+      purchase_date: purchaseDate,
     });
     return data;
   },
