@@ -548,6 +548,7 @@ export interface Database {
           transaction_id: string | null;
           boca_paid_now: number | null;
           seller_id: number | null;
+          installments: number | null;
         };
         Insert: {
           id?: number;
@@ -566,6 +567,7 @@ export interface Database {
           transaction_id?: string | null;
           boca_paid_now?: number | null;
           seller_id?: number | null;
+          installments?: number | null;
         };
         Update: {
           id?: number;
@@ -584,6 +586,7 @@ export interface Database {
           transaction_id?: string | null;
           boca_paid_now?: number | null;
           seller_id?: number | null;
+          installments?: number | null;
         };
         Relationships: [
           {
@@ -1241,6 +1244,7 @@ export interface Database {
           p_card_tax: number | null;
           p_cash_user_id: number | null;
           p_customer_id: number | null;
+          p_installments?: number | null;
           p_items: Json | null;
           p_lead_id?: string | null;
           p_notes: string | null;

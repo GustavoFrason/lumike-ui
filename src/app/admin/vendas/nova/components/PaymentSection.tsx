@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Wallet } from 'lucide-react';
 import { CurrencyInputATM } from '@/components/ui/currency-input-atm';
 import { Customer } from '@/lib/services/customers.service';
+import { formatCurrency } from '@/lib/formatters';
 import { PaymentMethod, PaymentStatus } from './types';
 
 interface PaymentSectionProps {
@@ -18,12 +19,18 @@ interface PaymentSectionProps {
   onBocaNotesChange: (value: string) => void;
   selectedCustomer: Customer | null;
 
+  /** Total do carrinho — usado só pra calcular o valor de cada parcela no combo abaixo. */
+  total: number;
   cardBrand: string;
   onCardBrandChange: (value: string) => void;
   transactionId: string;
   onTransactionIdChange: (value: string) => void;
   cardTax: string;
   onCardTaxChange: (value: string) => void;
+  /** Nº de parcelas escolhido (modo "parcelado" — já vem limitado ao máximo válido). */
+  installments: number;
+  onInstallmentsChange: (value: number) => void;
+  maxInstallments: number;
 
   notes: string;
   onNotesChange: (value: string) => void;
@@ -41,12 +48,16 @@ export function PaymentSection({
   bocaNotes,
   onBocaNotesChange,
   selectedCustomer,
+  total,
   cardBrand,
   onCardBrandChange,
   transactionId,
   onTransactionIdChange,
   cardTax,
   onCardTaxChange,
+  installments,
+  onInstallmentsChange,
+  maxInstallments,
   notes,
   onNotesChange,
 }: PaymentSectionProps) {
@@ -201,13 +212,31 @@ export function PaymentSection({
               className="w-full border rounded p-2 text-sm"
             />
           </div>
-          <input
-            type="text"
-            placeholder="ID Transação / NSU"
-            value={transactionId}
-            onChange={(e) => onTransactionIdChange(e.target.value)}
-            className="w-full border rounded p-2 text-sm font-mono uppercase"
-          />
+          {paymentMethod === 'cartao' && (
+            <input
+              type="text"
+              placeholder="ID Transação / NSU"
+              value={transactionId}
+              onChange={(e) => onTransactionIdChange(e.target.value)}
+              className="w-full border rounded p-2 text-sm font-mono uppercase"
+            />
+          )}
+          {paymentMethod === 'parcelado' && (
+            <div>
+              <select
+                value={installments}
+                onChange={(e) => onInstallmentsChange(Number(e.target.value))}
+                className="w-full border rounded p-2 text-sm font-medium"
+              >
+                {Array.from({ length: maxInstallments }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={n}>
+                    {n}x de {formatCurrency(total / n)}
+                  </option>
+                ))}
+              </select>
+              <p className="text-[11px] text-zinc-400 mt-1">Parcela mínima de R$ 50,00</p>
+            </div>
+          )}
         </div>
       )}
 

@@ -13,10 +13,19 @@ export function cn(...inputs: ClassValue[]) {
  *
  * Essa lógica (`err.response?.data?.message || err.message || fallback`)
  * estava copiada, com `err: any`, em pelo menos 10 lugares diferentes.
+ *
+ * `.error` vem primeiro: todo proxy `/api/*` do Next (ver
+ * `createErrorResponse` em `api-helpers.ts`) embrulha o erro como
+ * `{ error: mensagem }`, não `{ message: mensagem }` — sem checar `.error`
+ * essa função nunca conseguia extrair a mensagem de verdade do backend
+ * (ex: "Estoque insuficiente..."), sempre caindo no texto genérico do
+ * Axios ("Request failed with status code 400"). `.message` continua
+ * checado depois, de brinde, pra qualquer chamada que não passe por esse
+ * proxy (ou uma resposta de erro nativa do NestJS sem passar pelo proxy).
  */
 export function getErrorMessage(err: unknown, fallback = 'Erro inesperado'): string {
   if (axios.isAxiosError(err)) {
-    return err.response?.data?.message || err.message || fallback;
+    return err.response?.data?.error || err.response?.data?.message || err.message || fallback;
   }
   if (err instanceof Error) {
     return err.message || fallback;

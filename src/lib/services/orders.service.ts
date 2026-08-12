@@ -65,6 +65,8 @@ export interface CreateOrderDto {
     brand?: string;
     tax?: number;
     transaction_id?: string;
+    /** Só no modo "parcelado" — número de parcelas (1 a 10, mínimo R$50/parcela). */
+    installments?: number;
   };
   items: CreateOrderItemDto[];
 }

@@ -9,6 +9,7 @@ import { Customer } from '@/lib/services/customers.service';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { Loading } from '@/components/ui/loading';
 import { formatCurrency, parseCurrencyBR } from '@/lib/formatters';
+import { getErrorMessage } from '@/lib/utils';
 import { Save, ArrowLeft } from 'lucide-react';
 import { usersService, User } from '@/lib/services/users.service';
 import { ScannerModal } from '@/components/scanner-modal';
@@ -49,8 +50,9 @@ export default function NovaVendaPage() {
 
   // Card Details
   const [cardBrand, setCardBrand] = useState('visa');
-  const [transactionId, setTransactionId] = useState('');
+  const [transactionId, setTransactionId] = useState(''); // só modo "cartao" (à vista)
   const [cardTax, setCardTax] = useState('');
+  const [installments, setInstallments] = useState(1); // só modo "parcelado"
 
   useEffect(() => {
     loadProducts(1, 200, true);
@@ -167,6 +169,20 @@ export default function NovaVendaPage() {
     return sum + price * item.quantity;
   }, 0);
 
+  // Até 10x, nunca deixando a parcela cair abaixo de R$50 (mesma regra já
+  // anunciada na vitrine — home-benefits-bar.tsx). Sempre ao menos 1x,
+  // mesmo com o carrinho vazio/abaixo de R$50.
+  const maxInstallments = Math.max(1, Math.min(10, Math.floor(total / 50)));
+
+  useEffect(() => {
+    // Carrinho mudou depois de já ter escolhido parcelas (ex: removeu
+    // item e 6x deixou de caber na regra de R$50/parcela) — reduz pro
+    // novo máximo em vez de deixar uma seleção que o backend rejeitaria.
+    if (installments > maxInstallments) {
+      setInstallments(maxInstallments);
+    }
+  }, [maxInstallments, installments]);
+
   function handlePaymentMethodChange(newMethod: PaymentMethod) {
     setPaymentMethod(newMethod);
     // Auto-ajustar status baseado no método
@@ -229,8 +245,9 @@ export default function NovaVendaPage() {
           paymentMethod === 'cartao' || paymentMethod === 'parcelado'
             ? {
                 brand: cardBrand,
-                transaction_id: transactionId,
                 tax: parseCurrencyBR(cardTax),
+                transaction_id: paymentMethod === 'cartao' ? transactionId : undefined,
+                installments: paymentMethod === 'parcelado' ? installments : undefined,
               }
             : undefined,
         items: cart.map((item) => ({
@@ -243,8 +260,7 @@ export default function NovaVendaPage() {
       await ordersService.create(payload);
       router.push('/admin/vendas');
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Erro ao criar venda';
-      setError(message);
+      setError(getErrorMessage(err, 'Erro ao criar venda'));
     } finally {
       setCreating(false);
     }
@@ -304,12 +320,16 @@ export default function NovaVendaPage() {
               bocaNotes={bocaNotes}
               onBocaNotesChange={setBocaNotes}
               selectedCustomer={selectedCustomer}
+              total={total}
               cardBrand={cardBrand}
               onCardBrandChange={setCardBrand}
               transactionId={transactionId}
               onTransactionIdChange={setTransactionId}
               cardTax={cardTax}
               onCardTaxChange={setCardTax}
+              installments={installments}
+              onInstallmentsChange={setInstallments}
+              maxInstallments={maxInstallments}
               notes={notes}
               onNotesChange={setNotes}
             />
