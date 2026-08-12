@@ -55,8 +55,7 @@ export async function generateMetadata(
   return {
     title: `${product.name} | Lumilee Semijoias`,
     description:
-      product.description?.slice(0, 160) ||
-      'Descubra a elegância exclusiva das semijoias Lumilee.',
+      product.description?.slice(0, 160) || 'Descubra a elegância exclusiva das semijoias Lumilee.',
     openGraph: {
       title: product.name,
       description: product.description?.slice(0, 160),
