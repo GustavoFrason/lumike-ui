@@ -27,7 +27,7 @@ describe('Pagination', () => {
   it('should highlight current page', () => {
     render(<Pagination currentPage={2} totalPages={3} onPageChange={onPageChange} />);
     const button = screen.getByText('2');
-    expect(button).toHaveClass('bg-[var(--lumike-gold)]');
+    expect(button).toHaveClass('bg-[var(--lumilee-gold)]');
   });
 
   it('should call onPageChange when a page is clicked', () => {

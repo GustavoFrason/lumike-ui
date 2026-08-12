@@ -61,7 +61,7 @@ export default function AdminPage() {
   return (
     <section className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Bem-vindo ao Painel Lumike ✨</h1>
+        <h1 className="text-2xl font-semibold">Bem-vindo ao Painel Lumilee ✨</h1>
         <button onClick={loadDashboard} className="text-sm text-zinc-600 hover:text-zinc-900">
           Atualizar
         </button>
@@ -71,12 +71,12 @@ export default function AdminPage() {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="p-6 rounded-lg bg-(--lumike-beige) border">
+        <div className="p-6 rounded-lg bg-(--lumilee-beige) border">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-medium">Total de Vendas</h2>
-            <TrendingUp className="h-5 w-5 text-(--lumike-gold)" />
+            <TrendingUp className="h-5 w-5 text-(--lumilee-gold)" />
           </div>
-          <p className="text-3xl font-bold text-(--lumike-gold)">
+          <p className="text-3xl font-bold text-(--lumilee-gold)">
             {kpis ? formatCurrency(kpis.total_vendas) : 'R$ 0,00'}
           </p>
           <p className="text-xs text-zinc-500 mt-1">
@@ -84,22 +84,22 @@ export default function AdminPage() {
           </p>
         </div>
 
-        <div className="p-6 rounded-lg bg-(--lumike-beige) border">
+        <div className="p-6 rounded-lg bg-(--lumilee-beige) border">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-medium">Ticket Médio</h2>
-            <CreditCard className="h-5 w-5 text-(--lumike-gold)" />
+            <CreditCard className="h-5 w-5 text-(--lumilee-gold)" />
           </div>
-          <p className="text-3xl font-bold text-(--lumike-gold)">
+          <p className="text-3xl font-bold text-(--lumilee-gold)">
             {kpis ? formatCurrency(kpis.ticket_medio) : 'R$ 0,00'}
           </p>
         </div>
 
-        <div className="p-6 rounded-lg bg-(--lumike-beige) border">
+        <div className="p-6 rounded-lg bg-(--lumilee-beige) border">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-medium">Taxa de Conversão</h2>
-            <Target className="h-5 w-5 text-(--lumike-gold)" />
+            <Target className="h-5 w-5 text-(--lumilee-gold)" />
           </div>
-          <p className="text-3xl font-bold text-(--lumike-gold)">
+          <p className="text-3xl font-bold text-(--lumilee-gold)">
             {(kpis?.taxa_conversao ?? 0).toFixed(1)}%
           </p>
         </div>
@@ -107,7 +107,7 @@ export default function AdminPage() {
         <div className="p-6 rounded-lg bg-white border">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-medium">Marketing Leads</h2>
-            <Zap className="h-5 w-5 text-(--lumike-gold)" />
+            <Zap className="h-5 w-5 text-(--lumilee-gold)" />
           </div>
           <p className="text-2xl font-bold text-zinc-900">{kpis?.total_leads || 0}</p>
         </div>
@@ -115,7 +115,7 @@ export default function AdminPage() {
         <div className="p-6 rounded-lg bg-white border">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-medium">Produtos Ativos</h2>
-            <Package className="h-5 w-5 text-(--lumike-gold)" />
+            <Package className="h-5 w-5 text-(--lumilee-gold)" />
           </div>
           <p className="text-2xl font-bold text-zinc-900">{kpis?.produtos_ativos || 0}</p>
         </div>
@@ -123,7 +123,7 @@ export default function AdminPage() {
         <div className="p-6 rounded-lg bg-white border">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-medium">Clientes Registrados</h2>
-            <Zap className="h-5 w-5 text-(--lumike-gold)" />
+            <Zap className="h-5 w-5 text-(--lumilee-gold)" />
           </div>
           <p className="text-2xl font-bold text-zinc-900">{kpis?.clientes || 0}</p>
         </div>
@@ -165,7 +165,7 @@ export default function AdminPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Alertas de Estoque</h2>
             {lowStock.length > 0 && (
-              <Link href="/admin/estoque" className="text-sm text-(--lumike-gold) hover:underline">
+              <Link href="/admin/estoque" className="text-sm text-(--lumilee-gold) hover:underline">
                 Ver todos
               </Link>
             )}

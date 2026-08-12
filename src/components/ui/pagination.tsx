@@ -64,7 +64,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
           className={cn(
             'px-3 py-2 rounded-lg border transition',
             currentPage === page
-              ? 'bg-[var(--lumike-gold)] text-white border-[var(--lumike-gold)]'
+              ? 'bg-[var(--lumilee-gold)] text-white border-[var(--lumilee-gold)]'
               : 'border-zinc-300 hover:bg-zinc-50',
           )}
         >

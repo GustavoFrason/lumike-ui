@@ -25,7 +25,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // Load from localStorage on init
   useEffect(() => {
-    const savedCart = localStorage.getItem('lumike_cart');
+    const savedCart = localStorage.getItem('lumilee_cart');
     if (savedCart) {
       try {
         setItems(JSON.parse(savedCart));
@@ -37,7 +37,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // Sync to localStorage
   useEffect(() => {
-    localStorage.setItem('lumike_cart', JSON.stringify(items));
+    localStorage.setItem('lumilee_cart', JSON.stringify(items));
   }, [items]);
 
   const addItem = (product: Product, quantity = 1) => {

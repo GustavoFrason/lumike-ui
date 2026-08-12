@@ -42,7 +42,7 @@ export function ProductImagesAndToggles({
             name="is_active"
             checked={form.is_active}
             onChange={onChange}
-            className="w-5 h-5 rounded border-zinc-300 text-(--lumike-gold) focus:ring-(--lumike-gold)"
+            className="w-5 h-5 rounded border-zinc-300 text-(--lumilee-gold) focus:ring-(--lumilee-gold)"
           />
           <div className="flex flex-col">
             <span className="text-sm font-medium text-zinc-800">Ativo</span>
@@ -56,7 +56,7 @@ export function ProductImagesAndToggles({
             name="is_featured"
             checked={form.is_featured}
             onChange={onChange}
-            className="w-5 h-5 rounded border-zinc-300 text-(--lumike-gold) focus:ring-(--lumike-gold)"
+            className="w-5 h-5 rounded border-zinc-300 text-(--lumilee-gold) focus:ring-(--lumilee-gold)"
           />
           <div className="flex flex-col">
             <span className="text-sm font-medium text-zinc-800">Destaque</span>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import { User, ShoppingBag, ShieldCheck, Ticket, Heart, LogOut, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { COOKIE_NAME } from '@/lib/cookie-name';
 import { useRouter } from 'next/navigation';
 
 export default function CustomerLayout({ children }: { children: React.ReactNode }) {
@@ -20,7 +21,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
     } catch (error) {
       console.error('Erro ao sair:', error);
       // Fallback se a API falhar (mesmo que não deva)
-      document.cookie = 'lumike_token=; Max-Age=0; path=/;';
+      document.cookie = `${COOKIE_NAME}=; Max-Age=0; path=/;`;
       window.location.href = '/login';
     }
   };

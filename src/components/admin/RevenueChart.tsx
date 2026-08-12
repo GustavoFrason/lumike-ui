@@ -57,9 +57,9 @@ export function RevenueChart({ data }: RevenueChartProps) {
           <Line
             type="monotone"
             dataKey="revenue"
-            stroke="var(--lumike-gold)"
+            stroke="var(--lumilee-gold)"
             strokeWidth={3}
-            dot={{ r: 4, fill: 'var(--lumike-gold)', strokeWidth: 2, stroke: '#fff' }}
+            dot={{ r: 4, fill: 'var(--lumilee-gold)', strokeWidth: 2, stroke: '#fff' }}
             activeDot={{ r: 6, strokeWidth: 0 }}
           />
         </LineChart>

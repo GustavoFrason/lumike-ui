@@ -73,7 +73,7 @@ export function TransferStockModal({
       <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="p-8 border-b border-zinc-50 bg-linear-to-r from-zinc-50/50 to-white">
           <div className="flex items-center gap-3 mb-1">
-            <Package className="h-5 w-5 text-(--lumike-gold)" />
+            <Package className="h-5 w-5 text-(--lumilee-gold)" />
             <h2 className="text-2xl font-serif text-zinc-900 font-medium">Transferir Estoque</h2>
           </div>
           <p className="text-zinc-500 text-sm">
@@ -94,9 +94,9 @@ export function TransferStockModal({
                   onChange={(e) =>
                     setFromUserId(e.target.value === 'central' ? null : Number(e.target.value))
                   }
-                  className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all appearance-none"
+                  className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all appearance-none"
                 >
-                  <option value="central">Estoque Lumike</option>
+                  <option value="central">Estoque Lumilee</option>
                   {sellers.map((seller) => (
                     <option key={seller.id} value={seller.id}>
                       {seller.name}
@@ -113,7 +113,7 @@ export function TransferStockModal({
               </div>
               <p className="text-[10px] text-zinc-400 px-1">
                 Disponível:{' '}
-                <span className="font-bold text-(--lumike-gold)">{currentFromStock} un</span>
+                <span className="font-bold text-(--lumilee-gold)">{currentFromStock} un</span>
               </p>
             </div>
 
@@ -132,9 +132,9 @@ export function TransferStockModal({
                   onChange={(e) =>
                     setToUserId(e.target.value === 'central' ? null : Number(e.target.value))
                   }
-                  className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all appearance-none"
+                  className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all appearance-none"
                 >
-                  <option value="central">Estoque Lumike</option>
+                  <option value="central">Estoque Lumilee</option>
                   {sellers.map((seller) => (
                     <option key={seller.id} value={seller.id}>
                       {seller.name}
@@ -163,7 +163,7 @@ export function TransferStockModal({
                 max={currentFromStock}
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm font-bold text-zinc-900 focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all"
+                className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm font-bold text-zinc-900 focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all"
                 required
                 placeholder="0"
               />
@@ -176,7 +176,7 @@ export function TransferStockModal({
                 type="text"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all"
+                className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all"
                 placeholder="Ex: Entrega semanal"
               />
             </div>
@@ -193,7 +193,7 @@ export function TransferStockModal({
             <button
               type="submit"
               disabled={loading || !quantity || Number(quantity) <= 0 || fromUserId === toUserId}
-              className="flex-1 py-4 bg-(--lumike-gold) text-white text-sm font-bold rounded-2xl hover:opacity-90 transition-all shadow-lg shadow-orange-100 disabled:opacity-50 disabled:shadow-none"
+              className="flex-1 py-4 bg-(--lumilee-gold) text-white text-sm font-bold rounded-2xl hover:opacity-90 transition-all shadow-lg shadow-orange-100 disabled:opacity-50 disabled:shadow-none"
             >
               {loading ? 'Processando...' : 'Confirmar Transferência'}
             </button>

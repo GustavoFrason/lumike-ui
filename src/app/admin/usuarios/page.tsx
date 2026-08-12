@@ -128,7 +128,7 @@ export default function UsuariosPage() {
         </div>
         <button
           onClick={openCreateModal}
-          className="flex items-center gap-2 px-6 py-3 bg-(--lumike-gold) text-white rounded-xl font-bold hover:opacity-90 transition-all shadow-lg shadow-orange-100"
+          className="flex items-center gap-2 px-6 py-3 bg-(--lumilee-gold) text-white rounded-xl font-bold hover:opacity-90 transition-all shadow-lg shadow-orange-100"
         >
           <Plus className="h-5 w-5" /> Novo Usuário
         </button>
@@ -145,7 +145,7 @@ export default function UsuariosPage() {
             placeholder="Buscar por nome ou email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-zinc-50 border-transparent rounded-xl text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all"
+            className="w-full pl-10 pr-4 py-3 bg-zinc-50 border-transparent rounded-xl text-sm focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all"
           />
         </div>
       </div>

@@ -120,7 +120,7 @@ export function CustomerSearch({ onSelect, selectedCustomer }: CustomerSearchPro
               placeholder="Buscar cliente (Nome, CPF, Tel)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-12 py-2 border rounded-lg focus:ring-2 focus:ring-(--lumike-gold) focus:outline-none"
+              className="w-full pl-9 pr-12 py-2 border rounded-lg focus:ring-2 focus:ring-(--lumilee-gold) focus:outline-none"
             />
             <button
               onClick={() => setIsCreating(true)}
@@ -192,7 +192,7 @@ export function CustomerSearch({ onSelect, selectedCustomer }: CustomerSearchPro
           <button
             onClick={handleCreate}
             disabled={creatingLoading || !newCustomer.name}
-            className="w-full py-2 bg-(--lumike-gold) text-white rounded text-sm font-medium hover:opacity-90 disabled:opacity-50"
+            className="w-full py-2 bg-(--lumilee-gold) text-white rounded text-sm font-medium hover:opacity-90 disabled:opacity-50"
           >
             {creatingLoading ? 'Salvando...' : 'Cadastrar Cliente'}
           </button>

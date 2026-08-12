@@ -25,7 +25,7 @@ export function Loading({ size = 'md', className, spinnerClassName, text }: Load
     <div className={cn('flex flex-col items-center justify-center gap-2', className)}>
       <Loader2
         className={cn(
-          'animate-spin text-[var(--lumike-gold)]',
+          'animate-spin text-[var(--lumilee-gold)]',
           sizeClasses[size],
           spinnerClassName,
         )}

@@ -97,7 +97,7 @@ export function getStockColumns({
           </button>
           <button
             onClick={() => onSelect(produto)}
-            className="text-(--lumike-gold) hover:underline text-xs font-bold"
+            className="text-(--lumilee-gold) hover:underline text-xs font-bold"
           >
             Detalhes
           </button>

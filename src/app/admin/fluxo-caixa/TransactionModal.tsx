@@ -102,7 +102,7 @@ export function TransactionModal({ onClose, onSave }: ModalProps) {
                 name="category"
                 value={form.category}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-[var(--lumike-gold)] focus:border-transparent outline-none"
+                className="w-full border rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-[var(--lumilee-gold)] focus:border-transparent outline-none"
               >
                 <option value="venda">Venda</option>
                 <option value="compra">Compra (Despesa)</option>
@@ -125,7 +125,7 @@ export function TransactionModal({ onClose, onSave }: ModalProps) {
                   placeholder="0,00"
                   value={form.amount}
                   onChange={handleChange}
-                  className="w-full border rounded-lg pl-9 pr-3 py-2 focus:ring-2 focus:ring-[var(--lumike-gold)] focus:border-transparent outline-none"
+                  className="w-full border rounded-lg pl-9 pr-3 py-2 focus:ring-2 focus:ring-[var(--lumilee-gold)] focus:border-transparent outline-none"
                 />
               </div>
             </div>
@@ -140,7 +140,7 @@ export function TransactionModal({ onClose, onSave }: ModalProps) {
                 rows={3}
                 value={form.description}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[var(--lumike-gold)] focus:border-transparent outline-none resize-none"
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[var(--lumilee-gold)] focus:border-transparent outline-none resize-none"
               />
             </div>
 
@@ -153,7 +153,7 @@ export function TransactionModal({ onClose, onSave }: ModalProps) {
             <Button
               type="submit"
               disabled={loading || !form.amount}
-              className="w-full bg-[var(--lumike-gold)] hover:bg-yellow-600 text-white font-medium py-2 rounded-lg mt-2"
+              className="w-full bg-[var(--lumilee-gold)] hover:bg-yellow-600 text-white font-medium py-2 rounded-lg mt-2"
             >
               {loading ? 'Salvando...' : 'Confirmar Lançamento'}
             </Button>

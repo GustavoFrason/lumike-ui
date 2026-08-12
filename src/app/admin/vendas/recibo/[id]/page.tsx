@@ -45,7 +45,7 @@ export default function ReceiptPage() {
       {/* Header */}
       <div className="text-center mb-6 pb-6 border-b-2 border-double border-zinc-200">
         <h1 className="text-3xl font-playfair font-black tracking-widest text-zinc-900 mb-1">
-          LUMIKE
+          LUMILEE
         </h1>
         <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-medium">
           Semijoias & Acessórios
@@ -137,6 +137,8 @@ export default function ReceiptPage() {
         </div>
 
         <div className="pt-4">
+          {/* Domínio e Instagram antigos mantidos de propósito — a marca
+              virou Lumilee, mas o domínio/@ novos ainda não existem. */}
           <p className="text-[10px] font-bold tracking-[0.3em] text-zinc-900">WWW.LUMIKE.COM.BR</p>
           <p className="text-[9px] text-zinc-400 mt-1">@lumike_acessorios</p>
         </div>

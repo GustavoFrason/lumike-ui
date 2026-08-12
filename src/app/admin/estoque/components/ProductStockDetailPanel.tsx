@@ -55,13 +55,13 @@ export function ProductStockDetailPanel({
         ) : inventory.stock ? (
           <div className="space-y-3">
             {/* Central */}
-            <div className="flex items-center justify-between p-4 bg-linear-to-br from-zinc-50 to-white rounded-2xl border border-zinc-100 group hover:border-(--lumike-gold)/30 transition-all">
+            <div className="flex items-center justify-between p-4 bg-linear-to-br from-zinc-50 to-white rounded-2xl border border-zinc-100 group hover:border-(--lumilee-gold)/30 transition-all">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white rounded-xl shadow-xs flex items-center justify-center text-(--lumike-gold)">
+                <div className="w-10 h-10 bg-white rounded-xl shadow-xs flex items-center justify-center text-(--lumilee-gold)">
                   <Home className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-zinc-700">Estoque Lumike</p>
+                  <p className="text-sm font-bold text-zinc-700">Estoque Lumilee</p>
                   <p className="text-[10px] text-zinc-400">Ponto de distribuição central</p>
                 </div>
               </div>
@@ -74,10 +74,10 @@ export function ProductStockDetailPanel({
             {inventory.stock.sellers.map((s) => (
               <div
                 key={s.user_id}
-                className="flex items-center justify-between p-4 bg-white rounded-2xl border border-zinc-100 group hover:border-(--lumike-gold)/30 transition-all"
+                className="flex items-center justify-between p-4 bg-white rounded-2xl border border-zinc-100 group hover:border-(--lumilee-gold)/30 transition-all"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-zinc-50 rounded-xl flex items-center justify-center text-zinc-400 group-hover:text-(--lumike-gold) transition-colors">
+                  <div className="w-10 h-10 bg-zinc-50 rounded-xl flex items-center justify-center text-zinc-400 group-hover:text-(--lumilee-gold) transition-colors">
                     <UserIcon className="h-5 w-5" />
                   </div>
                   <div>
@@ -91,7 +91,7 @@ export function ProductStockDetailPanel({
 
             <div className="pt-2 border-t border-zinc-50 flex items-center justify-between px-2">
               <span className="text-sm font-bold text-zinc-400">Total Geral</span>
-              <span className="text-xl font-serif font-bold text-(--lumike-gold)">
+              <span className="text-xl font-serif font-bold text-(--lumilee-gold)">
                 {inventory.stock.total}
               </span>
             </div>

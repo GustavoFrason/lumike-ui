@@ -40,7 +40,7 @@ export function PaymentInfoSection({
   return (
     <section>
       <h3 className="text-sm font-semibold text-zinc-900 uppercase tracking-wider mb-3 flex items-center gap-2">
-        <CreditCard className="h-4 w-4 text-[var(--lumike-gold)]" /> Pagamento
+        <CreditCard className="h-4 w-4 text-[var(--lumilee-gold)]" /> Pagamento
       </h3>
       <div className="bg-zinc-50 p-4 rounded-lg border border-zinc-100 space-y-2">
         <div className="flex justify-between text-sm">

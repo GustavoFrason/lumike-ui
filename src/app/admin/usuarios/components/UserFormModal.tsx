@@ -50,7 +50,7 @@ export function UserFormModal({
                 type="text"
                 value={data.name}
                 onChange={(e) => onChange({ ...data, name: e.target.value })}
-                className="w-full bg-zinc-50 border-zinc-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all"
+                className="w-full bg-zinc-50 border-zinc-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all"
               />
             </div>
             <div>
@@ -62,7 +62,7 @@ export function UserFormModal({
                 type="email"
                 value={data.email}
                 onChange={(e) => onChange({ ...data, email: e.target.value })}
-                className="w-full bg-zinc-50 border-zinc-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all"
+                className="w-full bg-zinc-50 border-zinc-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all"
               />
             </div>
             <div>
@@ -74,7 +74,7 @@ export function UserFormModal({
                 type="password"
                 value={data.password}
                 onChange={(e) => onChange({ ...data, password: e.target.value })}
-                className="w-full bg-zinc-50 border-zinc-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all"
+                className="w-full bg-zinc-50 border-zinc-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all"
                 placeholder="••••••••"
               />
             </div>
@@ -86,7 +86,7 @@ export function UserFormModal({
                 <select
                   value={data.role_id}
                   onChange={(e) => onChange({ ...data, role_id: Number(e.target.value) })}
-                  className="w-full bg-zinc-50 border-zinc-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all"
+                  className="w-full bg-zinc-50 border-zinc-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all"
                 >
                   {roles.map((role) => (
                     <option key={role.id} value={role.id}>
@@ -103,7 +103,7 @@ export function UserFormModal({
                   type="number"
                   value={data.commission_rate}
                   onChange={(e) => onChange({ ...data, commission_rate: Number(e.target.value) })}
-                  className="w-full bg-zinc-50 border-zinc-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all"
+                  className="w-full bg-zinc-50 border-zinc-100 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all"
                 />
               </div>
             </div>
@@ -113,7 +113,7 @@ export function UserFormModal({
                 id="is_active"
                 checked={data.is_active}
                 onChange={(e) => onChange({ ...data, is_active: e.target.checked })}
-                className="w-4 h-4 text-(--lumike-gold) border-zinc-300 rounded focus:ring-(--lumike-gold)"
+                className="w-4 h-4 text-(--lumilee-gold) border-zinc-300 rounded focus:ring-(--lumilee-gold)"
               />
               <label htmlFor="is_active" className="text-sm font-medium text-zinc-600">
                 Usuário Ativo
@@ -132,7 +132,7 @@ export function UserFormModal({
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 py-3 bg-(--lumike-gold) text-white text-sm font-bold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-orange-100"
+              className="flex-1 py-3 bg-(--lumilee-gold) text-white text-sm font-bold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-orange-100"
             >
               {saving ? 'Salvando...' : 'Salvar Alterações'}
             </button>

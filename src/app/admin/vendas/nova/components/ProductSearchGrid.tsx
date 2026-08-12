@@ -43,7 +43,7 @@ export function ProductSearchGrid({
               onChange={onSearchChange}
               onKeyDown={onKeyDown}
               autoFocus
-              className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-(--lumike-gold) text-lg"
+              className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-(--lumilee-gold) text-lg"
             />
           </div>
           <button
@@ -84,7 +84,7 @@ export function ProductSearchGrid({
               <div
                 key={product.id}
                 className={cn(
-                  'bg-white p-3 rounded-lg border hover:border-(--lumike-gold) transition flex gap-3 group relative cursor-pointer',
+                  'bg-white p-3 rounded-lg border hover:border-(--lumilee-gold) transition flex gap-3 group relative cursor-pointer',
                   viewMode === 'list' && 'p-2 items-center',
                 )}
                 onClick={() => onAddToCart(product)}
@@ -130,7 +130,7 @@ export function ProductSearchGrid({
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <p className="text-(--lumike-gold) font-bold">
+                    <p className="text-(--lumilee-gold) font-bold">
                       {formatCurrency(product.preco_promocional || product.price)}
                     </p>
                     {isPromo && viewMode === 'grid' && (
@@ -146,7 +146,7 @@ export function ProductSearchGrid({
                   </div>
                 </div>
                 <div className="absolute right-3 bottom-1.5 opacity-0 group-hover:opacity-100 transition">
-                  <Plus className="bg-(--lumike-gold) text-white p-1 h-6 w-6 rounded-full shadow-lg" />
+                  <Plus className="bg-(--lumilee-gold) text-white p-1 h-6 w-6 rounded-full shadow-lg" />
                 </div>
               </div>
             );

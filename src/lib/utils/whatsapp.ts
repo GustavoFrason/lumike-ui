@@ -29,7 +29,7 @@ export function generateWhatsAppCollectionLink(params: WhatsAppCollectionParams)
 
   // Build message
   let message = `Olá, ${customerName}! Tudo bem? 😊\n\n`;
-  message += `Estou passando para lembrar do seu débito na Lumike de *${formattedAmount}* `;
+  message += `Estou passando para lembrar do seu débito na Lumilee de *${formattedAmount}* `;
   message += `referente à sua compra de ${orderDate}.\n\n`;
   message += `Podemos combinar o pagamento? `;
 

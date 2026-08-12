@@ -104,7 +104,7 @@ export function ImageUpload({
         {previews.length > 0 && previews.length < maxImages && !disabled && (
           <label
             className={cn(
-              'w-24 h-24 border-2 border-dashed border-zinc-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[var(--lumike-gold)] transition',
+              'w-24 h-24 border-2 border-dashed border-zinc-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[var(--lumilee-gold)] transition',
               uploading && 'opacity-50 cursor-not-allowed',
             )}
           >
@@ -134,7 +134,7 @@ export function ImageUpload({
           <ImageIcon className="h-12 w-12 text-zinc-400 mx-auto mb-2" />
           <p className="text-sm text-zinc-500 mb-2">Nenhuma imagem adicionada</p>
           {!disabled && (
-            <label className="inline-block px-4 py-2 bg-[var(--lumike-gold)] text-white rounded-lg hover:opacity-90 transition cursor-pointer">
+            <label className="inline-block px-4 py-2 bg-[var(--lumilee-gold)] text-white rounded-lg hover:opacity-90 transition cursor-pointer">
               Selecionar Imagens
               <input
                 ref={fileInputRef}

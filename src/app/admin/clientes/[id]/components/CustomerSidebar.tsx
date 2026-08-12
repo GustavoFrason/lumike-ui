@@ -10,7 +10,7 @@ export function CustomerSidebar({ customer }: CustomerSidebarProps) {
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-100 flex flex-col items-center text-center">
-        <div className="h-24 w-24 bg-zinc-50 border-4 border-white shadow-md rounded-full flex items-center justify-center text-3xl font-serif text-(--lumike-taupe-dark) mb-4 relative group">
+        <div className="h-24 w-24 bg-zinc-50 border-4 border-white shadow-md rounded-full flex items-center justify-center text-3xl font-serif text-(--lumilee-taupe-dark) mb-4 relative group">
           {customer.name.charAt(0).toUpperCase()}
           <div className="absolute inset-0 bg-black/5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
@@ -23,13 +23,13 @@ export function CustomerSidebar({ customer }: CustomerSidebarProps) {
         <div className="w-full space-y-3 pt-6 border-t border-zinc-50">
           {customer.email && (
             <div className="flex items-center gap-3 text-sm text-zinc-600 justify-center">
-              <Mail className="h-4 w-4 text-(--lumike-gold)" />
+              <Mail className="h-4 w-4 text-(--lumilee-gold)" />
               <span className="truncate">{customer.email}</span>
             </div>
           )}
           {customer.phone && (
             <div className="flex items-center gap-3 text-sm text-zinc-600 justify-center">
-              <Phone className="h-4 w-4 text-(--lumike-gold)" />
+              <Phone className="h-4 w-4 text-(--lumilee-gold)" />
               <span>{customer.phone}</span>
             </div>
           )}

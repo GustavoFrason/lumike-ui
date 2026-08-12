@@ -143,7 +143,7 @@ export function AccessoryPurchaseModal({ onClose, onSave }: AccessoryPurchaseMod
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-(--lumike-gold) text-white rounded hover:opacity-90 font-medium"
+              className="px-4 py-2 bg-(--lumilee-gold) text-white rounded hover:opacity-90 font-medium"
             >
               {loading ? 'Salvando...' : 'Registrar Compra'}
             </button>

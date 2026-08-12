@@ -22,7 +22,7 @@ const testimonials = [
     name: 'Ana Paula G.',
     location: 'Joinville, SC',
     content:
-      'Comprei um conjunto para um casamento e recebi muitos elogios. Elegância pura. Recomendo muito a Lumike.',
+      'Comprei um conjunto para um casamento e recebi muitos elogios. Elegância pura. Recomendo muito a Lumilee.',
     rating: 5,
   },
 ];
@@ -33,7 +33,7 @@ export function TestimonialsSection() {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-playfair font-bold text-white mb-4 uppercase tracking-[0.2em]">
-            Experiência Lumike
+            Experiência Lumilee
           </h2>
           <p className="text-zinc-400 font-inter text-sm italic">
             O que nossas clientes dizem sobre nós

@@ -47,7 +47,7 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
             ) : (
               <Link
                 href={item.href}
-                className="hover:text-[var(--lumike-gold)] capitalize transition"
+                className="hover:text-[var(--lumilee-gold)] capitalize transition"
               >
                 {item.label}
               </Link>

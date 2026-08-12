@@ -57,7 +57,7 @@ export function RoiKpiCards({
       </div>
 
       <div className="bg-zinc-900 p-6 rounded-2xl shadow-xl relative overflow-hidden group border border-zinc-800">
-        <div className="absolute -bottom-2 -right-2 opacity-20 text-(--lumike-gold)">
+        <div className="absolute -bottom-2 -right-2 opacity-20 text-(--lumilee-gold)">
           <PieChartIcon className="h-20 w-20" />
         </div>
         <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] mb-1">
@@ -70,11 +70,11 @@ export function RoiKpiCards({
       </div>
 
       {bestSupplier && (
-        <div className="bg-white p-6 rounded-2xl border-2 border-(--lumike-gold)/20 shadow-lg shadow-orange-50/50 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 text-(--lumike-gold)/20">
+        <div className="bg-white p-6 rounded-2xl border-2 border-(--lumilee-gold)/20 shadow-lg shadow-orange-50/50 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 text-(--lumilee-gold)/20">
             <Award className="h-12 w-12" />
           </div>
-          <p className="text-[10px] font-bold text-(--lumike-gold) uppercase tracking-[0.2em] mb-1">
+          <p className="text-[10px] font-bold text-(--lumilee-gold) uppercase tracking-[0.2em] mb-1">
             Top Performance
           </p>
           <p className="text-xl font-bold text-zinc-900 truncate pr-8">

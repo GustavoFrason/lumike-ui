@@ -63,7 +63,7 @@ export default function ConfiguracoesPage() {
   if (loading)
     return (
       <div className="flex items-center justify-center p-12">
-        <Loader2 className="animate-spin text-[var(--lumike-gold)]" size={32} />
+        <Loader2 className="animate-spin text-[var(--lumilee-gold)]" size={32} />
       </div>
     );
 
@@ -87,7 +87,7 @@ export default function ConfiguracoesPage() {
             className={cn(
               'flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors',
               activeTab === tab.id
-                ? 'border-[var(--lumike-gold)] text-[var(--lumike-gold)]'
+                ? 'border-[var(--lumilee-gold)] text-[var(--lumilee-gold)]'
                 : 'border-transparent text-zinc-500 hover:text-zinc-700',
             )}
           >
@@ -149,7 +149,7 @@ export default function ConfiguracoesPage() {
                       <input
                         type="text"
                         defaultValue={setting.value}
-                        className="w-full border rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-[var(--lumike-gold)] focus:border-transparent outline-none transition"
+                        className="w-full border rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-[var(--lumilee-gold)] focus:border-transparent outline-none transition"
                         onBlur={(e) => {
                           if (e.target.value !== setting.value) {
                             handleUpdate(setting.key, e.target.value);
@@ -158,7 +158,7 @@ export default function ConfiguracoesPage() {
                       />
                       {saving === setting.key && (
                         <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                          <Loader2 className="animate-spin text-[var(--lumike-gold)]" size={16} />
+                          <Loader2 className="animate-spin text-[var(--lumilee-gold)]" size={16} />
                         </div>
                       )}
                     </div>

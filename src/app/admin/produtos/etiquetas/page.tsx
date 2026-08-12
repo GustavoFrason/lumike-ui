@@ -103,7 +103,7 @@ export default function EtiquetasPage() {
         <button
           onClick={handlePrint}
           disabled={labelList.length === 0}
-          className="flex items-center gap-2 bg-(--lumike-gold) text-white px-6 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition shadow-lg shadow-orange-100"
+          className="flex items-center gap-2 bg-(--lumilee-gold) text-white px-6 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition shadow-lg shadow-orange-100"
         >
           <Printer className="h-5 w-5" />
           Imprimir ({labelList.length} Etiquetas)

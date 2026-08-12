@@ -20,7 +20,7 @@ export function ProductQuickSearch({
   return (
     <div className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm space-y-4">
       <label className="text-sm font-semibold text-zinc-700 flex items-center gap-2">
-        <Package className="h-4 w-4 text-(--lumike-gold)" />
+        <Package className="h-4 w-4 text-(--lumilee-gold)" />
         Adicionar Produtos
       </label>
       <div className="relative">
@@ -30,7 +30,7 @@ export function ProductQuickSearch({
           placeholder="Buscar produto por nome ou SKU..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-(--lumike-gold) outline-none text-lg"
+          className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-(--lumilee-gold) outline-none text-lg"
         />
       </div>
 
@@ -44,7 +44,7 @@ export function ProductQuickSearch({
                   onAddProduct(product);
                   onSearchChange('');
                 }}
-                className="flex items-center gap-3 p-3 bg-zinc-50 border rounded-lg hover:border-(--lumike-gold) hover:bg-white transition text-left group"
+                className="flex items-center gap-3 p-3 bg-zinc-50 border rounded-lg hover:border-(--lumilee-gold) hover:bg-white transition text-left group"
               >
                 <div className="w-12 h-12 bg-zinc-200 rounded flex items-center justify-center text-zinc-400 overflow-hidden relative">
                   {product.images?.[0] ? (
@@ -57,7 +57,7 @@ export function ProductQuickSearch({
                   <p className="font-medium text-sm truncate">{product.name}</p>
                   <p className="text-xs text-zinc-500">SKU: {product.sku || '-'}</p>
                 </div>
-                <Plus className="h-5 w-5 text-zinc-300 group-hover:text-(--lumike-gold)" />
+                <Plus className="h-5 w-5 text-zinc-300 group-hover:text-(--lumilee-gold)" />
               </button>
             ))}
           </div>
@@ -65,7 +65,7 @@ export function ProductQuickSearch({
           <div className="flex justify-center pt-2">
             <button
               onClick={onOpenCreateModal}
-              className="flex items-center gap-2 text-sm font-bold text-(--lumike-gold) hover:text-amber-600 transition-colors py-2 px-4 bg-amber-50 rounded-full border border-amber-100"
+              className="flex items-center gap-2 text-sm font-bold text-(--lumilee-gold) hover:text-amber-600 transition-colors py-2 px-4 bg-amber-50 rounded-full border border-amber-100"
             >
               <PlusCircle className="h-4 w-4" />
               Não encontrou? Cadastrar novo produto &quot;{searchTerm}&quot;

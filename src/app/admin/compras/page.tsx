@@ -28,7 +28,7 @@ export default function PurchasesListPage() {
         </div>
         <Link
           href="/admin/compras/nova"
-          className="flex items-center gap-2 px-4 py-2 bg-(--lumike-gold) text-white rounded-lg hover:opacity-90 transition shadow-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2 bg-(--lumilee-gold) text-white rounded-lg hover:opacity-90 transition shadow-sm font-medium"
         >
           <PlusCircle className="h-4 w-4" />
           Registrar Compra

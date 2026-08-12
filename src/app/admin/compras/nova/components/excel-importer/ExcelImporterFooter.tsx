@@ -33,7 +33,7 @@ export function ExcelImporterFooter({
         disabled={confirming || !hasItems}
         className={`px-8 py-2.5 rounded-xl font-bold transition shadow-md flex items-center gap-2 ${
           hasItems
-            ? 'bg-(--lumike-gold) text-white hover:opacity-90 shadow-orange-100 disabled:opacity-50'
+            ? 'bg-(--lumilee-gold) text-white hover:opacity-90 shadow-orange-100 disabled:opacity-50'
             : 'bg-zinc-200 text-zinc-500 cursor-not-allowed'
         }`}
       >

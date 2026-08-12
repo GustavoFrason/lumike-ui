@@ -21,7 +21,7 @@ export function CustomerKpiCards({
           <ShoppingBag className="h-4 w-4" />
           <span className="text-[10px] font-bold uppercase tracking-wider">LTV Total</span>
         </div>
-        <p className="text-xl font-bold text-(--lumike-taupe-dark) font-serif">
+        <p className="text-xl font-bold text-(--lumilee-taupe-dark) font-serif">
           {formatCurrency(totalSpent)}
         </p>
       </div>

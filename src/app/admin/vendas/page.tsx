@@ -95,7 +95,7 @@ export default function VendasPage() {
     }
 
     const firstItem = pedido.items?.[0]?.products?.name || 'itens selecionados';
-    const message = `Olá, ${pedido.customers.name}! ✨\n\nPassando para informar que seu pedido #${pedido.id} na Lumike (*${firstItem}* e outros) foi atualizado para: *${statusLabels[pedido.status]}*.\n\nQualquer dúvida, estamos à disposição! 💎`;
+    const message = `Olá, ${pedido.customers.name}! ✨\n\nPassando para informar que seu pedido #${pedido.id} na Lumilee (*${firstItem}* e outros) foi atualizado para: *${statusLabels[pedido.status]}*.\n\nQualquer dúvida, estamos à disposição! 💎`;
 
     const encodedMessage = encodeURIComponent(message);
     const phone = pedido.customers.phone.replace(/\D/g, '');
@@ -135,7 +135,7 @@ export default function VendasPage() {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `vendas_lumike_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `vendas_lumilee_${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -195,7 +195,7 @@ export default function VendasPage() {
           </button>
           <Link
             href="/admin/vendas/nova"
-            className="px-4 py-2 bg-(--lumike-gold) text-white rounded-lg hover:bg-yellow-600 transition text-sm font-medium"
+            className="px-4 py-2 bg-(--lumilee-gold) text-white rounded-lg hover:bg-yellow-600 transition text-sm font-medium"
           >
             Nova Venda
           </Link>

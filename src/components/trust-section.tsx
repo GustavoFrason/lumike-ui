@@ -35,7 +35,7 @@ export function TrustSection() {
           <FadeIn direction="right" className="space-y-8">
             <div className="space-y-4">
               <h3 className="text-primary-gold font-montserrat text-xs font-bold uppercase tracking-[0.3em]">
-                Conceito Lumike
+                Conceito Lumilee
               </h3>
               <h2 className="text-4xl md:text-5xl font-playfair font-bold text-zinc-900 leading-tight">
                 Brilhe com a <br />
@@ -44,7 +44,7 @@ export function TrustSection() {
             </div>
 
             <p className="text-zinc-600 font-inter leading-relaxed max-w-lg">
-              A Lumike nasceu do desejo de democratizar o luxo. Nossas semijoias combinam o design
+              A Lumilee nasceu do desejo de democratizar o luxo. Nossas semijoias combinam o design
               da alta joalheria com a durabilidade que o seu dia a dia exige. Cada peça é uma
               promessa de sofisticação e confiança.
             </p>

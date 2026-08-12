@@ -132,7 +132,7 @@ export function getSalesColumns({
           <Link
             href={`/admin/vendas/garantia/${pedido.id}`}
             target="_blank"
-            className="p-1 text-(--lumike-gold) hover:text-yellow-600"
+            className="p-1 text-(--lumilee-gold) hover:text-yellow-600"
             title="Certificado de Garantia"
           >
             <ShieldCheck className="h-4 w-4" />

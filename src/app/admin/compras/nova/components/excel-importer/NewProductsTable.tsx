@@ -51,7 +51,7 @@ export function NewProductsTable({ rows, categories, onUpdate, onRemove }: NewPr
                     type="text"
                     value={row.name}
                     onChange={(e) => onUpdate(row.row_number, { name: e.target.value })}
-                    className="w-full border rounded px-2 py-1 focus:ring-1 focus:ring-(--lumike-gold) outline-none"
+                    className="w-full border rounded px-2 py-1 focus:ring-1 focus:ring-(--lumilee-gold) outline-none"
                   />
                 </td>
                 <td className="px-4 py-2 min-w-[160px]">

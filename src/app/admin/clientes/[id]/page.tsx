@@ -56,7 +56,7 @@ export default function CustomerDetailsPage() {
   if (loadingCustomer) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-(--lumike-gold)" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-(--lumilee-gold)" />
       </div>
     );
   }
@@ -67,7 +67,7 @@ export default function CustomerDetailsPage() {
         <h2 className="text-xl font-medium text-zinc-900">Cliente não encontrado</h2>
         <Link
           href="/admin/clientes"
-          className="text-(--lumike-gold) hover:underline mt-2 inline-block"
+          className="text-(--lumilee-gold) hover:underline mt-2 inline-block"
         >
           Voltar para lista
         </Link>

@@ -153,7 +153,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
                 placeholder="(00) 00000-0000"
                 value={form.phone}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumike-gold) outline-none"
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumilee-gold) outline-none"
               />
             </div>
           </div>
@@ -166,7 +166,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
               placeholder="000.000.000-00"
               value={form.cpf}
               onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumike-gold) outline-none"
+              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumilee-gold) outline-none"
             />
           </div>
 
@@ -211,7 +211,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
               <label className="text-sm font-medium text-zinc-700 mb-1 flex justify-between">
                 CEP
                 {searchingCep && (
-                  <span className="text-[10px] text-(--lumike-gold) animate-pulse uppercase">
+                  <span className="text-[10px] text-(--lumilee-gold) animate-pulse uppercase">
                     Buscando...
                   </span>
                 )}
@@ -223,7 +223,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
                 value={form.zipcode}
                 onChange={handleChange}
                 onBlur={(e) => handleCepBlur(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumike-gold) outline-none"
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumilee-gold) outline-none"
               />
             </div>
           </div>
@@ -251,7 +251,7 @@ export function CustomerModal({ cliente, onClose, onSave, loading = false }: Mod
             <button
               type="submit"
               disabled={loading || searchingCep}
-              className="flex-1 bg-(--lumike-gold) text-white py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-(--lumilee-gold) text-white py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Salvando...' : 'Salvar'}
             </button>

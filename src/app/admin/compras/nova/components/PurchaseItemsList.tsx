@@ -42,7 +42,7 @@ export function PurchaseItemsList({ items, onUpdateItem, onRemoveItem }: Purchas
                     onChange={(e) =>
                       onUpdateItem(item.product.id, 'quantity', Number(e.target.value))
                     }
-                    className="w-full border rounded px-2 py-1.5 focus:ring-1 focus:ring-(--lumike-gold) outline-none"
+                    className="w-full border rounded px-2 py-1.5 focus:ring-1 focus:ring-(--lumilee-gold) outline-none"
                     min="1"
                   />
                 </div>
@@ -56,7 +56,7 @@ export function PurchaseItemsList({ items, onUpdateItem, onRemoveItem }: Purchas
                       onUpdateItem(item.product.id, 'unit_cost', parseCurrencyBR(val))
                     }
                     prefix="R$ "
-                    className="w-full border rounded px-2 py-1.5 focus:ring-1 focus:ring-(--lumike-gold) outline-none"
+                    className="w-full border rounded px-2 py-1.5 focus:ring-1 focus:ring-(--lumilee-gold) outline-none"
                   />
                 </div>
                 <div className="text-right min-w-[100px]">

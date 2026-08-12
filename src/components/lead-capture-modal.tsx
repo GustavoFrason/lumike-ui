@@ -9,7 +9,7 @@ import { LeadCaptureForm } from './lead-capture/LeadCaptureForm';
 import { LeadCaptureSuccess } from './lead-capture/LeadCaptureSuccess';
 
 // Key for localStorage to prevent showing again
-const STORE_KEY = 'lumike_lead_captured_v1';
+const STORE_KEY = 'lumilee_lead_captured_v1';
 
 export function LeadCaptureModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -154,7 +154,7 @@ export function LeadCaptureModal() {
             <div className="p-8 md:p-10 text-center relative">
               {/* Decorative Logo / Title */}
               <h2 className="font-playfair text-4xl md:text-5xl text-primary-gold font-bold mb-2">
-                Lumike<span className="text-black">.</span>
+                Lumilee<span className="text-black">.</span>
               </h2>
 
               {step === 'form' ? (

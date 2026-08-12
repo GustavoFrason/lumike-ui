@@ -24,7 +24,7 @@ export function ScannerModal({ isOpen, onClose, onScan }: ScannerModalProps) {
 
         <div className="pt-20 pb-10 px-4 text-center">
           <p className="text-white mb-4">Aponte a câmera para o QR Code</p>
-          <div className="aspect-square rounded-lg overflow-hidden border-2 border-[var(--lumike-gold)] relative">
+          <div className="aspect-square rounded-lg overflow-hidden border-2 border-[var(--lumilee-gold)] relative">
             <Scanner
               onScan={(result) => {
                 if (result && result.length > 0) {

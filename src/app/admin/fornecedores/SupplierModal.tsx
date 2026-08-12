@@ -57,7 +57,7 @@ export function SupplierModal({ supplier, onClose, onSave, loading = false }: Mo
               placeholder="Ex: Fornecedor de Semijoias LTDA"
               value={form.name}
               onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumike-gold) outline-none"
+              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumilee-gold) outline-none"
               required
             />
           </div>
@@ -73,7 +73,7 @@ export function SupplierModal({ supplier, onClose, onSave, loading = false }: Mo
                 placeholder="Ex: João Silva"
                 value={form.contact_name}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumike-gold) outline-none"
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumilee-gold) outline-none"
               />
             </div>
 
@@ -87,7 +87,7 @@ export function SupplierModal({ supplier, onClose, onSave, loading = false }: Mo
                 placeholder="(11) 91234-5678"
                 value={form.phone}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumike-gold) outline-none"
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumilee-gold) outline-none"
               />
             </div>
           </div>
@@ -101,7 +101,7 @@ export function SupplierModal({ supplier, onClose, onSave, loading = false }: Mo
                 placeholder="fornecedor@email.com"
                 value={form.email}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumike-gold) outline-none"
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumilee-gold) outline-none"
               />
             </div>
 
@@ -113,7 +113,7 @@ export function SupplierModal({ supplier, onClose, onSave, loading = false }: Mo
                 placeholder="00.000.000/0000-00"
                 value={form.document}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumike-gold) outline-none"
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumilee-gold) outline-none"
               />
             </div>
           </div>
@@ -126,7 +126,7 @@ export function SupplierModal({ supplier, onClose, onSave, loading = false }: Mo
               placeholder="Ex: Banho de Ouro, Pedrarias, Embalagens"
               value={form.category}
               onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumike-gold) outline-none"
+              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumilee-gold) outline-none"
             />
           </div>
 
@@ -138,7 +138,7 @@ export function SupplierModal({ supplier, onClose, onSave, loading = false }: Mo
               placeholder="Rua, número, complemento, cidade - UF"
               value={form.address}
               onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumike-gold) outline-none"
+              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumilee-gold) outline-none"
             />
           </div>
 
@@ -149,7 +149,7 @@ export function SupplierModal({ supplier, onClose, onSave, loading = false }: Mo
               placeholder="Detalhes adicionais, prazos de entrega, condições de pagamento..."
               value={form.notes}
               onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumike-gold) outline-none"
+              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-(--lumilee-gold) outline-none"
               rows={3}
             />
           </div>
@@ -165,7 +165,7 @@ export function SupplierModal({ supplier, onClose, onSave, loading = false }: Mo
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-(--lumike-gold) text-white py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-(--lumilee-gold) text-white py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Salvando...' : 'Salvar'}
             </button>

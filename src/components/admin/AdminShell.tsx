@@ -13,7 +13,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-[var(--lumike-beige)] text-[var(--lumike-text)]">
+    <div className="flex min-h-screen bg-[var(--lumilee-beige)] text-[var(--lumilee-text)]">
       {/* Sidebar lateral */}
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
@@ -22,7 +22,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         <AdminHeader onMenuClick={() => setIsSidebarOpen(true)} />
 
         {/* Container principal */}
-        <main className="flex-1 p-6 md:p-10 bg-[var(--lumike-bg)] rounded-t-xl shadow-inner overflow-y-auto">
+        <main className="flex-1 p-6 md:p-10 bg-[var(--lumilee-bg)] rounded-t-xl shadow-inner overflow-y-auto">
           {children}
         </main>
       </div>

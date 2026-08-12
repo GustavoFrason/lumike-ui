@@ -126,7 +126,7 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
     <div className="bg-white rounded-2xl border border-zinc-200 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
       <div className="p-6 border-b border-zinc-100 flex items-center justify-between gap-4 bg-zinc-50/50">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-(--lumike-gold)/10 rounded-lg text-(--lumike-gold)">
+          <div className="p-2 bg-(--lumilee-gold)/10 rounded-lg text-(--lumilee-gold)">
             <FileSpreadsheet className="h-5 w-5" />
           </div>
           <div>

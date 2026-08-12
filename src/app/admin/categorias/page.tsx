@@ -136,7 +136,7 @@ export default function CategoriasPage() {
         <h1 className="text-2xl font-semibold">Categorias</h1>
         <button
           onClick={handleNovaCategoria}
-          className="px-4 py-2 bg-[var(--lumike-gold)] text-white rounded-lg hover:opacity-90 transition"
+          className="px-4 py-2 bg-[var(--lumilee-gold)] text-white rounded-lg hover:opacity-90 transition"
         >
           + Nova Categoria
         </button>
@@ -155,7 +155,7 @@ export default function CategoriasPage() {
         emptyAction={
           <button
             onClick={handleNovaCategoria}
-            className="px-4 py-2 bg-[var(--lumike-gold)] text-white rounded-lg hover:opacity-90 transition"
+            className="px-4 py-2 bg-[var(--lumilee-gold)] text-white rounded-lg hover:opacity-90 transition"
           >
             Criar Primeira Categoria
           </button>

@@ -36,7 +36,7 @@ export function CustomerSellerSection({
         <select
           value={selectedSellerId || ''}
           onChange={(e) => onSelectSeller(Number(e.target.value) || null)}
-          className="w-full border rounded-lg p-2.5 text-sm bg-zinc-50 border-zinc-200 focus:ring-2 focus:ring-(--lumike-gold) focus:border-transparent transition-all outline-none"
+          className="w-full border rounded-lg p-2.5 text-sm bg-zinc-50 border-zinc-200 focus:ring-2 focus:ring-(--lumilee-gold) focus:border-transparent transition-all outline-none"
         >
           <option value="">Nenhum vendedor</option>
           {sellers.map((s) => (
@@ -54,9 +54,9 @@ export function CustomerSellerSection({
         <select
           value={stockLocationUserId || ''}
           onChange={(e) => onSelectStockLocation(Number(e.target.value) || null)}
-          className="w-full border rounded-lg p-2.5 text-sm bg-zinc-50 border-zinc-200 focus:ring-2 focus:ring-(--lumike-gold) focus:border-transparent transition-all outline-none"
+          className="w-full border rounded-lg p-2.5 text-sm bg-zinc-50 border-zinc-200 focus:ring-2 focus:ring-(--lumilee-gold) focus:border-transparent transition-all outline-none"
         >
-          <option value="">Estoque Lumike (Central)</option>
+          <option value="">Estoque Lumilee (Central)</option>
           {sellers.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name} (Revendedor)

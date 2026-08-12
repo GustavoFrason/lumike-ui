@@ -97,7 +97,7 @@ export function LoginForm() {
       <Card className="w-[380px] shadow-lg">
         <CardHeader>
           <CardTitle className="text-center text-xl font-semibold">
-            Acesso Administrativo – Lumike
+            Acesso Administrativo – Lumilee
           </CardTitle>
         </CardHeader>
         <CardContent>

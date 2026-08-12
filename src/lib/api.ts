@@ -1,7 +1,7 @@
 /**
  * api.ts
  * ------------------------------------
- * Responsável por centralizar chamadas HTTP ao backend Lumike (NestJS).
+ * Responsável por centralizar chamadas HTTP ao backend Lumilee (NestJS).
  * Usa axios e faz chamadas através das API routes do Next.js (que têm acesso ao cookie httpOnly).
  */
 

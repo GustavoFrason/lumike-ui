@@ -439,7 +439,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
             type="submit"
             form="product-form"
             disabled={loading}
-            className="px-6 py-2 bg-(--lumike-gold) text-white rounded-lg hover:opacity-90 transition font-medium disabled:opacity-50 shadow-sm"
+            className="px-6 py-2 bg-(--lumilee-gold) text-white rounded-lg hover:opacity-90 transition font-medium disabled:opacity-50 shadow-sm"
           >
             {loading ? 'Salvando...' : 'Salvar Produto'}
           </button>

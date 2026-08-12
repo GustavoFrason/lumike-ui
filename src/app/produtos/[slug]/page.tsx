@@ -45,7 +45,7 @@ export async function generateMetadata(
 
   if (!product) {
     return {
-      title: 'Produto não encontrado | Lumike',
+      title: 'Produto não encontrado | Lumilee',
     };
   }
 
@@ -53,15 +53,18 @@ export async function generateMetadata(
   const previousImages = (await parent).openGraph?.images || [];
 
   return {
-    title: `${product.name} | Lumike Semijoias`,
+    title: `${product.name} | Lumilee Semijoias`,
     description:
-      product.description?.slice(0, 160) || 'Descubra a elegância exclusiva das semijoias Lumike.',
+      product.description?.slice(0, 160) ||
+      'Descubra a elegância exclusiva das semijoias Lumilee.',
     openGraph: {
       title: product.name,
       description: product.description?.slice(0, 160),
+      // Domínio antigo (lumike.com.br) mantido de propósito — a marca
+      // registrou "Lumilee" mas o domínio novo ainda não existe.
       url: `https://lumike.com.br/produtos/${slug}`, // Ideally use valid domain env var
       images: [...images, ...previousImages],
-      siteName: 'Lumike Semijoias',
+      siteName: 'Lumilee Semijoias',
       locale: 'pt_BR',
       type: 'website',
     },

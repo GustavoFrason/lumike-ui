@@ -40,8 +40,8 @@ export function UserInventoryModal({ user, onClose }: UserInventoryModalProps) {
         {/* Header */}
         <div className="p-6 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-(--lumike-gold)/10 rounded-xl">
-              <ShoppingBag className="h-5 w-5 text-(--lumike-gold)" />
+            <div className="p-2 bg-(--lumilee-gold)/10 rounded-xl">
+              <ShoppingBag className="h-5 w-5 text-(--lumilee-gold)" />
             </div>
             <div>
               <h2 className="text-xl font-serif text-zinc-900 font-medium">Inventário em Posse</h2>
@@ -120,7 +120,7 @@ export function UserInventoryModal({ user, onClose }: UserInventoryModalProps) {
               <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
                 Valor Total (Venda)
               </span>
-              <span className="text-lg font-bold text-(--lumike-gold)">
+              <span className="text-lg font-bold text-(--lumilee-gold)">
                 {formatCurrency(totalValue)}
               </span>
             </div>

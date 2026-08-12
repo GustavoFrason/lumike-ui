@@ -10,7 +10,7 @@ interface WhatsAppWidgetProps {
 
 export function WhatsAppWidget({
   phone = '5511999999999', // Default phone
-  message = 'Olá! Gostaria de saber mais sobre as semijoias Lumike.',
+  message = 'Olá! Gostaria de saber mais sobre as semijoias Lumilee.',
 }: WhatsAppWidgetProps) {
   const handleClick = () => {
     const encodedMessage = encodeURIComponent(message);

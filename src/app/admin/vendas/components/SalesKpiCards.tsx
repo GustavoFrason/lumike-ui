@@ -19,7 +19,7 @@ export function SalesKpiCards({ total, ticketMedio, pendente }: SalesKpiCardsPro
         <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">
           Ticket Médio
         </p>
-        <p className="text-2xl font-bold text-(--lumike-gold)">{formatCurrency(ticketMedio)}</p>
+        <p className="text-2xl font-bold text-(--lumilee-gold)">{formatCurrency(ticketMedio)}</p>
       </div>
       <div className="p-4 rounded-xl border border-red-100 shadow-sm bg-red-50/30">
         <p className="text-xs font-bold text-red-400 uppercase tracking-wider mb-1">

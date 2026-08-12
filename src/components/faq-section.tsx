@@ -11,7 +11,7 @@ interface FAQItem {
 
 const faqs: FAQItem[] = [
   {
-    question: 'As semijoias Lumike têm garantia?',
+    question: 'As semijoias Lumilee têm garantia?',
     answer:
       'Sim! Todas as nossas peças possuem garantia de 1 ano no banho. Cada pedido acompanha um certificado de garantia detalhado.',
   },

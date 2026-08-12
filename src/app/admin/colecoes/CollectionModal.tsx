@@ -114,7 +114,7 @@ export function CollectionModal({ colecao, onClose, onSave, loading = false }: M
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-[var(--lumike-gold)] text-white py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-[var(--lumilee-gold)] text-white py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Salvando...' : 'Salvar'}
             </button>

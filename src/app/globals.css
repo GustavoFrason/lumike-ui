@@ -43,10 +43,10 @@
   --color-sidebar-ring: var(--primary-gold);
 
   /* Legacy / Admin UI Compatibility Mappings */
-  --lumike-gold: var(--color-primary-gold);
-  --lumike-beige: var(--color-off-white);
-  --lumike-text: var(--color-deep-black);
-  --lumike-bg: var(--color-pure-white);
+  --lumilee-gold: var(--color-primary-gold);
+  --lumilee-beige: var(--color-off-white);
+  --lumilee-text: var(--color-deep-black);
+  --lumilee-bg: var(--color-pure-white);
 
   --color-card: var(--pure-white);
   --color-card-foreground: var(--deep-black);

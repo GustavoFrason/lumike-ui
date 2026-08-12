@@ -1,7 +1,6 @@
 'use client';
 
 import { LogOut, Bell, Menu } from 'lucide-react';
-import Image from 'next/image';
 import { Breadcrumb } from './Breadcrumb';
 
 interface AdminHeaderProps {
@@ -23,14 +22,12 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
 
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <Image
-            src="/logo-lumike.svg"
-            alt="Lumike"
-            width={32}
-            height={32}
-            className="rounded-full"
-          />
-          <span className="text-lg font-semibold text-gray-800 hidden md:block">Painel Lumike</span>
+          <span className="text-lg font-playfair font-bold tracking-wide text-gray-800">
+            Lumilee
+          </span>
+          <span className="text-lg font-semibold text-gray-800 hidden md:block">
+            Painel Lumilee
+          </span>
         </div>
 
         {/* Ações */}
@@ -52,7 +49,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
       </div>
 
       {/* Breadcrumb */}
-      <div className="px-6 py-2 border-t bg-[var(--lumike-beige)]">
+      <div className="px-6 py-2 border-t bg-[var(--lumilee-beige)]">
         <Breadcrumb />
       </div>
     </header>

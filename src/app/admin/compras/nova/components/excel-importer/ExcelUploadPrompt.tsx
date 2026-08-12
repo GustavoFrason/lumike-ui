@@ -16,7 +16,7 @@ export function ExcelUploadPrompt({
 }: ExcelUploadPromptProps) {
   return (
     <div className="py-12 flex flex-col items-center text-center">
-      <div className="h-20 w-20 bg-zinc-50 rounded-full flex items-center justify-center mb-6 border-2 border-dashed border-zinc-200 group-hover:border-(--lumike-gold) transition-colors">
+      <div className="h-20 w-20 bg-zinc-50 rounded-full flex items-center justify-center mb-6 border-2 border-dashed border-zinc-200 group-hover:border-(--lumilee-gold) transition-colors">
         <FileSpreadsheet className="h-10 w-10 text-zinc-300" />
       </div>
       <h3 className="text-lg font-bold text-zinc-900 mb-2">
@@ -38,7 +38,7 @@ export function ExcelUploadPrompt({
       <button
         onClick={() => fileInputRef.current?.click()}
         disabled={loading}
-        className="px-8 py-3 bg-(--lumike-gold) text-white rounded-xl font-bold hover:opacity-90 transition shadow-lg shadow-orange-100 flex items-center gap-2"
+        className="px-8 py-3 bg-(--lumilee-gold) text-white rounded-xl font-bold hover:opacity-90 transition shadow-lg shadow-orange-100 flex items-center gap-2"
       >
         {loading ? (
           <>

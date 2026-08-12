@@ -12,7 +12,7 @@ interface OrderHeaderProps {
 
 export function OrderHeader({ order, statusLabels, statusColors, onClose }: OrderHeaderProps) {
   function handleShareWhatsapp() {
-    const text = `Olá ${order.customers?.name}, segue o link do seu recibo da LUMIKE: ${window.location.origin}/admin/vendas/recibo/${order.id}`;
+    const text = `Olá ${order.customers?.name}, segue o link do seu recibo da LUMILEE: ${window.location.origin}/admin/vendas/recibo/${order.id}`;
     window.open(
       `https://wa.me/${order.customers?.phone?.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`,
       '_blank',
@@ -20,7 +20,7 @@ export function OrderHeader({ order, statusLabels, statusColors, onClose }: Orde
   }
 
   return (
-    <div className="flex items-center justify-between p-6 border-b border-zinc-100 bg-[var(--lumike-beige)]">
+    <div className="flex items-center justify-between p-6 border-b border-zinc-100 bg-[var(--lumilee-beige)]">
       <div>
         <h2 className="text-2xl font-playfair font-bold text-zinc-900">Pedido #{order.id}</h2>
         <div className="flex items-center gap-2 mt-1">

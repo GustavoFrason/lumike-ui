@@ -192,7 +192,7 @@ export default function ProdutosPage() {
         <h1 className="text-2xl font-semibold">Produtos</h1>
         <button
           onClick={handleNovoProduto}
-          className="px-4 py-2 bg-[var(--lumike-gold)] text-white rounded-lg hover:opacity-90 transition"
+          className="px-4 py-2 bg-[var(--lumilee-gold)] text-white rounded-lg hover:opacity-90 transition"
         >
           + Novo Produto
         </button>
@@ -265,7 +265,7 @@ export default function ProdutosPage() {
           ) : (
             <button
               onClick={handleNovoProduto}
-              className="px-4 py-2 bg-[var(--lumike-gold)] text-white rounded-lg hover:opacity-90 transition"
+              className="px-4 py-2 bg-[var(--lumilee-gold)] text-white rounded-lg hover:opacity-90 transition"
             >
               Criar Primeiro Produto
             </button>

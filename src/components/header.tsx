@@ -91,7 +91,7 @@ export function Header() {
             <div className="absolute left-1/2 -translate-x-1/2">
               <Link href="/" className="group">
                 <h1 className="font-playfair font-bold text-3xl md:text-4xl text-deep-black tracking-tight">
-                  Lumike<span className="text-primary-gold">.</span>
+                  Lumilee<span className="text-primary-gold">.</span>
                 </h1>
               </Link>
             </div>

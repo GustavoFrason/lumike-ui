@@ -11,7 +11,7 @@ export function OrderItemsTable({ order, onRepair }: OrderItemsTableProps) {
   return (
     <section>
       <h3 className="text-sm font-semibold text-zinc-900 uppercase tracking-wider mb-3 flex items-center gap-2">
-        <Package className="h-4 w-4 text-[var(--lumike-gold)]" /> Itens do Pedido
+        <Package className="h-4 w-4 text-[var(--lumilee-gold)]" /> Itens do Pedido
       </h3>
       <div className="border border-zinc-100 rounded-lg overflow-hidden">
         <table className="w-full text-sm">
@@ -59,7 +59,7 @@ export function OrderItemsTable({ order, onRepair }: OrderItemsTableProps) {
               <td colSpan={3} className="py-3 px-4 text-right font-semibold text-zinc-900 text-lg">
                 Total do Pedido
               </td>
-              <td className="py-3 px-4 text-right font-bold text-[var(--lumike-gold)] text-lg">
+              <td className="py-3 px-4 text-right font-bold text-[var(--lumilee-gold)] text-lg">
                 {formatCurrency(order.total_amount)}
               </td>
             </tr>

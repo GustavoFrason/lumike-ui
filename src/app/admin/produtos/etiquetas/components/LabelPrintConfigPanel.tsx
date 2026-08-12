@@ -54,10 +54,10 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
             id="show-branding"
             checked={config.showBranding}
             onChange={(e) => onConfigChange({ ...config, showBranding: e.target.checked })}
-            className="rounded text-(--lumike-gold) focus:ring-(--lumike-gold)"
+            className="rounded text-(--lumilee-gold) focus:ring-(--lumilee-gold)"
           />
           <label htmlFor="show-branding" className="text-xs font-medium text-zinc-600">
-            Logo Lumike
+            Logo Lumilee
           </label>
         </div>
       </div>

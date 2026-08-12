@@ -46,7 +46,7 @@ export function PurchaseSummary({
             value={notes}
             onChange={(e) => onNotesChange(e.target.value)}
             rows={4}
-            className="w-full border rounded-lg p-3 text-sm focus:ring-1 focus:ring-(--lumike-gold) outline-none"
+            className="w-full border rounded-lg p-3 text-sm focus:ring-1 focus:ring-(--lumilee-gold) outline-none"
             placeholder="Detalhes sobre a entrega, fatura, etc..."
           />
         </div>
@@ -54,7 +54,7 @@ export function PurchaseSummary({
         <button
           onClick={onFinalizar}
           disabled={disabled}
-          className="w-full py-4 bg-(--lumike-gold) text-white rounded-xl font-bold text-lg hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-orange-100 transition"
+          className="w-full py-4 bg-(--lumilee-gold) text-white rounded-xl font-bold text-lg hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-orange-100 transition"
         >
           {creating ? (
             <Loading size="sm" spinnerClassName="text-white" />

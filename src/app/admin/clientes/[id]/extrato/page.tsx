@@ -95,7 +95,7 @@ export default function CustomerStatementPage() {
           <div className="flex justify-between items-start">
             <div>
               <CardTitle className="text-2xl font-bold text-gray-900">Extrato de Conta</CardTitle>
-              <p className="text-sm text-gray-500 mt-1">LUMIKE - Moda e Acessórios</p>
+              <p className="text-sm text-gray-500 mt-1">LUMILEE - Moda e Acessórios</p>
             </div>
             <div className="text-right">
               <h3 className="font-semibold text-lg">{data.customer.name}</h3>

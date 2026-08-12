@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Facebook, Instagram, ArrowRight } from 'lucide-react';
 
 /**
- * Rodapé público da Lumike (Refactored Luxury Design)
+ * Rodapé público da Lumilee (Refactored Luxury Design)
  */
 export function Footer() {
   const year = new Date().getFullYear();
@@ -13,7 +13,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {/* Brand Column */}
           <div className="space-y-6">
-            <h3 className="font-playfair text-2xl font-bold text-primary-gold">Lumike</h3>
+            <h3 className="font-playfair text-2xl font-bold text-primary-gold">Lumilee</h3>
             <p className="font-inter text-sm text-medium-gray leading-relaxed max-w-xs">
               Curadoria exclusiva de semijoias que unem elegância atemporal e design contemporâneo.
               Feitas para brilhar com você.
@@ -134,7 +134,7 @@ export function Footer() {
         </div>
 
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-500 font-inter">
-          <p>© {year} Lumike. Todos os direitos reservados.</p>
+          <p>© {year} Lumilee. Todos os direitos reservados.</p>
           <div className="flex gap-4">
             {/* Payment Icons could go here */}
             <span>Visa</span>

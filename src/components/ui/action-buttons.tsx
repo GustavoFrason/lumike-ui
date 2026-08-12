@@ -50,7 +50,7 @@ export function ActionButtons({
             onEdit();
           }}
           disabled={disabled}
-          className="text-[var(--lumike-gold)] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+          className="text-[var(--lumilee-gold)] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label={editLabel}
         >
           <Edit className="h-4 w-4" />

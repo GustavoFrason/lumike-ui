@@ -46,7 +46,7 @@ export default function RevendedorasInventarioPage() {
       ) : sellers.length === 0 ? (
         <div className="text-center py-16 text-zinc-400 bg-white rounded-2xl border border-zinc-100">
           <Package className="h-8 w-8 mx-auto mb-3 opacity-40" />
-          Nenhuma peça está com revendedoras no momento — tudo está no Estoque Lumike (central).
+          Nenhuma peça está com revendedoras no momento — tudo está no Estoque Lumilee (central).
         </div>
       ) : (
         <div className="space-y-6">
@@ -55,7 +55,7 @@ export default function RevendedorasInventarioPage() {
               {sellers.length} revendedora{sellers.length > 1 ? 's' : ''} com peças em mãos
             </span>
             <span className="text-sm font-bold text-zinc-800">
-              Total geral: <span className="text-(--lumike-gold)">{totalGeral} peças</span>
+              Total geral: <span className="text-(--lumilee-gold)">{totalGeral} peças</span>
             </span>
           </div>
 

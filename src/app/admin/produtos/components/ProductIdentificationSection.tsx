@@ -70,7 +70,7 @@ export function ProductIdentificationSection({
             className={`w-full border-2 rounded-lg px-3 py-2 focus:ring-2 outline-none font-mono font-medium ${
               validationErrors.sku2
                 ? 'border-red-300 focus:ring-red-200'
-                : 'border-(--lumike-gold)/30 focus:ring-(--lumike-gold)'
+                : 'border-(--lumilee-gold)/30 focus:ring-(--lumilee-gold)'
             }`}
             required
             autoFocus
@@ -119,23 +119,23 @@ export function ProductIdentificationSection({
           </div>
 
           {loadingStock ? (
-            <div className="flex items-center justify-center py-4 text-(--lumike-gold)">
+            <div className="flex items-center justify-center py-4 text-(--lumilee-gold)">
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>
           ) : stock ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-                <div className="bg-white p-2.5 rounded-xl border border-zinc-100 flex items-center justify-between shadow-xs hover:border-(--lumike-gold)/30 transition-all">
+                <div className="bg-white p-2.5 rounded-xl border border-zinc-100 flex items-center justify-between shadow-xs hover:border-(--lumilee-gold)/30 transition-all">
                   <div className="flex items-center gap-2">
-                    <Home className="h-3.5 w-3.5 text-(--lumike-gold)" />
-                    <span className="text-xs font-medium text-zinc-600">Estoque Lumike</span>
+                    <Home className="h-3.5 w-3.5 text-(--lumilee-gold)" />
+                    <span className="text-xs font-medium text-zinc-600">Estoque Lumilee</span>
                   </div>
                   <span className="text-sm font-bold text-zinc-900">{stock.central}</span>
                 </div>
                 {stock.sellers.map((s) => (
                   <div
                     key={s.user_id}
-                    className="bg-white p-2.5 rounded-xl border border-zinc-100 flex items-center justify-between shadow-xs hover:border-(--lumike-gold)/30 transition-all"
+                    className="bg-white p-2.5 rounded-xl border border-zinc-100 flex items-center justify-between shadow-xs hover:border-(--lumilee-gold)/30 transition-all"
                   >
                     <div className="flex items-center gap-2">
                       <UserIcon className="h-3.5 w-3.5 text-zinc-400" />
@@ -150,7 +150,7 @@ export function ProductIdentificationSection({
 
               <div className="mt-2 bg-zinc-900 p-2.5 rounded-xl flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <BarChart3 className="h-3.5 w-3.5 text-(--lumike-gold)" />
+                  <BarChart3 className="h-3.5 w-3.5 text-(--lumilee-gold)" />
                   <div>
                     <span className="text-xs font-bold text-white block leading-tight">
                       Total (todas as localidades)
@@ -160,7 +160,7 @@ export function ProductIdentificationSection({
                     </span>
                   </div>
                 </div>
-                <span className="text-base font-bold text-(--lumike-gold)">{stock.total}</span>
+                <span className="text-base font-bold text-(--lumilee-gold)">{stock.total}</span>
               </div>
             </>
           ) : (

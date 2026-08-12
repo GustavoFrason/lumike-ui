@@ -415,7 +415,7 @@ export default function NovaVendaPage() {
           <button
             onClick={handleFinalizar}
             disabled={cart.length === 0 || creating}
-            className="w-full py-4 bg-(--lumike-gold) text-white rounded-lg font-bold text-lg hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-orange-100"
+            className="w-full py-4 bg-(--lumilee-gold) text-white rounded-lg font-bold text-lg hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-orange-100"
           >
             {creating ? (
               <Loading size="sm" spinnerClassName="text-white" />

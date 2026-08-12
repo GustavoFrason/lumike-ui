@@ -15,7 +15,7 @@ export function LabelContent({ product, config }: LabelContentProps) {
           className="absolute top-0 right-1 text-[7px] font-playfair font-bold text-zinc-300 tracking-[3px] uppercase"
           style={{ opacity: 0.8 }}
         >
-          Lumike
+          Lumilee
         </span>
       )}
 

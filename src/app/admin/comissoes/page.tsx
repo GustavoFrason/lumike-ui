@@ -121,7 +121,7 @@ export default function ComissoesPage() {
         <MetricCard
           title="Total Comissões"
           value={formatCurrency(stats.totalCommission)}
-          icon={<DollarSign className="h-5 w-5 text-(--lumike-gold)" />}
+          icon={<DollarSign className="h-5 w-5 text-(--lumilee-gold)" />}
           description={`Média ${((stats.totalCommission / stats.totalSales) * 100 || 0).toFixed(1)}% de taxa`}
           gradient="from-orange-50 to-white"
         />
@@ -154,7 +154,7 @@ export default function ComissoesPage() {
             <select
               value={selectedSellerId}
               onChange={(e) => setSelectedSellerId(e.target.value)}
-              className="w-full bg-zinc-50 border-zinc-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all"
+              className="w-full bg-zinc-50 border-zinc-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all"
             >
               <option value="all">Todos os Vendedores</option>
               {sellers.map((s) => (
@@ -172,7 +172,7 @@ export default function ComissoesPage() {
               type="date"
               value={dateRange.start}
               onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-              className="w-full bg-zinc-50 border-zinc-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all"
+              className="w-full bg-zinc-50 border-zinc-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all"
             />
           </div>
           <div className="space-y-1.5">
@@ -181,7 +181,7 @@ export default function ComissoesPage() {
               type="date"
               value={dateRange.end}
               onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-              className="w-full bg-zinc-50 border-zinc-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all"
+              className="w-full bg-zinc-50 border-zinc-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all"
             />
           </div>
         </div>
@@ -237,7 +237,7 @@ export default function ComissoesPage() {
                         {formatCurrency(order.total_amount)}
                       </td>
                       <td className="px-6 py-4 text-xs text-zinc-400">{rate}%</td>
-                      <td className="px-6 py-4 text-sm text-right font-bold text-(--lumike-gold)">
+                      <td className="px-6 py-4 text-sm text-right font-bold text-(--lumilee-gold)">
                         {formatCurrency(value)}
                       </td>
                       <td className="px-6 py-4 text-center">

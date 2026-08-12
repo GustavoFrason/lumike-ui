@@ -59,7 +59,7 @@ export function StockAdjustmentModal({
       <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="p-8 border-b border-zinc-50 bg-linear-to-r from-zinc-50/50 to-white">
           <div className="flex items-center gap-3 mb-1">
-            <ClipboardCheck className="h-5 w-5 text-(--lumike-gold)" />
+            <ClipboardCheck className="h-5 w-5 text-(--lumilee-gold)" />
             <h2 className="text-2xl font-serif text-zinc-900 font-medium">
               Conferência de Estoque
             </h2>
@@ -80,9 +80,9 @@ export function StockAdjustmentModal({
                 onChange={(e) =>
                   setUserId(e.target.value === 'central' ? null : Number(e.target.value))
                 }
-                className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all appearance-none"
+                className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all appearance-none"
               >
-                <option value="central">Estoque Lumike</option>
+                <option value="central">Estoque Lumilee</option>
                 {sellers.map((seller) => (
                   <option key={seller.id} value={seller.id}>
                     {seller.name}
@@ -117,7 +117,7 @@ export function StockAdjustmentModal({
                 min="0"
                 value={countedQuantity}
                 onChange={(e) => setCountedQuantity(e.target.value)}
-                className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm font-bold text-zinc-900 text-center focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all"
+                className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm font-bold text-zinc-900 text-center focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all"
                 required
                 placeholder="0"
               />
@@ -150,7 +150,7 @@ export function StockAdjustmentModal({
               type="text"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-(--lumike-gold) outline-none transition-all"
+              className="w-full bg-zinc-50 border-zinc-100 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-(--lumilee-gold) outline-none transition-all"
               placeholder="Ex: Conferência mensal de agosto"
               required
             />
@@ -167,7 +167,7 @@ export function StockAdjustmentModal({
             <button
               type="submit"
               disabled={loading || countedQuantity === ''}
-              className="flex-1 py-4 bg-(--lumike-gold) text-white text-sm font-bold rounded-2xl hover:opacity-90 transition-all shadow-lg shadow-orange-100 disabled:opacity-50 disabled:shadow-none"
+              className="flex-1 py-4 bg-(--lumilee-gold) text-white text-sm font-bold rounded-2xl hover:opacity-90 transition-all shadow-lg shadow-orange-100 disabled:opacity-50 disabled:shadow-none"
             >
               {loading ? 'Registrando...' : 'Confirmar Conferência'}
             </button>

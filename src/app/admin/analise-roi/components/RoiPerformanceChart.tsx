@@ -18,7 +18,7 @@ export function RoiPerformanceChart({ chartData }: RoiPerformanceChartProps) {
     <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm">
       <div className="flex items-center justify-between mb-8">
         <h3 className="font-playfair font-bold text-zinc-900 flex items-center gap-2 text-lg">
-          <TrendingUp className="h-5 w-5 text-(--lumike-gold)" />
+          <TrendingUp className="h-5 w-5 text-(--lumilee-gold)" />
           Comparativo de Desempenho
         </h3>
         <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
@@ -26,7 +26,7 @@ export function RoiPerformanceChart({ chartData }: RoiPerformanceChartProps) {
             <div className="w-2 h-2 rounded-full bg-zinc-200" /> Investido
           </span>
           <span className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-(--lumike-gold)" /> Retorno
+            <div className="w-2 h-2 rounded-full bg-(--lumilee-gold)" /> Retorno
           </span>
         </div>
       </div>

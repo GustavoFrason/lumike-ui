@@ -63,7 +63,7 @@ export function Filters({ categories, collections }: FiltersProps) {
           placeholder="Buscar produtos..."
           defaultValue={searchParams.get('q')?.toString()}
           onChange={(e) => handleSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--lumike-gold)]"
+          className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--lumilee-gold)]"
         />
       </div>
 
@@ -73,7 +73,7 @@ export function Filters({ categories, collections }: FiltersProps) {
         <select
           defaultValue={searchParams.get('category')?.toString()}
           onChange={(e) => handleCategory(e.target.value)}
-          className="pl-10 pr-8 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--lumike-gold)] appearance-none bg-white min-w-[200px]"
+          className="pl-10 pr-8 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--lumilee-gold)] appearance-none bg-white min-w-[200px]"
         >
           <option value="">Todas as categorias</option>
           {categories.map((cat) => (
@@ -89,7 +89,7 @@ export function Filters({ categories, collections }: FiltersProps) {
         <select
           defaultValue={searchParams.get('collection')?.toString()}
           onChange={(e) => handleCollection(e.target.value)}
-          className="pl-4 pr-8 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--lumike-gold)] appearance-none bg-white min-w-[200px]"
+          className="pl-4 pr-8 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--lumilee-gold)] appearance-none bg-white min-w-[200px]"
         >
           <option value="">Todas as coleções</option>
           {collections.map((col) => (

@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
+import { COOKIE_NAME } from '@/lib/cookie-name';
 
-const COOKIE_NAME = 'lumike_token';
+export { COOKIE_NAME };
 
 /**
  * Define o cookie de autenticação.

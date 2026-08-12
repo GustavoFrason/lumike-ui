@@ -134,7 +134,7 @@ export default function FluxoCaixaPage() {
         <div className="flex items-center gap-4">
           <Button
             onClick={() => setShowModal(true)}
-            className="bg-[var(--lumike-gold)] text-white hover:bg-yellow-600"
+            className="bg-[var(--lumilee-gold)] text-white hover:bg-yellow-600"
           >
             <PlusCircle className="mr-2 h-4 w-4" />
             Nova Movimentação

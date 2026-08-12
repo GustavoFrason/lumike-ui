@@ -72,7 +72,7 @@ export function CustomerOrdersTable({ orders, loadingOrders }: CustomerOrdersTab
                   <td className="px-6 py-5 text-right">
                     <Link
                       href={`/admin/vendas?highlight=${order.id}`}
-                      className="inline-flex items-center gap-1.5 text-(--lumike-gold) hover:text-amber-600 font-bold text-xs uppercase tracking-wider transition-colors"
+                      className="inline-flex items-center gap-1.5 text-(--lumilee-gold) hover:text-amber-600 font-bold text-xs uppercase tracking-wider transition-colors"
                     >
                       <span>Detalhes</span>
                       <ExternalLink className="h-3 w-3" />

@@ -129,11 +129,11 @@ export default function EstoquePage() {
         <div>
           <h1 className="text-3xl font-serif text-zinc-900 font-medium">Gestão de Estoque</h1>
           <p className="text-zinc-500 mt-1">
-            Monitore e transfira mercadorias entre estoque Lumike e revendedores
+            Monitore e transfira mercadorias entre estoque Lumilee e revendedores
           </p>
           <Link
             href="/admin/estoque/revendedores"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-(--lumike-gold) hover:underline mt-2"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-(--lumilee-gold) hover:underline mt-2"
           >
             <UserIcon className="h-3.5 w-3.5" /> Ver inventário por revendedora
           </Link>

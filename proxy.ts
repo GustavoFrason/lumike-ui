@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { COOKIE_NAME } from '@/lib/cookie-name';
 
 /**
  * Proxy de Autenticação e Redirecionamento (Next.js 16)
@@ -6,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
  * Controla o acesso às rotas /admin e /minha-conta com base no papel (role) do usuário.
  */
 export default async function proxy(request: NextRequest) {
-  const token = request.cookies.get('lumike_token')?.value;
+  const token = request.cookies.get(COOKIE_NAME)?.value;
   const { pathname } = request.nextUrl;
 
   let userRole: string | null = null;

@@ -56,7 +56,7 @@ export function ProductOrganizationSection({
               <button
                 type="button"
                 onClick={() => onToggleQuickCategory(true)}
-                className="text-xs text-(--lumike-gold) hover:underline flex items-center gap-1"
+                className="text-xs text-(--lumilee-gold) hover:underline flex items-center gap-1"
               >
                 <Plus className="h-3 w-3" /> Nova
               </button>
@@ -164,7 +164,7 @@ export function ProductOrganizationSection({
               onChange={(e) => onInitialSellerIdChange(e.target.value)}
               className="w-full border rounded-lg px-3 py-2 text-zinc-700"
             >
-              <option value="">Estoque Lumike (Central)</option>
+              <option value="">Estoque Lumilee (Central)</option>
               {sellers.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name} (Revendedor)

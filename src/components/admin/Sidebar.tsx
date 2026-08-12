@@ -31,7 +31,7 @@ interface SidebarProps {
 }
 
 /**
- * Sidebar do painel Lumike.
+ * Sidebar do painel Lumilee.
  * Responsiva e animada (abre/fecha no mobile).
  */
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
@@ -102,9 +102,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 key={item.href}
                 href={item.href}
                 onClick={mobile ? onClose : undefined}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-zinc-600 hover:text-(--lumike-gold) hover:bg-orange-50/50 transition-all border border-transparent hover:border-orange-100 group"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-zinc-600 hover:text-(--lumilee-gold) hover:bg-orange-50/50 transition-all border border-transparent hover:border-orange-100 group"
               >
-                <span className="text-zinc-400 group-hover:text-(--lumike-gold) transition-colors">
+                <span className="text-zinc-400 group-hover:text-(--lumilee-gold) transition-colors">
                   {item.icon}
                 </span>
                 <span>{item.label}</span>
@@ -122,8 +122,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       <aside className="hidden md:flex flex-col w-64 bg-white border-r shadow-xs h-screen sticky top-0 overflow-hidden">
         <div className="p-8 pb-4">
           <div className="text-xl font-serif font-bold tracking-tight text-zinc-900 italic">
-            LUMIKE{' '}
-            <span className="text-(--lumike-gold) not-italic font-sans text-xs align-top ml-1">
+            LUMILEE{' '}
+            <span className="text-(--lumilee-gold) not-italic font-sans text-xs align-top ml-1">
               ADMIN
             </span>
           </div>
@@ -152,7 +152,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             >
               <div className="flex items-center justify-between p-6 border-b border-zinc-50">
                 <span className="font-serif font-bold text-zinc-900 tracking-tight italic">
-                  LUMIKE
+                  LUMILEE
                 </span>
                 <button
                   onClick={onClose}

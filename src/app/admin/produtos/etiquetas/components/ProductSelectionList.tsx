@@ -35,7 +35,7 @@ export function ProductSelectionList({
           />
         </div>
         <div className="flex gap-2">
-          <button onClick={onSelectAll} className="text-xs text-[--lumike-gold] hover:underline">
+          <button onClick={onSelectAll} className="text-xs text-[--lumilee-gold] hover:underline">
             Selecionar Tudo
           </button>
           <button onClick={onDeselectAll} className="text-xs text-red-500 hover:underline">
@@ -52,7 +52,7 @@ export function ProductSelectionList({
               key={product.id}
               className={`p-3 rounded border transition flex items-center justify-between ${
                 qty > 0
-                  ? 'border-(--lumike-gold) bg-yellow-50/10 ring-1 ring-(--lumike-gold)'
+                  ? 'border-(--lumilee-gold) bg-yellow-50/10 ring-1 ring-(--lumilee-gold)'
                   : 'border-zinc-200 bg-white hover:bg-zinc-50'
               }`}
             >
@@ -75,13 +75,13 @@ export function ProductSelectionList({
                   -
                 </button>
                 <span
-                  className={`text-xs font-bold w-4 text-center ${qty > 0 ? 'text-(--lumike-gold)' : 'text-zinc-300'}`}
+                  className={`text-xs font-bold w-4 text-center ${qty > 0 ? 'text-(--lumilee-gold)' : 'text-zinc-300'}`}
                 >
                   {qty}
                 </span>
                 <button
                   onClick={() => onUpdateQuantity(product.id, 1)}
-                  className="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-(--lumike-gold) transition"
+                  className="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-(--lumilee-gold) transition"
                 >
                   +
                 </button>

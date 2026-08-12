@@ -33,7 +33,7 @@ export function getProductColumns({
           type="checkbox"
           checked={allSelected}
           onChange={onToggleSelectAll}
-          className="rounded border-zinc-300 text-[var(--lumike-gold)] focus:ring-[var(--lumike-gold)]"
+          className="rounded border-zinc-300 text-[var(--lumilee-gold)] focus:ring-[var(--lumilee-gold)]"
         />
       ),
       render: (produto) => (
@@ -41,7 +41,7 @@ export function getProductColumns({
           type="checkbox"
           checked={selectedIds.includes(produto.id)}
           onChange={() => onToggleSelect(produto.id)}
-          className="rounded border-zinc-300 text-[var(--lumike-gold)] focus:ring-[var(--lumike-gold)]"
+          className="rounded border-zinc-300 text-[var(--lumilee-gold)] focus:ring-[var(--lumilee-gold)]"
         />
       ),
       className: 'w-10',
@@ -74,7 +74,7 @@ export function getProductColumns({
         produto.preco_promocional ? (
           <div>
             <span className="line-through text-zinc-400">{formatCurrency(produto.price)}</span>
-            <span className="ml-2 text-[var(--lumike-gold)] font-semibold">
+            <span className="ml-2 text-[var(--lumilee-gold)] font-semibold">
               {formatCurrency(produto.preco_promocional)}
             </span>
           </div>

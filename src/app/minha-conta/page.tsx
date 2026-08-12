@@ -10,7 +10,7 @@ export default function CustomerDashboard() {
       <div>
         <h1 className="font-playfair text-3xl font-bold mb-2">Visão Geral</h1>
         <p className="text-medium-gray text-sm">
-          Bem-vindo(a) de volta ao seu espaço exclusivo Lumike.
+          Bem-vindo(a) de volta ao seu espaço exclusivo Lumilee.
         </p>
       </div>
 

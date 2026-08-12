@@ -99,7 +99,7 @@ export default function ClientesPage() {
       render: (cliente) => (
         <Link
           href={`/admin/clientes/${cliente.id}`}
-          className="font-medium text-(--lumike-taupe-dark) hover:text-(--lumike-gold) hover:underline"
+          className="font-medium text-(--lumilee-taupe-dark) hover:text-(--lumilee-gold) hover:underline"
         >
           {cliente.name}
         </Link>
@@ -156,7 +156,7 @@ export default function ClientesPage() {
         </div>
         <button
           onClick={handleNovoCliente}
-          className="px-4 py-2 bg-(--lumike-gold) text-white rounded-lg hover:opacity-90 transition shadow-sm font-medium flex items-center justify-center gap-2"
+          className="px-4 py-2 bg-(--lumilee-gold) text-white rounded-lg hover:opacity-90 transition shadow-sm font-medium flex items-center justify-center gap-2"
         >
           <span>+ Novo Cliente</span>
         </button>
@@ -218,7 +218,7 @@ export default function ClientesPage() {
             placeholder="Buscar por nome, e-mail, CPF ou telefone..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm text-zinc-900 focus:ring-2 focus:ring-(--lumike-gold) focus:bg-white focus:outline-none transition-all"
+            className="w-full pl-9 pr-4 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm text-zinc-900 focus:ring-2 focus:ring-(--lumilee-gold) focus:bg-white focus:outline-none transition-all"
           />
         </div>
       </div>
@@ -236,7 +236,7 @@ export default function ClientesPage() {
         emptyAction={
           <button
             onClick={handleNovoCliente}
-            className="px-4 py-2 bg-(--lumike-gold) text-white rounded-lg hover:opacity-90 transition"
+            className="px-4 py-2 bg-(--lumilee-gold) text-white rounded-lg hover:opacity-90 transition"
           >
             Criar Primeiro Cliente
           </button>

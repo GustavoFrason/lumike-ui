@@ -73,7 +73,7 @@ export function DataTable<T extends { id: number | string }>({
     >
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-[var(--lumike-beige)]">
+          <thead className="bg-[var(--lumilee-beige)]">
             <tr>
               {columns.map((column) => (
                 <th

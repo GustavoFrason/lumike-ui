@@ -26,25 +26,25 @@ export default function WarrantyPage() {
   expirationDate.setFullYear(expirationDate.getFullYear() + 1);
 
   return (
-    <div className="max-w-[148mm] mx-auto p-12 bg-white text-zinc-900 font-sans border-12 border-double border-(--lumike-gold) print:max-w-none print:w-full print:border-12 shadow-2xl relative overflow-hidden">
+    <div className="max-w-[148mm] mx-auto p-12 bg-white text-zinc-900 font-sans border-12 border-double border-(--lumilee-gold) print:max-w-none print:w-full print:border-12 shadow-2xl relative overflow-hidden">
       {/* Decorative Background Element */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-(--lumike-gold)/5 rounded-bl-full -mr-16 -mt-16 pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-32 h-32 bg-(--lumilee-gold)/5 rounded-bl-full -mr-16 -mt-16 pointer-events-none"></div>
 
       {/* Header */}
       <div className="text-center mb-10 relative">
         <h1 className="text-4xl font-playfair font-black tracking-[0.3em] text-zinc-900 mb-2">
-          LUMIKE
+          LUMILEE
         </h1>
         <p className="text-[10px] tracking-[0.4em] uppercase text-zinc-400 mb-8 font-medium">
           Semijoias & Acessórios de Luxo
         </p>
 
         <div className="flex items-center justify-center gap-4 mb-4">
-          <div className="h-px w-12 bg-(--lumike-gold)"></div>
+          <div className="h-px w-12 bg-(--lumilee-gold)"></div>
           <h2 className="text-xl font-playfair italic font-medium text-zinc-700">
             Certificado de Garantia
           </h2>
-          <div className="h-px w-12 bg-(--lumike-gold)"></div>
+          <div className="h-px w-12 bg-(--lumilee-gold)"></div>
         </div>
       </div>
 
@@ -60,7 +60,7 @@ export default function WarrantyPage() {
             <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
               Detalhes da Aquisição
             </span>
-            <span className="text-xs font-serif italic text-(--lumike-gold)">
+            <span className="text-xs font-serif italic text-(--lumilee-gold)">
               Pedido #{order.id}
             </span>
           </div>
@@ -100,21 +100,21 @@ export default function WarrantyPage() {
           </p>
           <div className="grid grid-cols-1 gap-3">
             <p className="flex gap-2">
-              <span className="font-bold text-(--lumike-gold)">1.</span>
+              <span className="font-bold text-(--lumilee-gold)">1.</span>
               <span>
                 Esta garantia assegura o banho de ouro 18k e ródio por um período de{' '}
                 <strong>1 (um) ano</strong> a partir da data de compra.
               </span>
             </p>
             <p className="flex gap-2">
-              <span className="font-bold text-(--lumike-gold)">2.</span>
+              <span className="font-bold text-(--lumilee-gold)">2.</span>
               <span>
                 Cobertura exclusiva para defeitos técnicos de fabricação e desprendimento do metal.
                 Reclamações serão avaliadas pelo nosso laboratório.
               </span>
             </p>
             <p className="flex gap-2">
-              <span className="font-bold text-(--lumike-gold)">3.</span>
+              <span className="font-bold text-(--lumilee-gold)">3.</span>
               <span>
                 A garantia <strong>não cobre</strong> danos por mau uso, quebras, quedas de pedras,
                 riscos ou contato com agentes químicos (perfumes, cremes, mar e piscina).
@@ -129,7 +129,7 @@ export default function WarrantyPage() {
         <div className="flex flex-col items-center">
           <div className="w-56 h-px bg-zinc-200 mb-2"></div>
           <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-zinc-800">
-            Autenticidade Lumike
+            Autenticidade Lumilee
           </p>
           <p className="text-[9px] text-zinc-400 mt-1 italic">
             Válido até {formatDate(expirationDate.toISOString())}
