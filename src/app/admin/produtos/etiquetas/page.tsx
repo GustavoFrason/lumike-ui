@@ -20,13 +20,15 @@ export default function EtiquetasPage() {
   // Novo estado: Map de id -> quantidade
   const [selectedQuantities, setSelectedQuantities] = useState<Record<number, number>>({});
 
-  // Configurações de impressão
+  // Configurações de impressão — padrão já na etiqueta física usada nas peças
+  // (27x15mm, ver preset "Joia" em components/types.ts)
   const [config, setConfig] = useState<LabelConfig>({
-    width: 40, // mm
-    height: 25, // mm
-    fontSize: 9, // px
-    qrSize: 55, // px (visual)
-    showBranding: true,
+    width: 27, // mm
+    height: 15, // mm
+    fontSize: 8, // px
+    qrSize: 40, // px (visual)
+    showBranding: false,
+    showProductName: false,
   });
 
   useEffect(() => {

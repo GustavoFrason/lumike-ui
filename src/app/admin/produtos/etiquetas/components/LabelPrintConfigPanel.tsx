@@ -11,7 +11,7 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
       <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">
         Configuração de Impressão
       </p>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         <div>
           <label className="text-xs font-medium text-zinc-500">Largura (mm)</label>
           <input
@@ -58,6 +58,18 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
           />
           <label htmlFor="show-branding" className="text-xs font-medium text-zinc-600">
             Logo Lumilee
+          </label>
+        </div>
+        <div className="flex items-center gap-2 pt-4">
+          <input
+            type="checkbox"
+            id="show-product-name"
+            checked={config.showProductName}
+            onChange={(e) => onConfigChange({ ...config, showProductName: e.target.checked })}
+            className="rounded text-(--lumilee-gold) focus:ring-(--lumilee-gold)"
+          />
+          <label htmlFor="show-product-name" className="text-xs font-medium text-zinc-600">
+            Nome do Produto
           </label>
         </div>
       </div>

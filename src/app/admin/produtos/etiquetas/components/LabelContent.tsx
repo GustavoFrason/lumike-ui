@@ -4,7 +4,7 @@ import { Product } from '@/lib/services/products.service';
 
 interface LabelContentProps {
   product: Product;
-  config: { fontSize: number; qrSize: number; showBranding: boolean };
+  config: { fontSize: number; qrSize: number; showBranding: boolean; showProductName: boolean };
 }
 
 export function LabelContent({ product, config }: LabelContentProps) {
@@ -24,12 +24,14 @@ export function LabelContent({ product, config }: LabelContentProps) {
       </div>
 
       <div className="flex-1 min-w-0 flex flex-col justify-center h-full leading-none space-y-0.5">
-        <p
-          className="font-bold line-clamp-2 text-zinc-900"
-          style={{ fontSize: `${config.fontSize}px`, lineHeight: '1.2' }}
-        >
-          {product.name}
-        </p>
+        {config.showProductName && (
+          <p
+            className="font-bold line-clamp-2 text-zinc-900"
+            style={{ fontSize: `${config.fontSize}px`, lineHeight: '1.2' }}
+          >
+            {product.name}
+          </p>
+        )}
 
         <p
           className="font-mono text-zinc-500"
