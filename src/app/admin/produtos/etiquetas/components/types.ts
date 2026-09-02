@@ -5,6 +5,10 @@ export interface LabelConfig {
   qrSize: number; // px (visual)
   showBranding: boolean;
   showProductName: boolean;
+  qrOffsetX: number; // px (visual) — ajuste fino de alinhamento na impressão
+  qrOffsetY: number; // px (visual) — ajuste fino de alinhamento na impressão
+  columnGap: number; // mm — espaço entre etiquetas lado a lado (bobina multi-coluna)
+  edgeMargin: number; // mm — margem em branco antes da primeira coluna
 }
 
 export interface LabelTemplate {

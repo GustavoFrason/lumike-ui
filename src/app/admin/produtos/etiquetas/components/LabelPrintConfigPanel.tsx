@@ -11,7 +11,7 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
       <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">
         Configuração de Impressão
       </p>
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-8 gap-4">
         <div>
           <label className="text-xs font-medium text-zinc-500">Largura (mm)</label>
           <input
@@ -45,6 +45,42 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
             type="number"
             value={config.qrSize}
             onChange={(e) => onConfigChange({ ...config, qrSize: Number(e.target.value) })}
+            className="w-full border rounded px-2 py-1 text-sm bg-zinc-50"
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium text-zinc-500">Deslocar QR — Horiz. (px)</label>
+          <input
+            type="number"
+            value={config.qrOffsetX}
+            onChange={(e) => onConfigChange({ ...config, qrOffsetX: Number(e.target.value) })}
+            className="w-full border rounded px-2 py-1 text-sm bg-zinc-50"
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium text-zinc-500">Deslocar QR — Vert. (px)</label>
+          <input
+            type="number"
+            value={config.qrOffsetY}
+            onChange={(e) => onConfigChange({ ...config, qrOffsetY: Number(e.target.value) })}
+            className="w-full border rounded px-2 py-1 text-sm bg-zinc-50"
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium text-zinc-500">Espaço entre colunas (mm)</label>
+          <input
+            type="number"
+            value={config.columnGap}
+            onChange={(e) => onConfigChange({ ...config, columnGap: Number(e.target.value) })}
+            className="w-full border rounded px-2 py-1 text-sm bg-zinc-50"
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium text-zinc-500">Margem da borda (mm)</label>
+          <input
+            type="number"
+            value={config.edgeMargin}
+            onChange={(e) => onConfigChange({ ...config, edgeMargin: Number(e.target.value) })}
             className="w-full border rounded px-2 py-1 text-sm bg-zinc-50"
           />
         </div>

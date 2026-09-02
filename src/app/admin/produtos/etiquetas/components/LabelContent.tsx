@@ -4,7 +4,14 @@ import { Product } from '@/lib/services/products.service';
 
 interface LabelContentProps {
   product: Product;
-  config: { fontSize: number; qrSize: number; showBranding: boolean; showProductName: boolean };
+  config: {
+    fontSize: number;
+    qrSize: number;
+    showBranding: boolean;
+    showProductName: boolean;
+    qrOffsetX: number;
+    qrOffsetY: number;
+  };
 }
 
 export function LabelContent({ product, config }: LabelContentProps) {
@@ -19,7 +26,10 @@ export function LabelContent({ product, config }: LabelContentProps) {
         </span>
       )}
 
-      <div className="shrink-0 flex items-center justify-center">
+      <div
+        className="shrink-0 flex items-center justify-center"
+        style={{ transform: `translate(${config.qrOffsetX}px, ${config.qrOffsetY}px)` }}
+      >
         <QRCodeSVG value={product.sku || product.id.toString()} size={config.qrSize} level="L" />
       </div>
 

@@ -29,6 +29,13 @@ export default function EtiquetasPage() {
     qrSize: 40, // px (visual)
     showBranding: false,
     showProductName: false,
+    qrOffsetX: -2, // px — chute inicial pra ajuste fino na impressora
+    qrOffsetY: 2, // px — chute inicial pra ajuste fino na impressora
+    // Bobina física usada tem 3 colunas de etiqueta lado a lado (9,2cm de
+    // largura total): 2mm de margem em branco em cada borda + 3mm de espaço
+    // entre uma etiqueta e a outra.
+    columnGap: 3, // mm
+    edgeMargin: 2, // mm
   });
 
   useEffect(() => {
@@ -133,7 +140,14 @@ export default function EtiquetasPage() {
 
       {/* Print Area - Only visible when printing */}
       <div className="hidden print:block">
-        <div className="flex flex-wrap content-start gap-0">
+        <div
+          className="flex flex-wrap content-start"
+          style={{
+            columnGap: `${config.columnGap}mm`,
+            rowGap: 0,
+            paddingLeft: `${config.edgeMargin}mm`,
+          }}
+        >
           {labelList.map((product, idx) => (
             <div
               key={`${product.id}-${idx}-print`}
