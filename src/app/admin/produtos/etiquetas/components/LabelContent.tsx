@@ -9,14 +9,17 @@ interface LabelContentProps {
     qrSize: number;
     showBranding: boolean;
     showProductName: boolean;
-    qrOffsetX: number;
-    qrOffsetY: number;
+    offsetX: number;
+    offsetY: number;
   };
 }
 
 export function LabelContent({ product, config }: LabelContentProps) {
   return (
-    <div className="w-full h-full flex items-center gap-1.5 p-1 relative">
+    <div
+      className="w-full h-full flex items-center gap-1.5 p-1 relative"
+      style={{ transform: `translate(${config.offsetX}px, ${config.offsetY}px)` }}
+    >
       {config.showBranding && (
         <span
           className="absolute top-0 right-1 text-[7px] font-playfair font-bold text-zinc-300 tracking-[3px] uppercase"
@@ -26,10 +29,7 @@ export function LabelContent({ product, config }: LabelContentProps) {
         </span>
       )}
 
-      <div
-        className="shrink-0 flex items-center justify-center"
-        style={{ transform: `translate(${config.qrOffsetX}px, ${config.qrOffsetY}px)` }}
-      >
+      <div className="shrink-0 flex items-center justify-center">
         <QRCodeSVG value={product.sku || product.id.toString()} size={config.qrSize} level="L" />
       </div>
 

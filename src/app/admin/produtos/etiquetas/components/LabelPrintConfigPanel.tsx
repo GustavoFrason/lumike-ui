@@ -49,20 +49,20 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-zinc-500">Deslocar QR — Horiz. (px)</label>
+          <label className="text-xs font-medium text-zinc-500">Deslocar Etiqueta — Horiz. (px)</label>
           <input
             type="number"
-            value={config.qrOffsetX}
-            onChange={(e) => onConfigChange({ ...config, qrOffsetX: Number(e.target.value) })}
+            value={config.offsetX}
+            onChange={(e) => onConfigChange({ ...config, offsetX: Number(e.target.value) })}
             className="w-full border rounded px-2 py-1 text-sm bg-zinc-50"
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-zinc-500">Deslocar QR — Vert. (px)</label>
+          <label className="text-xs font-medium text-zinc-500">Deslocar Etiqueta — Vert. (px)</label>
           <input
             type="number"
-            value={config.qrOffsetY}
-            onChange={(e) => onConfigChange({ ...config, qrOffsetY: Number(e.target.value) })}
+            value={config.offsetY}
+            onChange={(e) => onConfigChange({ ...config, offsetY: Number(e.target.value) })}
             className="w-full border rounded px-2 py-1 text-sm bg-zinc-50"
           />
         </div>

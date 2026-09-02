@@ -29,8 +29,8 @@ export default function EtiquetasPage() {
     qrSize: 40, // px (visual)
     showBranding: false,
     showProductName: false,
-    qrOffsetX: -2, // px — chute inicial pra ajuste fino na impressora
-    qrOffsetY: 2, // px — chute inicial pra ajuste fino na impressora
+    offsetX: -4, // px — chute inicial pra ajuste fino na impressora
+    offsetY: 2, // px — chute inicial pra ajuste fino na impressora
     // Bobina física usada tem 3 colunas de etiqueta lado a lado (9,2cm de
     // largura total): 2mm de margem em branco em cada borda + 3mm de espaço
     // entre uma etiqueta e a outra.
