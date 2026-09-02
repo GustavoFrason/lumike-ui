@@ -119,7 +119,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <>
       {/* Sidebar desktop */}
-      <aside className="hidden md:flex flex-col w-64 bg-white border-r shadow-xs h-screen sticky top-0 overflow-hidden">
+      <aside className="print:hidden hidden md:flex flex-col w-64 bg-white border-r shadow-xs h-screen sticky top-0 overflow-hidden">
         <div className="p-8 pb-4">
           <div className="text-xl font-serif font-bold tracking-tight text-zinc-900 italic">
             LUMILEE{' '}
@@ -136,7 +136,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         {isOpen && (
           <>
             <motion.div
-              className="fixed inset-0 bg-black/40 z-40 backdrop-blur-xs"
+              className="print:hidden fixed inset-0 bg-black/40 z-40 backdrop-blur-xs"
               onClick={onClose}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -144,7 +144,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             />
 
             <motion.aside
-              className="fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-50 flex flex-col"
+              className="print:hidden fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-50 flex flex-col"
               initial={{ x: -300 }}
               animate={{ x: 0 }}
               exit={{ x: -300 }}

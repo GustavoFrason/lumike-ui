@@ -13,7 +13,7 @@ interface AdminHeaderProps {
  */
 export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   return (
-    <header className="flex flex-col bg-white border-b shadow-sm sticky top-0 z-40">
+    <header className="print:hidden flex flex-col bg-white border-b shadow-sm sticky top-0 z-40">
       <div className="flex items-center justify-between px-6 py-3">
         {/* Botão menu mobile */}
         <button className="md:hidden p-2 rounded-md hover:bg-gray-100" onClick={onMenuClick}>
