@@ -49,7 +49,9 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-zinc-500">Deslocar Etiqueta — Horiz. (px)</label>
+          <label className="text-xs font-medium text-zinc-500">
+            Deslocar Etiqueta — Horiz. (px)
+          </label>
           <input
             type="number"
             value={config.offsetX}
@@ -58,7 +60,9 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-zinc-500">Deslocar Etiqueta — Vert. (px)</label>
+          <label className="text-xs font-medium text-zinc-500">
+            Deslocar Etiqueta — Vert. (px)
+          </label>
           <input
             type="number"
             value={config.offsetY}
