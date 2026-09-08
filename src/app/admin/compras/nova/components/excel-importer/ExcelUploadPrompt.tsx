@@ -1,5 +1,8 @@
-import { FileSpreadsheet, AlertCircle, Loader2 } from 'lucide-react';
+import { FileSpreadsheet, AlertCircle, Loader2, Download } from 'lucide-react';
 import { RefObject } from 'react';
+
+/** Modelo pronto pra baixar (public/modelos). Gerado por scripts/gen-import-template.py. */
+const TEMPLATE_URL = '/modelos/modelo-importacao-zarpellon.xlsx';
 
 interface ExcelUploadPromptProps {
   loading: boolean;
@@ -22,10 +25,19 @@ export function ExcelUploadPrompt({
       <h3 className="text-lg font-bold text-zinc-900 mb-2">
         Selecione a planilha da Zarpellon Joias
       </h3>
-      <p className="text-sm text-zinc-500 max-w-sm mb-6">
+      <p className="text-sm text-zinc-500 max-w-sm mb-4">
         Arquivo .xlsx com as colunas Produto, Descrição, Qtd. e Valor Base. O sistema classifica
         cada linha automaticamente e deixa tudo editável antes de confirmar.
       </p>
+
+      <a
+        href={TEMPLATE_URL}
+        download
+        className="mb-6 inline-flex items-center gap-1.5 text-sm font-bold text-(--lumilee-gold) hover:underline"
+      >
+        <Download className="h-4 w-4" />
+        Baixar modelo de planilha (.xlsx)
+      </a>
 
       <input
         type="file"

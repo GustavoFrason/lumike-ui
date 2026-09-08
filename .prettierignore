@@ -1,0 +1,6 @@
+# Prettier não tem parser de Python — o script gerador do modelo de
+# importação (scripts/gen-import-template.py) não é formatado por aqui.
+*.py
+
+# Artefatos binários
+public/modelos/
