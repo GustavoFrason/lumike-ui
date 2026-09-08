@@ -9,11 +9,13 @@ import { ActionButtons } from '@/components/ui/action-buttons';
 import { Pagination } from '@/components/ui/pagination';
 import { PaginationInfo } from '@/components/ui/pagination-info';
 import { CustomerModal } from './CustomerModal';
+import { CustomersImporter } from './components/customers-importer/CustomersImporter';
 import { formatDate, formatCurrency } from '@/lib/formatters';
 import { UpdateCustomerDto } from '@/lib/services/customers.service';
+import type { ConfirmCustomerImportResult } from '@/lib/services/customer-import.service';
 import { accountsReceivableService, Debtor } from '@/lib/services/accounts-receivable.service';
 import { useDebounce } from 'use-debounce';
-import { Search, Users, Wallet, TrendingUp } from 'lucide-react';
+import { FileSpreadsheet, Search, Users, Wallet, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 20;
@@ -38,6 +40,8 @@ export default function ClientesPage() {
 
   const [modalAberto, setModalAberto] = useState(false);
   const [clienteSelecionado, setClienteSelecionado] = useState<Customer | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importMsg, setImportMsg] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch] = useDebounce(searchTerm, 500);
@@ -58,6 +62,15 @@ export default function ClientesPage() {
   function handleNovoCliente() {
     setClienteSelecionado(null);
     setModalAberto(true);
+  }
+
+  async function handleImportConfirm(result: ConfirmCustomerImportResult) {
+    setImportOpen(false);
+    await loadCustomers(currentPage, ITEMS_PER_PAGE, debouncedSearch || undefined);
+    const parts = [`${result.created} cliente(s) importado(s)`];
+    if (result.skipped > 0) parts.push(`${result.skipped} já existia(m)`);
+    setImportMsg(parts.join(' · '));
+    setTimeout(() => setImportMsg(null), 6000);
   }
 
   function handleEditar(cliente: Customer) {
@@ -154,13 +167,28 @@ export default function ClientesPage() {
           <h1 className="text-2xl font-bold font-serif text-zinc-900">Clientes</h1>
           <p className="text-sm text-zinc-500">Gerencie sua base de clientes e acompanhe débitos</p>
         </div>
-        <button
-          onClick={handleNovoCliente}
-          className="px-4 py-2 bg-(--lumilee-gold) text-white rounded-lg hover:opacity-90 transition shadow-sm font-medium flex items-center justify-center gap-2"
-        >
-          <span>+ Novo Cliente</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setImportOpen(true)}
+            className="px-4 py-2 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition shadow-sm font-medium flex items-center justify-center gap-2"
+          >
+            <FileSpreadsheet className="h-4 w-4" />
+            <span>Importar Clientes</span>
+          </button>
+          <button
+            onClick={handleNovoCliente}
+            className="px-4 py-2 bg-(--lumilee-gold) text-white rounded-lg hover:opacity-90 transition shadow-sm font-medium flex items-center justify-center gap-2"
+          >
+            <span>+ Novo Cliente</span>
+          </button>
+        </div>
       </div>
+
+      {importMsg && (
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm font-medium">
+          {importMsg}
+        </div>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -268,6 +296,17 @@ export default function ClientesPage() {
           onSave={handleSalvar}
           loading={creating || updating}
         />
+      )}
+
+      {importOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-60 p-4">
+          <div className="w-full max-w-5xl">
+            <CustomersImporter
+              onConfirm={handleImportConfirm}
+              onCancel={() => setImportOpen(false)}
+            />
+          </div>
+        </div>
       )}
     </section>
   );

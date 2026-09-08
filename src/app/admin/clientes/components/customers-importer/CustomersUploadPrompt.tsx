@@ -1,0 +1,74 @@
+import { AlertCircle, Download, Loader2, Users } from 'lucide-react';
+import { RefObject } from 'react';
+
+/** Modelo pronto pra baixar (public/modelos). Gerado por scripts/gen-import-template.py. */
+const TEMPLATE_URL = '/modelos/modelo-importacao-clientes.xlsx';
+
+interface CustomersUploadPromptProps {
+  loading: boolean;
+  error: string | null;
+  fileInputRef: RefObject<HTMLInputElement | null>;
+  onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+export function CustomersUploadPrompt({
+  loading,
+  error,
+  fileInputRef,
+  onFileUpload,
+}: CustomersUploadPromptProps) {
+  return (
+    <div className="py-12 flex flex-col items-center text-center">
+      <div className="h-20 w-20 bg-zinc-50 rounded-full flex items-center justify-center mb-6 border-2 border-dashed border-zinc-200">
+        <Users className="h-10 w-10 text-zinc-300" />
+      </div>
+      <h3 className="text-lg font-bold text-zinc-900 mb-2">Selecione a planilha de clientes</h3>
+      <p className="text-sm text-zinc-500 max-w-sm mb-4">
+        Arquivo .xlsx com as colunas Nome, Email, Telefone, CPF, CEP, Endereço, Cidade, Estado e
+        Observações. Só o Nome é obrigatório. Você revisa tudo antes de confirmar.
+      </p>
+
+      <a
+        href={TEMPLATE_URL}
+        download
+        className="mb-6 inline-flex items-center gap-1.5 text-sm font-bold text-(--lumilee-gold) hover:underline"
+      >
+        <Download className="h-4 w-4" />
+        Baixar modelo de planilha (.xlsx)
+      </a>
+
+      <input
+        type="file"
+        accept=".xlsx,.xls"
+        ref={fileInputRef}
+        onChange={onFileUpload}
+        className="hidden"
+      />
+
+      <button
+        onClick={() => fileInputRef.current?.click()}
+        disabled={loading}
+        className="px-8 py-3 bg-(--lumilee-gold) text-white rounded-xl font-bold hover:opacity-90 transition shadow-lg shadow-orange-100 flex items-center gap-2"
+      >
+        {loading ? (
+          <>
+            <Loader2 className="h-5 w-5 animate-spin" />
+            Lendo Planilha...
+          </>
+        ) : (
+          <>
+            <Users className="h-5 w-5" />
+            Escolher Planilha
+          </>
+        )}
+      </button>
+
+      {error && (
+        <div className="mt-6 flex items-center gap-2 text-red-500 bg-red-50 px-4 py-2 rounded-lg text-sm font-bold border border-red-100">
+          <AlertCircle className="h-4 w-4" />
+          {error}
+        </div>
+      )}
+    </div>
+  );
+}
