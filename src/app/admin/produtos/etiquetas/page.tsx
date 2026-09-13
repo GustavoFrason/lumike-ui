@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useProducts } from '@/lib/hooks/use-products';
 import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
@@ -18,6 +18,7 @@ import { LabelContent } from './components/LabelContent';
 import { LabelPrintConfigPanel } from './components/LabelPrintConfigPanel';
 import { ProductSelectionList } from './components/ProductSelectionList';
 import { LabelPreviewGrid } from './components/LabelPreviewGrid';
+import { loadSavedLabelConfig, saveLabelConfig } from './components/label-config-storage';
 import {
   testQzConnection,
   printLabelsViaQz,
@@ -35,7 +36,35 @@ export default function EtiquetasPage() {
   // Configurações de impressão — parte de DEFAULT_LABEL_CONFIG (components/types.ts),
   // a etiqueta física já usada nas peças hoje. Não duplica os valores aqui:
   // se o default mudar lá, a página acompanha sozinha.
+  //
+  // Inicializa com o default (não com a config salva) de propósito: essa
+  // página é pré-renderizada estaticamente (build-time), então o HTML
+  // gerado nunca tem acesso a localStorage — usar aqui um valor diferente
+  // do build causaria divergência entre o HTML pré-renderizado e o que o
+  // React monta no cliente. A config salva é carregada abaixo, num
+  // useEffect (só roda no navegador, depois da hidratação).
   const [config, setConfig] = useState<LabelConfig>(() => ({ ...DEFAULT_LABEL_CONFIG }));
+  const isFirstConfigRender = useRef(true);
+
+  useEffect(() => {
+    setConfig(loadSavedLabelConfig());
+  }, []);
+
+  useEffect(() => {
+    // Pula a primeira execução (roda com o DEFAULT do useState acima, antes
+    // do efeito de carregamento logo acima ter aplicado a config salva) —
+    // sem essa guarda, uma calibração já salva seria sobrescrita pelo
+    // default assim que a tela abrisse.
+    if (isFirstConfigRender.current) {
+      isFirstConfigRender.current = false;
+      return;
+    }
+    saveLabelConfig(config);
+  }, [config]);
+
+  function handleResetConfig() {
+    setConfig({ ...DEFAULT_LABEL_CONFIG });
+  }
 
   useEffect(() => {
     // Carrega produtos (pagination false para pegar tudo, se a API suportar, ou limit alto)
@@ -225,7 +254,7 @@ export default function EtiquetasPage() {
         )}
       </div>
 
-      <LabelPrintConfigPanel config={config} onConfigChange={setConfig} />
+      <LabelPrintConfigPanel config={config} onConfigChange={setConfig} onReset={handleResetConfig} />
 
       {/* Selection Area - Hidden on Print */}
       <div className="print:hidden grid grid-cols-1 md:grid-cols-3 gap-6">

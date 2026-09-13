@@ -11,7 +11,13 @@ import { DEFAULT_LABEL_CONFIG, LabelConfig } from '../types';
  */
 function Harness({ initial }: { initial: LabelConfig }) {
   const [config, setConfig] = useState(initial);
-  return <LabelPrintConfigPanel config={config} onConfigChange={setConfig} />;
+  return (
+    <LabelPrintConfigPanel
+      config={config}
+      onConfigChange={setConfig}
+      onReset={() => setConfig(initial)}
+    />
+  );
 }
 
 describe('LabelPrintConfigPanel', () => {
@@ -155,6 +161,18 @@ describe('LabelPrintConfigPanel', () => {
     expect((screen.getByLabelText('Espaço etiqueta 3→4 (mm)') as HTMLInputElement).value).toBe(
       '3',
     );
+  });
+
+  it('botão "Restaurar padrão" chama onReset', () => {
+    render(<Harness initial={DEFAULT_LABEL_CONFIG} />);
+    const width = screen.getByLabelText('Largura da etiqueta (mm)') as HTMLInputElement;
+
+    fireEvent.change(width, { target: { value: '40' } });
+    fireEvent.blur(width);
+    expect(width.value).toBe('40');
+
+    fireEvent.click(screen.getByRole('button', { name: /Restaurar padrão/ }));
+    expect(width.value).toBe('27'); // volta pro valor inicial passado ao Harness
   });
 
   it('diminuir colunas por fileira remove os campos de vão que sobraram', () => {

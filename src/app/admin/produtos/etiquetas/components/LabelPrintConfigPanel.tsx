@@ -1,10 +1,12 @@
 import { useEffect, useId, useState } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, RotateCcw } from 'lucide-react';
 import { LabelConfig, resizeColumnGaps } from './types';
 
 interface LabelPrintConfigPanelProps {
   config: LabelConfig;
   onConfigChange: (config: LabelConfig) => void;
+  /** Volta pro DEFAULT_LABEL_CONFIG — não pro que estava salvo antes (é justamente pra descartar isso). */
+  onReset: () => void;
 }
 
 interface NumberFieldProps {
@@ -122,7 +124,7 @@ function NumberField({ label, value, onChange, min, max }: NumberFieldProps) {
  * como constante em `DEFAULT_LABEL_CONFIG` (types.ts) atrapalhava mais do
  * que ajudava — esses valores viram só o CHUTE INICIAL exibido aqui.
  */
-export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConfigPanelProps) {
+export function LabelPrintConfigPanel({ config, onConfigChange, onReset }: LabelPrintConfigPanelProps) {
   // Mesmo limiar do formato Joia (27x15): abaixo disso o nome do produto e a
   // marca não cabem de forma legível.
   const isTinyLabel = config.width <= 27 && config.height <= 15;
@@ -132,9 +134,25 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
 
   return (
     <div className="print:hidden bg-white p-6 rounded-lg border border-zinc-200 space-y-4">
-      <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">
-        Configuração de Impressão
-      </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">
+            Configuração de Impressão
+          </p>
+          <p className="text-[11px] text-zinc-400">
+            Salva automaticamente neste computador — a próxima vez que abrir esta tela, continua
+            do jeito que você deixou.
+          </p>
+        </div>
+        <button
+          onClick={onReset}
+          className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-700 transition shrink-0"
+          title="Descarta a configuração salva e volta pro padrão de fábrica"
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+          Restaurar padrão
+        </button>
+      </div>
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         <NumberField
           label="Largura da etiqueta (mm)"
