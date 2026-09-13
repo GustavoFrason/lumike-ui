@@ -1,6 +1,6 @@
 import { Trash2, AlertTriangle } from 'lucide-react';
 import { CurrencyInputATM } from '@/components/ui/currency-input-atm';
-import { formatCurrency, parseCurrencyBR } from '@/lib/formatters';
+import { parseCurrencyBR } from '@/lib/formatters';
 import { Category } from '@/lib/services/categories.service';
 import { NewProductRow } from './types';
 
@@ -28,7 +28,7 @@ export function NewProductsTable({ rows, categories, onUpdate, onRemove }: NewPr
               <th className="text-left px-4 py-2">Categoria</th>
               <th className="text-center px-4 py-2">Qtd.</th>
               <th className="text-right px-4 py-2">Custo</th>
-              <th className="text-right px-4 py-2">Preço Sugerido</th>
+              <th className="text-right px-4 py-2">Preço de Venda</th>
               <th></th>
             </tr>
           </thead>
@@ -98,8 +98,20 @@ export function NewProductsTable({ rows, categories, onUpdate, onRemove }: NewPr
                     className="w-full border rounded px-2 py-1 text-right"
                   />
                 </td>
-                <td className="px-4 py-2 text-right text-zinc-500 whitespace-nowrap">
-                  {formatCurrency(row.unit_cost * 3)}
+                <td className="px-4 py-2 w-32">
+                  {/* Antes era um valor fixo (unit_cost×3) só exibido, nunca
+                      chegava a ser enviado no confirm — agora é o preço de
+                      venda de verdade: vem do "Valor de Venda" da planilha
+                      quando preenchido, senão da regra padrão, e editável
+                      aqui igual o Custo ao lado. */}
+                  <CurrencyInputATM
+                    value={row.suggested_price}
+                    onValueChange={(val: string | undefined) =>
+                      onUpdate(row.row_number, { suggested_price: parseCurrencyBR(val) })
+                    }
+                    prefix="R$ "
+                    className="w-full border rounded px-2 py-1 text-right"
+                  />
                 </td>
                 <td className="px-2 py-2">
                   <button

@@ -62,6 +62,8 @@ export interface ConfirmImportItem {
   category_id?: number;
   quantity: number;
   unit_cost: number;
+  /** Preço de venda do produto novo — só usado quando is_new = true. */
+  price?: number;
 }
 
 export interface ConfirmImportResult {

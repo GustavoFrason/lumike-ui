@@ -54,12 +54,13 @@ def build_zarpellon() -> Path:
     ws.title = "Compra Zarpellon"
     _write_sheet(
         ws,
-        headers=["Produto", "Descrição", "Qtd.", "Valor Base"],
+        headers=["Produto", "Descrição", "Qtd.", "Valor Base", "Valor de Venda"],
         example=[
             "1171530601518",
             "ANEL PEQUENO ZIRCONIA REDONDO 3 GARRA RIVIERA 3MM BAN. DOURADO /INCOLOR /TAM. 18",
             10,
             8.85,
+            29.90,
         ],
         instructions=[
             "COMO PREENCHER (apague esta coluna se quiser):",
@@ -67,14 +68,18 @@ def build_zarpellon() -> Path:
             "2. Produto = código da peça na Zarpellon (coluna A).",
             "3. Descrição = nome/descrição da peça (coluna B).",
             "4. Qtd. = quantidade comprada. Valor Base = custo unitário (coluna D).",
-            "5. A linha 2 é só um EXEMPLO — apague e coloque os seus itens.",
-            "6. Não mexa na linha 1 (cabeçalho).",
+            "5. Valor de Venda (coluna E) é OPCIONAL: se preencher, esse é o preço",
+            "   de venda do produto. Se deixar em branco, o sistema aplica a regra",
+            "   padrão (custo × 3) — útil só pra quem já precifica na Zarpellon.",
+            "6. A linha 2 é só um EXEMPLO — apague e coloque os seus itens.",
+            "7. Não mexa na linha 1 (cabeçalho).",
         ],
         text_cols={1},  # coluna A (código) como texto: não perde zero à esquerda
-        widths={"A": 18, "B": 70, "C": 8, "D": 12, "F": 62},
-        instr_col=6,  # F
+        widths={"A": 18, "B": 70, "C": 8, "D": 12, "E": 14, "G": 66},
+        instr_col=7,  # G (deixa F como buffer, mesmo padrão do modelo de clientes)
     )
     ws.cell(row=2, column=4).number_format = "0.00"
+    ws.cell(row=2, column=5).number_format = "0.00"
     out = MODELOS_DIR / "modelo-importacao-zarpellon.xlsx"
     wb.save(out)
     return out

@@ -26,8 +26,9 @@ export function ExcelUploadPrompt({
         Selecione a planilha da Zarpellon Joias
       </h3>
       <p className="text-sm text-zinc-500 max-w-sm mb-4">
-        Arquivo .xlsx com as colunas Produto, Descrição, Qtd. e Valor Base. O sistema classifica
-        cada linha automaticamente e deixa tudo editável antes de confirmar.
+        Arquivo .xlsx com as colunas Produto, Descrição, Qtd. e Valor Base. Valor de Venda é
+        opcional — se preenchido, vira o preço do produto; se não, o sistema aplica a regra padrão
+        (custo × 3). Tudo fica editável antes de confirmar.
       </p>
 
       <a

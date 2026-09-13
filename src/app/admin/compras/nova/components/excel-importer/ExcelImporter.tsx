@@ -99,6 +99,10 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
         category_id: r.category_id,
         quantity: r.quantity,
         unit_cost: r.unit_cost,
+        // Vem da planilha ("Valor de Venda") quando preenchido, senão da
+        // regra padrão (unit_cost×3) — nos dois casos, editável no preview
+        // (NewProductsTable) antes de chegar aqui.
+        price: r.suggested_price,
       })),
       ...preview.atualizacoes.map((r) => ({
         is_new: false,
