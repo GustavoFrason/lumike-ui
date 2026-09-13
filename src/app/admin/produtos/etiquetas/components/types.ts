@@ -36,8 +36,8 @@ export interface LabelConfig {
 export const DEFAULT_LABEL_CONFIG: LabelConfig = {
   width: 27,
   height: 15,
-  fontSize: 8,
-  qrSize: 40,
+  fontSize: 10,
+  qrSize: 45,
   showBranding: false,
   showProductName: false,
   offsetX: -4, // px — ajuste fino de alinhamento calibrado na impressora
