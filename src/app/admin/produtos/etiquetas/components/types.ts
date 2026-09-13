@@ -27,21 +27,11 @@ export interface LabelConfig {
 }
 
 /**
- * Preset de etiqueta: uma `LabelConfig` COMPLETA, nunca parcial. Clicar num
- * preset substitui o config inteiro (ver LabelPrintConfigPanel) — se um
- * preset pudesse omitir campos, eles ficariam com o valor do preset anterior
- * (ex: offsetX/columnGap calibrados pra bobina de 3 colunas da Joia vazando
- * silenciosamente pro preset "Padrão", que é outra etiqueta/impressora).
- */
-export interface LabelTemplate extends LabelConfig {
-  label: string;
-}
-
-/**
- * Config default da página: a etiqueta física já usada nas peças hoje —
- * bobina térmica Elgin/Zebra de 3 colunas, 27x15mm cada (ver preset "Joia"
- * abaixo, que reusa esta mesma constante — evita ter os dois valores
- * duplicados e desalinhando se um dia só um dos dois for ajustado).
+ * Único formato de etiqueta usado na prática: a bobina térmica Elgin/Zebra
+ * de 3 colunas, 27x15mm cada, colada direto nas peças de joia — a impressora
+ * (Elgin L42 Pro) só imprime nesse papel, então não existe mais um catálogo
+ * de presets pra outros tamanhos (ver histórico do arquivo se precisar
+ * reintroduzir um formato alternativo no futuro).
  */
 export const DEFAULT_LABEL_CONFIG: LabelConfig = {
   width: 27,
@@ -50,8 +40,8 @@ export const DEFAULT_LABEL_CONFIG: LabelConfig = {
   qrSize: 40,
   showBranding: false,
   showProductName: false,
-  offsetX: -4, // px — chute inicial pra ajuste fino na impressora
-  offsetY: 2, // px — chute inicial pra ajuste fino na impressora
+  offsetX: -4, // px — ajuste fino de alinhamento calibrado na impressora
+  offsetY: 2, // px — ajuste fino de alinhamento calibrado na impressora
   // Bobina física usada tem 3 colunas de etiqueta lado a lado (9,2cm de
   // largura total): 2mm de margem em branco em cada borda + 3mm de espaço
   // entre uma etiqueta e a outra.
@@ -59,52 +49,6 @@ export const DEFAULT_LABEL_CONFIG: LabelConfig = {
   edgeMargin: 2, // mm
   columnsPerRow: 3,
 };
-
-/** Alinhamento/layout neutro pros presets que não têm uma bobina física calibrada. */
-const NO_ALIGNMENT_ADJUSTMENT = {
-  offsetX: 0,
-  offsetY: 0,
-  columnGap: 2,
-  edgeMargin: 0,
-  columnsPerRow: 1,
-};
-
-export const LABEL_TEMPLATES: LabelTemplate[] = [
-  {
-    label: 'Padrão (40x25)',
-    width: 40,
-    height: 25,
-    fontSize: 9,
-    qrSize: 55,
-    showBranding: true,
-    showProductName: true,
-    ...NO_ALIGNMENT_ADJUSTMENT,
-  },
-  {
-    label: 'Grande (60x40)',
-    width: 60,
-    height: 40,
-    fontSize: 13,
-    qrSize: 90,
-    showBranding: true,
-    showProductName: true,
-    ...NO_ALIGNMENT_ADJUSTMENT,
-  },
-  {
-    label: 'Pequena (30x15)',
-    width: 30,
-    height: 15,
-    fontSize: 7,
-    qrSize: 35,
-    showBranding: true,
-    showProductName: true,
-    ...NO_ALIGNMENT_ADJUSTMENT,
-  },
-  // Etiqueta física comprada pra colar direto nas peças de joia — muito pequena
-  // pra caber nome do produto e marca junto com QR + preço, então o preset já
-  // desliga os dois (o campo de nome do produto vira ilegível nesse tamanho).
-  { label: 'Joia (27x15)', ...DEFAULT_LABEL_CONFIG },
-];
 
 /**
  * Estilo do container que dispõe as etiquetas lado a lado. Preview (tela) e
@@ -128,13 +72,11 @@ export function getLabelGridStyle(config: LabelConfig): CSSProperties {
 
 /**
  * Tamanho de página de impressão (mm): largura = a bobina inteira (margem +
- * todas as colunas + os espaços entre elas), altura = uma fileira. Setado
- * explicitamente no `@page` (ver page.tsx) em vez de `size: auto` — "auto"
- * deixa a impressão usar o tamanho de página que já estiver configurado no
- * driver da impressora no Windows, que pode não bater com a largura real da
- * bobina; se não bater, o navegador quebra a fileira de etiquetas ao meio e,
- * como cada fileira vira uma "página" pro driver, a etiqueta que sobrou pra
- * próxima fileira pode nem chegar a ser impressa.
+ * todas as colunas + os espaços entre elas), altura = uma fileira. NÃO é
+ * setado no `@page` (ver comentário em page.tsx: o Chrome não respeita um
+ * tamanho de página forçado por CSS numa impressora física de verdade, só ao
+ * salvar PDF) — serve só de dica exibida pro usuário, pro papel personalizado
+ * ser cadastrado com esse valor direto no driver da impressora no Windows.
  */
 export function getPrintPageSizeMm(config: LabelConfig): { width: number; height: number } {
   const width =

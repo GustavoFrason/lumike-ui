@@ -45,11 +45,14 @@ describe('LabelPrintConfigPanel', () => {
     expect(input.value).toBe('-51');
   });
 
-  it('o limite de deslocamento acompanha o tamanho da etiqueta ao trocar de preset', () => {
-    render(<Harness initial={DEFAULT_LABEL_CONFIG} />);
+  it('o limite de deslocamento é proporcional ao tamanho de etiqueta configurado', () => {
+    // Não há mais preset pra trocar de tamanho em tela (só existe a bobina
+    // Elgin 27x15mm na prática), mas a fórmula do limite (maxOffsetFor)
+    // continua genérica — outro `width` no config precisa escalar o limite
+    // junto, não deixar um número fixo.
+    render(<Harness initial={{ ...DEFAULT_LABEL_CONFIG, width: 60, offsetX: 0 }} />);
     const input = screen.getByLabelText('Deslocar Etiqueta — Horiz. (px)') as HTMLInputElement;
 
-    fireEvent.click(screen.getByRole('button', { name: 'Grande (60x40)' }));
     // 60mm -> limite = round(60 * 96/25.4 / 2) = 113px, bem maior que o da Joia (51px)
     fireEvent.change(input, { target: { value: '-1000' } });
 
@@ -66,27 +69,11 @@ describe('LabelPrintConfigPanel', () => {
     expect(input.value).toBe('2'); // valor original de DEFAULT_LABEL_CONFIG.offsetY
   });
 
-  it('trocar de preset substitui a configuração inteira, sem vazar campos do preset anterior', () => {
-    render(<Harness initial={DEFAULT_LABEL_CONFIG} />);
-
-    // DEFAULT_LABEL_CONFIG é a "Joia (27x15)": branding e nome desligados,
-    // offsetX/columnGap calibrados pra bobina de 3 colunas.
-    expect(screen.queryByLabelText('Logo Lumilee')).not.toBeChecked();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Padrão (40x25)' }));
-
-    expect(screen.getByLabelText('Largura (mm)')).toHaveValue('40');
-    expect(screen.getByLabelText('Logo Lumilee')).toBeChecked();
-    expect(screen.getByLabelText('Nome do Produto')).toBeChecked();
-    expect(screen.getByLabelText('Deslocar Etiqueta — Horiz. (px)')).toHaveValue('0');
-    expect(screen.getByLabelText('Espaço entre colunas (mm)')).toHaveValue('2');
-  });
-
-  it('avisa quando a etiqueta é pequena demais pra nome/marca, e some ao desmarcar', () => {
+  it('avisa quando marca/nome do produto estão ligados na etiqueta pequena, e some ao desmarcar', () => {
     render(<Harness initial={DEFAULT_LABEL_CONFIG} />);
     const warning = () => screen.queryByText(/é pequena — logo e\/ou nome do produto/);
 
-    expect(warning()).not.toBeInTheDocument(); // Joia já nasce com os dois desligados
+    expect(warning()).not.toBeInTheDocument(); // config default já nasce com os dois desligados
 
     fireEvent.click(screen.getByLabelText('Nome do Produto'));
     expect(warning()).toBeInTheDocument();

@@ -1,6 +1,6 @@
 import { useEffect, useId, useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
-import { LabelConfig, LABEL_TEMPLATES } from './types';
+import { LabelConfig } from './types';
 
 interface LabelPrintConfigPanelProps {
   config: LabelConfig;
@@ -113,11 +113,18 @@ function NumberField({ label, value, onChange, min, max }: NumberFieldProps) {
   );
 }
 
+/**
+ * Painel de ajuste fino. NÃO expõe largura/altura/espaço entre colunas/
+ * margem/colunas por fileira — esses campos descrevem a bobina física
+ * (Elgin 27x15mm, 3 colunas) que é a única usada na prática, então viraram
+ * constantes fixas em `DEFAULT_LABEL_CONFIG` (types.ts) em vez de opção de
+ * tela. Só ficam ajustáveis aqui os valores que ainda mudam de verdade:
+ * cosmética (fonte, tamanho do QR, mostrar marca/nome) e calibração fina de
+ * alinhamento (deslocamento horizontal/vertical), que pode variar de
+ * impressora pra impressora mesmo usando a mesma bobina.
+ */
 export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConfigPanelProps) {
-  // Mesmo limiar do preset "Joia (27x15)": abaixo disso o nome do produto e a
-  // marca não cabem de forma legível (ver comentário do preset em types.ts).
-  const isTinyLabel = config.width <= 27 && config.height <= 15;
-  const showLegibilityWarning = isTinyLabel && (config.showBranding || config.showProductName);
+  const showLegibilityWarning = config.showBranding || config.showProductName;
   const maxOffsetX = maxOffsetFor(config.width);
   const maxOffsetY = maxOffsetFor(config.height);
 
@@ -126,19 +133,7 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
       <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">
         Configuração de Impressão
       </p>
-      <div className="grid grid-cols-2 md:grid-cols-8 gap-4">
-        <NumberField
-          label="Largura (mm)"
-          value={config.width}
-          min={5}
-          onChange={(width) => onConfigChange({ ...config, width })}
-        />
-        <NumberField
-          label="Altura (mm)"
-          value={config.height}
-          min={5}
-          onChange={(height) => onConfigChange({ ...config, height })}
-        />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <NumberField
           label="Fonte (px)"
           value={config.fontSize}
@@ -164,27 +159,6 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
           min={-maxOffsetY}
           max={maxOffsetY}
           onChange={(offsetY) => onConfigChange({ ...config, offsetY })}
-        />
-        <NumberField
-          label="Espaço entre colunas (mm)"
-          value={config.columnGap}
-          min={0}
-          onChange={(columnGap) => onConfigChange({ ...config, columnGap })}
-        />
-        <NumberField
-          label="Margem da borda (mm)"
-          value={config.edgeMargin}
-          min={0}
-          onChange={(edgeMargin) => onConfigChange({ ...config, edgeMargin })}
-        />
-        <NumberField
-          label="Colunas por fileira"
-          value={config.columnsPerRow}
-          min={1}
-          max={10}
-          onChange={(columnsPerRow) =>
-            onConfigChange({ ...config, columnsPerRow: Math.round(columnsPerRow) })
-          }
         />
         <div className="flex items-center gap-2 pt-4">
           <input
@@ -219,25 +193,6 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
           ficar ilegíveis ou sobrepor o QR Code.
         </div>
       )}
-
-      <div className="flex flex-wrap gap-2 pt-2 border-t mt-4 border-zinc-100">
-        <span className="text-xs text-zinc-400 font-medium self-center mr-2">Presets:</span>
-        {LABEL_TEMPLATES.map((t) => (
-          <button
-            key={t.label}
-            onClick={() => {
-              // Substitui o config INTEIRO pelo preset (nunca faz merge
-              // parcial) — cada preset já é uma LabelConfig completa
-              // justamente pra não vazar ajuste de uma etiqueta pra outra.
-              const { label: _presetLabel, ...preset } = t;
-              onConfigChange(preset);
-            }}
-            className="text-xs bg-zinc-100 hover:bg-zinc-200 text-zinc-700 px-3 py-1.5 rounded-full transition font-medium border border-zinc-200"
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }
