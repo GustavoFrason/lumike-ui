@@ -62,7 +62,13 @@ export function ProductSelectionList({
               <div className="flex-1 min-w-0 mr-4">
                 <p className="font-medium text-sm line-clamp-1">{product.name}</p>
                 <div className="flex justify-between text-xs text-zinc-500 mt-1">
-                  <span>{product.sku || 'S/ SKU'}</span>
+                  <span>
+                    {product.sku || 'S/ SKU'}
+                    {/* Informativo, só pra ajudar a decidir quantas etiquetas
+                        imprimir — não limita nem valida a quantidade
+                        escolhida no stepper ao lado. */}
+                    <span className="text-zinc-400"> · {product.current_stock} em estoque</span>
+                  </span>
                   <span className={product.preco_promocional ? 'text-green-600 font-bold' : ''}>
                     {formatCurrency(product.preco_promocional || product.price)}
                   </span>
