@@ -47,6 +47,16 @@ describe('generateLabelsZpl', () => {
     expect(zpl).toContain('^CI28');
   });
 
+  it('ajusta o escurecimento (^MD) — sem isso, a impressão via ZPL saiu fraca no teste real', () => {
+    const zpl = generateLabelsZpl([buildProduct()], DEFAULT_LABEL_CONFIG);
+    expect(zpl).toMatch(/\^MD\d+/);
+  });
+
+  it('imprime devagar (^PR baixo) — mais qualidade, pedido direto do usuário', () => {
+    const zpl = generateLabelsZpl([buildProduct()], DEFAULT_LABEL_CONFIG);
+    expect(zpl).toMatch(/\^PR2\b/);
+  });
+
   it('usa o SKU como conteúdo do QR, com o nível de correção de erro L (mesmo do preview)', () => {
     const zpl = generateLabelsZpl([buildProduct({ sku: 'XYZ-9' })], DEFAULT_LABEL_CONFIG);
     expect(zpl).toContain('^FDLA,XYZ-9^FS');

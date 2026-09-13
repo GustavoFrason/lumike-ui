@@ -50,6 +50,36 @@ function px(value: number): number {
 const QR_ERROR_CORRECTION = 'L';
 
 /**
+ * Ajuste de escurecimento (`^MD`, relativo — soma ao nível já configurado
+ * na impressora, de -30 a 30). Foi preciso depois que o primeiro teste via
+ * QZ Tray saiu com tinta visivelmente mais fraca que a impressão normal
+ * pelo navegador: o caminho ZPL/QZ Tray manda o comando cru direto pra
+ * impressora, pulando qualquer compensação de escurecimento que o driver
+ * do Windows aplica na impressão de imagem — sem esse comando, a impressora
+ * usa só o padrão dela, que aparentemente é mais claro.
+ *
+ * +15 é um chute inicial (metade do máximo) pra dar uma força visível sem
+ * arriscar passar do ponto (escurecimento demais também pode manchar/gastar
+ * mais o papel térmico). Se ainda sair fraco ou já sair escuro/borrado
+ * demais, este é o número a ajustar — mesma lógica de calibração de tudo
+ * mais nesta tela.
+ */
+const DARKNESS_ADJUST = 15;
+
+/**
+ * Velocidade de impressão (`^PR`, em polegadas/segundo — IPS). 2 IPS é a
+ * velocidade mais baixa que praticamente qualquer impressora compatível com
+ * ZPL aceita (o valor mínimo "universal" da linha Zebra/compatíveis) —
+ * imprimir mais devagar dá mais tempo pro cabeçote térmico aquecer cada
+ * ponto direito, o que ajuda tanto a nitidez do QR (módulos pequenos) quanto
+ * a força do escurecimento (ver DARKNESS_ADJUST acima — os dois efeitos se
+ * somam). Se ficar rápido demais pro gosto ou a impressora aceitar mais
+ * granularidade, é só subir esse número (a faixa exata dessa impressora não
+ * foi confirmada — 2 é o valor seguro que quase toda impressora ZPL aceita).
+ */
+const PRINT_SPEED_IPS = 2;
+
+/**
  * Gera o job ZPL inteiro pra uma lista de etiquetas: uma fileira física (um
  * bloco `^XA...^XZ`) a cada `columnsPerRow` produtos, na mesma ordem que a
  * grade CSS já usa (getLabelGridStyle) — o que já foi calibrado visualmente
@@ -79,6 +109,8 @@ function generateRowZpl(row: Product[], config: LabelConfig): string {
   return [
     '^XA',
     '^CI28', // UTF-8 — sem isso, acento (ç, ã, é...) em nome de produto sai errado
+    `^MD${DARKNESS_ADJUST}`, // ver comentário na constante — sem isso, ficou fraco no teste real
+    `^PR${PRINT_SPEED_IPS}`, // mais devagar = mais qualidade (ver comentário na constante)
     `^PW${pageWidthDots}`,
     `^LL${pageHeightDots}`,
     '^LH0,0',
