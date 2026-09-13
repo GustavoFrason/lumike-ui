@@ -81,4 +81,55 @@ describe('LabelPrintConfigPanel', () => {
     fireEvent.click(screen.getByLabelText('Nome do Produto'));
     expect(warning()).not.toBeInTheDocument();
   });
+
+  it('não avisa numa etiqueta grande mesmo com marca/nome ligados', () => {
+    // O aviso é só pro formato pequeno (27x15) — numa etiqueta maior, nome e
+    // marca cabem numa boa, não faz sentido mostrar o alerta.
+    render(
+      <Harness initial={{ ...DEFAULT_LABEL_CONFIG, width: 60, height: 40, showBranding: true }} />,
+    );
+    expect(screen.queryByText(/é pequena — logo e\/ou nome do produto/)).not.toBeInTheDocument();
+  });
+
+  it('largura e altura da etiqueta são editáveis e refletem no valor exibido', () => {
+    render(<Harness initial={DEFAULT_LABEL_CONFIG} />);
+
+    const width = screen.getByLabelText('Largura da etiqueta (mm)') as HTMLInputElement;
+    const height = screen.getByLabelText('Altura da etiqueta (mm)') as HTMLInputElement;
+    expect(width.value).toBe('27');
+    expect(height.value).toBe('15');
+
+    fireEvent.change(width, { target: { value: '30' } });
+    fireEvent.blur(width);
+    expect(width.value).toBe('30');
+  });
+
+  it('espaço entre colunas, distância p/ fileira de baixo e margem da borda são editáveis', () => {
+    render(<Harness initial={DEFAULT_LABEL_CONFIG} />);
+
+    const columnGap = screen.getByLabelText('Espaço entre colunas (mm)') as HTMLInputElement;
+    const rowGap = screen.getByLabelText('Distância p/ etiqueta de baixo (mm)') as HTMLInputElement;
+    const edgeMargin = screen.getByLabelText('Margem da borda (mm)') as HTMLInputElement;
+
+    expect(columnGap.value).toBe('3');
+    expect(rowGap.value).toBe('0'); // DEFAULT_LABEL_CONFIG.rowGap
+    expect(edgeMargin.value).toBe('2');
+
+    fireEvent.change(rowGap, { target: { value: '4' } });
+    fireEvent.blur(rowGap);
+    expect(rowGap.value).toBe('4');
+  });
+
+  it('colunas por fileira aceita só inteiro (arredonda) e respeita o limite de 1 a 10', () => {
+    render(<Harness initial={DEFAULT_LABEL_CONFIG} />);
+    const input = screen.getByLabelText('Colunas por fileira') as HTMLInputElement;
+    expect(input.value).toBe('3');
+
+    fireEvent.change(input, { target: { value: '4.7' } });
+    fireEvent.blur(input);
+    expect(input.value).toBe('5'); // 4.7 arredondado
+
+    fireEvent.change(input, { target: { value: '99' } });
+    expect(input.value).toBe('10'); // limitado ao máximo
+  });
 });

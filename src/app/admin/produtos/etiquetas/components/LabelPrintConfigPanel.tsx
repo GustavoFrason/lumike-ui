@@ -114,17 +114,19 @@ function NumberField({ label, value, onChange, min, max }: NumberFieldProps) {
 }
 
 /**
- * Painel de ajuste fino. NÃO expõe largura/altura/espaço entre colunas/
- * margem/colunas por fileira — esses campos descrevem a bobina física
- * (Elgin 27x15mm, 3 colunas) que é a única usada na prática, então viraram
- * constantes fixas em `DEFAULT_LABEL_CONFIG` (types.ts) em vez de opção de
- * tela. Só ficam ajustáveis aqui os valores que ainda mudam de verdade:
- * cosmética (fonte, tamanho do QR, mostrar marca/nome) e calibração fina de
- * alinhamento (deslocamento horizontal/vertical), que pode variar de
- * impressora pra impressora mesmo usando a mesma bobina.
+ * Painel de ajuste fino. Volta a expor largura/altura/espaço entre colunas/
+ * espaço entre fileiras/margem/colunas por fileira — esses campos descrevem
+ * a bobina física e, na teoria, são fixos (Elgin 27x15mm, 3 colunas), mas a
+ * calibração de verdade na impressora (drift de coluna, offset de página,
+ * corte de bobina) mostrou que precisam de ajuste manual continuado. Travar
+ * como constante em `DEFAULT_LABEL_CONFIG` (types.ts) atrapalhava mais do
+ * que ajudava — esses valores viram só o CHUTE INICIAL exibido aqui.
  */
 export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConfigPanelProps) {
-  const showLegibilityWarning = config.showBranding || config.showProductName;
+  // Mesmo limiar do formato Joia (27x15): abaixo disso o nome do produto e a
+  // marca não cabem de forma legível.
+  const isTinyLabel = config.width <= 27 && config.height <= 15;
+  const showLegibilityWarning = isTinyLabel && (config.showBranding || config.showProductName);
   const maxOffsetX = maxOffsetFor(config.width);
   const maxOffsetY = maxOffsetFor(config.height);
 
@@ -133,7 +135,19 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
       <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">
         Configuração de Impressão
       </p>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+        <NumberField
+          label="Largura da etiqueta (mm)"
+          value={config.width}
+          min={5}
+          onChange={(width) => onConfigChange({ ...config, width })}
+        />
+        <NumberField
+          label="Altura da etiqueta (mm)"
+          value={config.height}
+          min={5}
+          onChange={(height) => onConfigChange({ ...config, height })}
+        />
         <NumberField
           label="Fonte (px)"
           value={config.fontSize}
@@ -159,6 +173,33 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
           min={-maxOffsetY}
           max={maxOffsetY}
           onChange={(offsetY) => onConfigChange({ ...config, offsetY })}
+        />
+        <NumberField
+          label="Espaço entre colunas (mm)"
+          value={config.columnGap}
+          min={0}
+          onChange={(columnGap) => onConfigChange({ ...config, columnGap })}
+        />
+        <NumberField
+          label="Distância p/ etiqueta de baixo (mm)"
+          value={config.rowGap}
+          min={0}
+          onChange={(rowGap) => onConfigChange({ ...config, rowGap })}
+        />
+        <NumberField
+          label="Margem da borda (mm)"
+          value={config.edgeMargin}
+          min={0}
+          onChange={(edgeMargin) => onConfigChange({ ...config, edgeMargin })}
+        />
+        <NumberField
+          label="Colunas por fileira"
+          value={config.columnsPerRow}
+          min={1}
+          max={10}
+          onChange={(columnsPerRow) =>
+            onConfigChange({ ...config, columnsPerRow: Math.round(columnsPerRow) })
+          }
         />
         <div className="flex items-center gap-2 pt-4">
           <input

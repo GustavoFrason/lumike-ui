@@ -7,12 +7,18 @@ describe('getLabelGridStyle', () => {
     expect(style.display).toBe('grid');
     expect(style.gridTemplateColumns).toBe('repeat(3, 27mm)');
     expect(style.columnGap).toBe('3mm');
+    expect(style.rowGap).toBe('0mm');
     expect(style.paddingLeft).toBe('2mm');
   });
 
   it('acompanha columnsPerRow quando ele muda (ex: bobina de coluna única)', () => {
     const style = getLabelGridStyle({ ...DEFAULT_LABEL_CONFIG, columnsPerRow: 1 });
     expect(style.gridTemplateColumns).toBe('repeat(1, 27mm)');
+  });
+
+  it('acompanha rowGap quando ele muda (espaço até a fileira de baixo)', () => {
+    const style = getLabelGridStyle({ ...DEFAULT_LABEL_CONFIG, rowGap: 5 });
+    expect(style.rowGap).toBe('5mm');
   });
 });
 

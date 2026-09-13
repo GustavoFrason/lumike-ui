@@ -10,6 +10,7 @@ export interface LabelConfig {
   offsetX: number; // px (visual) — desloca a etiqueta inteira (QR + textos), ajuste fino de alinhamento
   offsetY: number; // px (visual) — desloca a etiqueta inteira (QR + textos), ajuste fino de alinhamento
   columnGap: number; // mm — espaço entre etiquetas lado a lado (bobina multi-coluna)
+  rowGap: number; // mm — distância entre uma fileira de etiquetas e a de baixo
   edgeMargin: number; // mm — margem em branco antes da primeira coluna
   /**
    * Nº de colunas físicas da bobina/etiqueta usada. NÃO é "quantas etiquetas
@@ -27,11 +28,13 @@ export interface LabelConfig {
 }
 
 /**
- * Único formato de etiqueta usado na prática: a bobina térmica Elgin/Zebra
- * de 3 colunas, 27x15mm cada, colada direto nas peças de joia — a impressora
- * (Elgin L42 Pro) só imprime nesse papel, então não existe mais um catálogo
- * de presets pra outros tamanhos (ver histórico do arquivo se precisar
- * reintroduzir um formato alternativo no futuro).
+ * Chute inicial pro único formato de etiqueta usado na prática: a bobina
+ * térmica Elgin/Zebra de 3 colunas, 27x15mm cada, colada direto nas peças de
+ * joia. Esses valores físicos (largura/altura/espaços/margem) viraram opção
+ * editável de novo no painel (LabelPrintConfigPanel) — a calibração real na
+ * impressora mostrou que precisam de ajuste fino continuado (drift entre
+ * colunas, offset de página etc.), então travar tudo como constante fixa
+ * atrapalhava mais do que ajudava.
  */
 export const DEFAULT_LABEL_CONFIG: LabelConfig = {
   width: 27,
@@ -46,6 +49,7 @@ export const DEFAULT_LABEL_CONFIG: LabelConfig = {
   // largura total): 2mm de margem em branco em cada borda + 3mm de espaço
   // entre uma etiqueta e a outra.
   columnGap: 3, // mm
+  rowGap: 0, // mm
   edgeMargin: 2, // mm
   columnsPerRow: 3,
 };
@@ -65,7 +69,7 @@ export function getLabelGridStyle(config: LabelConfig): CSSProperties {
     display: 'grid',
     gridTemplateColumns: `repeat(${config.columnsPerRow}, ${config.width}mm)`,
     columnGap: `${config.columnGap}mm`,
-    rowGap: 0,
+    rowGap: `${config.rowGap}mm`,
     paddingLeft: `${config.edgeMargin}mm`,
   };
 }
