@@ -35,13 +35,25 @@ describe('LabelPrintConfigPanel', () => {
     expect(input.value).toBe('-12');
   });
 
-  it('limita o deslocamento a [-20, 20] mesmo se a pessoa digitar um valor maior', () => {
+  it('limita o deslocamento a metade da largura física (px) mesmo se a pessoa digitar mais', () => {
     render(<Harness initial={DEFAULT_LABEL_CONFIG} />);
     const input = screen.getByLabelText('Deslocar Etiqueta — Horiz. (px)') as HTMLInputElement;
 
-    fireEvent.change(input, { target: { value: '-40' } });
+    // DEFAULT_LABEL_CONFIG.width = 27mm -> limite = round(27 * 96/25.4 / 2) = 51px
+    fireEvent.change(input, { target: { value: '-1000' } });
 
-    expect(input.value).toBe('-20');
+    expect(input.value).toBe('-51');
+  });
+
+  it('o limite de deslocamento acompanha o tamanho da etiqueta ao trocar de preset', () => {
+    render(<Harness initial={DEFAULT_LABEL_CONFIG} />);
+    const input = screen.getByLabelText('Deslocar Etiqueta — Horiz. (px)') as HTMLInputElement;
+
+    fireEvent.click(screen.getByRole('button', { name: 'Grande (60x40)' }));
+    // 60mm -> limite = round(60 * 96/25.4 / 2) = 113px, bem maior que o da Joia (51px)
+    fireEvent.change(input, { target: { value: '-1000' } });
+
+    expect(input.value).toBe('-113');
   });
 
   it('reverte para o último valor válido ao sair do campo vazio', () => {

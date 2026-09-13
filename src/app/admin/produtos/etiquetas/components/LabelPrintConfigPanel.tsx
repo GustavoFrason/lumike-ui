@@ -20,6 +20,22 @@ interface NumberFieldProps {
 // válido de digitação ("", "-", "1.", "-1", "-1.5"...).
 const PARTIAL_NUMBER_RE = /^-?\d*\.?\d*$/;
 
+// Mesma conversão que o navegador usa pra resolver a unidade CSS "mm"
+// (96 px por polegada ÷ 25,4mm por polegada).
+const MM_TO_PX = 96 / 25.4;
+
+/**
+ * Limite de deslocamento fino (offsetX/offsetY): metade do tamanho físico
+ * da própria etiqueta, em px. Evita dois extremos: travar em um número fixo
+ * pequeno demais pra etiquetas grandes (já aconteceu — um limite de ±20px
+ * bloqueava um ajuste de -25/-30 numa etiqueta que precisava disso de
+ * verdade) e não ter limite nenhum, deixando um typo (ex: "-40" em vez de
+ * "-4") deslocar o conteúdo inteiro pra fora da área visível.
+ */
+function maxOffsetFor(labelSizeMm: number): number {
+  return Math.round((labelSizeMm * MM_TO_PX) / 2);
+}
+
 /**
  * Input numérico controlado que não briga com quem está digitando.
  *
@@ -102,6 +118,8 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
   // marca não cabem de forma legível (ver comentário do preset em types.ts).
   const isTinyLabel = config.width <= 27 && config.height <= 15;
   const showLegibilityWarning = isTinyLabel && (config.showBranding || config.showProductName);
+  const maxOffsetX = maxOffsetFor(config.width);
+  const maxOffsetY = maxOffsetFor(config.height);
 
   return (
     <div className="print:hidden bg-white p-6 rounded-lg border border-zinc-200 space-y-4">
@@ -136,15 +154,15 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
         <NumberField
           label="Deslocar Etiqueta — Horiz. (px)"
           value={config.offsetX}
-          min={-20}
-          max={20}
+          min={-maxOffsetX}
+          max={maxOffsetX}
           onChange={(offsetX) => onConfigChange({ ...config, offsetX })}
         />
         <NumberField
           label="Deslocar Etiqueta — Vert. (px)"
           value={config.offsetY}
-          min={-20}
-          max={20}
+          min={-maxOffsetY}
+          max={maxOffsetY}
           onChange={(offsetY) => onConfigChange({ ...config, offsetY })}
         />
         <NumberField
