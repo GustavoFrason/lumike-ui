@@ -14,12 +14,20 @@
  */
 
 import type * as QzTray from 'qz-tray';
+import type { LabelConfig } from '@/app/admin/produtos/etiquetas/components/types';
+import type { Product } from '@/lib/services/products.service';
+import { generateLabelsZpl } from './label-zpl.service';
 
 export type QzConnectionStatus = 'not-installed' | 'connected' | 'error';
 
 export interface QzConnectionResult {
   status: QzConnectionStatus;
   printers?: string[];
+  message: string;
+}
+
+export interface QzPrintResult {
+  success: boolean;
   message: string;
 }
 
@@ -82,4 +90,53 @@ export async function printRawToQz(printerName: string, rawData: string): Promis
   // evita o pipeline de rasterização do Chrome que causava a corrupção em
   // lotes grandes.
   await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'plain', data: rawData }]);
+}
+
+/**
+ * Impressora não é hardcoded pelo nome exato do Windows ("ELGIN L42PRO
+ * FULL") pra não quebrar se um dia o nome mudar (reinstalação do driver,
+ * outro computador) — busca por "elgin" no que o QZ Tray encontrar.
+ */
+function findElginPrinter(printers: string[]): string | undefined {
+  return printers.find((p) => p.toLowerCase().includes('elgin'));
+}
+
+/**
+ * Fluxo completo do botão "Imprimir via QZ Tray": conecta, acha a
+ * impressora Elgin entre as que o QZ Tray enxerga, gera o ZPL a partir da
+ * mesma config já calibrada na tela (LabelConfig) e manda imprimir.
+ */
+export async function printLabelsViaQz(
+  labelList: Product[],
+  config: LabelConfig,
+): Promise<QzPrintResult> {
+  try {
+    const qz = await loadQz();
+
+    if (!qz.websocket.isActive()) {
+      await qz.websocket.connect();
+    }
+
+    const found = await qz.printers.find();
+    const printers = Array.isArray(found) ? found : [found];
+    const printerName = findElginPrinter(printers);
+
+    if (!printerName) {
+      return {
+        success: false,
+        message:
+          printers.length === 0
+            ? 'QZ Tray não encontrou nenhuma impressora. Confirme que a Elgin está ligada e instalada no Windows.'
+            : `Nenhuma impressora "Elgin" encontrada. Disponíveis: ${printers.join(', ')}.`,
+      };
+    }
+
+    const zpl = generateLabelsZpl(labelList, config);
+    await printRawToQz(printerName, zpl);
+
+    return { success: true, message: `Enviado para "${printerName}" via QZ Tray.` };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { success: false, message: `Erro ao imprimir via QZ Tray: ${message}` };
+  }
 }

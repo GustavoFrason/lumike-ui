@@ -17,7 +17,12 @@ import { LabelContent } from './components/LabelContent';
 import { LabelPrintConfigPanel } from './components/LabelPrintConfigPanel';
 import { ProductSelectionList } from './components/ProductSelectionList';
 import { LabelPreviewGrid } from './components/LabelPreviewGrid';
-import { testQzConnection, type QzConnectionResult } from '@/lib/services/qz-print.service';
+import {
+  testQzConnection,
+  printLabelsViaQz,
+  type QzConnectionResult,
+  type QzPrintResult,
+} from '@/lib/services/qz-print.service';
 
 export default function EtiquetasPage() {
   const { products, loadingProducts, errorProducts, loadProducts } = useProducts();
@@ -85,10 +90,10 @@ export default function EtiquetasPage() {
     window.print();
   }
 
-  // Diagnóstico temporário: confirma que o QZ Tray (programinha local que
-  // permite mandar comando direto pra impressora, sem passar pelo
+// Diagnóstico: confirma que o QZ Tray (programinha local que permite
+  // mandar comando direto pra impressora, sem passar pelo
   // window.print()/Chrome) está instalado, rodando e enxergando a
-  // impressora — passo anterior a montar o gerador de ZPL de verdade.
+  // impressora.
   const [qzTest, setQzTest] = useState<{ loading: boolean; result: QzConnectionResult | null }>({
     loading: false,
     result: null,
@@ -98,6 +103,21 @@ export default function EtiquetasPage() {
     setQzTest({ loading: true, result: null });
     const result = await testQzConnection();
     setQzTest({ loading: false, result });
+  }
+
+  // Segunda opção de impressão, ao lado da existente (handlePrint) — não
+  // substitui nada: navegador continua igual pro dia a dia, QZ Tray/ZPL é
+  // alternativa pra lotes grandes (ver comentário no gerador, label-zpl.
+  // service.ts, sobre a corrupção em lotes grandes via window.print()).
+  const [qzPrint, setQzPrint] = useState<{ loading: boolean; result: QzPrintResult | null }>({
+    loading: false,
+    result: null,
+  });
+
+  async function handlePrintViaQz() {
+    setQzPrint({ loading: true, result: null });
+    const result = await printLabelsViaQz(labelList, config);
+    setQzPrint({ loading: false, result });
   }
 
   // Só EXIBIDO pro usuário (ver dica abaixo do botão Imprimir) — não força
@@ -124,14 +144,31 @@ export default function EtiquetasPage() {
           </div>
         </div>
         <div className="flex flex-col items-end gap-1">
-          <button
-            onClick={handlePrint}
-            disabled={labelList.length === 0}
-            className="flex items-center gap-2 bg-(--lumilee-gold) text-white px-6 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition shadow-lg shadow-orange-100"
-          >
-            <Printer className="h-5 w-5" />
-            Imprimir ({labelList.length} Etiquetas)
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePrint}
+              disabled={labelList.length === 0}
+              className="flex items-center gap-2 bg-(--lumilee-gold) text-white px-6 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition shadow-lg shadow-orange-100"
+            >
+              <Printer className="h-5 w-5" />
+              Imprimir ({labelList.length} Etiquetas)
+            </button>
+            {/* Alternativa ao botão acima — não substitui, convive lado a
+                lado. Usa o QZ Tray (programinha local) pra mandar ZPL direto
+                pra impressora, sem passar pelo window.print()/Chrome, que é
+                o que corrompe QR/etiqueta em lotes grandes (ver
+                label-zpl.service.ts). Só funciona no computador que tem o
+                QZ Tray instalado e rodando. */}
+            <button
+              onClick={handlePrintViaQz}
+              disabled={labelList.length === 0 || qzPrint.loading}
+              className="flex items-center gap-2 bg-zinc-900 text-white px-4 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition"
+              title="Manda direto pra impressora via QZ Tray, sem passar pelo diálogo do navegador — recomendado pra lotes grandes."
+            >
+              <Printer className="h-4 w-4" />
+              {qzPrint.loading ? 'Enviando...' : 'Via QZ Tray'}
+            </button>
+          </div>
           {/* O Chrome não respeita de forma confiável um tamanho de página
               forçado por CSS ao imprimir numa impressora física (só ao
               salvar PDF) — por isso não fica só no código: se o driver da
@@ -145,13 +182,22 @@ export default function EtiquetasPage() {
             </strong>
             .
           </p>
+          {qzPrint.result && (
+            <p
+              className={`text-[11px] max-w-[260px] text-right ${
+                qzPrint.result.success ? 'text-green-700' : 'text-red-600'
+              }`}
+            >
+              {qzPrint.result.message}
+            </p>
+          )}
         </div>
       </div>
 
       <ErrorMessage message={errorProducts || ''} />
 
-      {/* Diagnóstico temporário do QZ Tray — remover quando a impressão via
-          ZPL estiver pronta e substituir por um seletor de modo de impressão. */}
+      {/* Diagnóstico do QZ Tray — confirma que ele está instalado/rodando e
+          o que ele enxerga antes de confiar no botão "Via QZ Tray" acima. */}
       <div className="print:hidden flex items-center gap-3 bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3">
         <button
           onClick={handleTestQz}
