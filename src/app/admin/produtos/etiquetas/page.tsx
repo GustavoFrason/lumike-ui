@@ -84,11 +84,10 @@ export default function EtiquetasPage() {
     window.print();
   }
 
-  // Tamanho de página explícito pro @page abaixo — largura da bobina inteira
-  // (todas as columnsPerRow colunas), altura de uma fileira. Ver comentário
-  // de getPrintPageSizeMm: "size: auto" deixava a impressão usar o tamanho
-  // de página já configurado no driver da impressora, que podia não bater
-  // com a largura real da bobina e cortar etiquetas da fileira.
+  // Só EXIBIDO pro usuário (ver dica abaixo do botão Imprimir) — não força
+  // mais o @page (ver comentário na tag <style> no fim do arquivo: setar o
+  // tamanho de página via CSS não é respeitado de forma confiável pelo
+  // Chrome ao imprimir numa impressora física de verdade, só ao salvar PDF).
   const printPageSize = getPrintPageSizeMm(config);
 
   if (loadingProducts && products.length === 0) {
@@ -108,14 +107,29 @@ export default function EtiquetasPage() {
             <p className="text-sm text-zinc-500">Configure o tamanho e imprima QR Codes</p>
           </div>
         </div>
-        <button
-          onClick={handlePrint}
-          disabled={labelList.length === 0}
-          className="flex items-center gap-2 bg-(--lumilee-gold) text-white px-6 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition shadow-lg shadow-orange-100"
-        >
-          <Printer className="h-5 w-5" />
-          Imprimir ({labelList.length} Etiquetas)
-        </button>
+        <div className="flex flex-col items-end gap-1">
+          <button
+            onClick={handlePrint}
+            disabled={labelList.length === 0}
+            className="flex items-center gap-2 bg-(--lumilee-gold) text-white px-6 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition shadow-lg shadow-orange-100"
+          >
+            <Printer className="h-5 w-5" />
+            Imprimir ({labelList.length} Etiquetas)
+          </button>
+          {/* O Chrome não respeita de forma confiável um tamanho de página
+              forçado por CSS ao imprimir numa impressora física (só ao
+              salvar PDF) — por isso não fica só no código: se o driver da
+              impressora permitir cadastrar um tamanho de papel
+              personalizado, é esse o número a usar lá. */}
+          <p className="text-[11px] text-zinc-400 max-w-[220px] text-right">
+            No diálogo de impressão: desligue &quot;Cabeçalhos e rodapés&quot; e, se o
+            driver permitir papel personalizado, use{' '}
+            <strong>
+              {printPageSize.width}x{printPageSize.height}mm
+            </strong>
+            .
+          </p>
+        </div>
       </div>
 
       <ErrorMessage message={errorProducts || ''} />
@@ -160,9 +174,17 @@ export default function EtiquetasPage() {
       <style jsx global>{`
         @media print {
           @page {
-            /* Tamanho real da bobina (todas as colunas), não "auto" — ver
-               comentário de getPrintPageSizeMm em components/types.ts. */
-            size: ${printPageSize.width}mm ${printPageSize.height}mm;
+            /* "auto" de propósito: setar um tamanho explícito aqui (ex:
+               "89mm 15mm") NÃO é respeitado de forma confiável pelo Chrome
+               ao imprimir numa impressora física — só funciona ao salvar
+               como PDF. Numa impressora de verdade, se o tamanho não bater
+               com nada que o driver conhece, o Chrome cai num tamanho
+               padrão (Carta/A4), o que já causou uma impressão toda
+               desconfigurada. O tamanho real da página é controlado pelo
+               que estiver selecionado em "Tamanho do papel" no diálogo de
+               impressão (idealmente um papel personalizado cadastrado no
+               driver da impressora — ver dica ao lado do botão Imprimir). */
+            size: auto;
             margin: 0mm;
           }
           body {
