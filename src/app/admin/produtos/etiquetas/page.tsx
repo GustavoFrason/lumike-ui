@@ -17,6 +17,7 @@ import { LabelContent } from './components/LabelContent';
 import { LabelPrintConfigPanel } from './components/LabelPrintConfigPanel';
 import { ProductSelectionList } from './components/ProductSelectionList';
 import { LabelPreviewGrid } from './components/LabelPreviewGrid';
+import { testQzConnection, type QzConnectionResult } from '@/lib/services/qz-print.service';
 
 export default function EtiquetasPage() {
   const { products, loadingProducts, errorProducts, loadProducts } = useProducts();
@@ -84,6 +85,21 @@ export default function EtiquetasPage() {
     window.print();
   }
 
+  // Diagnóstico temporário: confirma que o QZ Tray (programinha local que
+  // permite mandar comando direto pra impressora, sem passar pelo
+  // window.print()/Chrome) está instalado, rodando e enxergando a
+  // impressora — passo anterior a montar o gerador de ZPL de verdade.
+  const [qzTest, setQzTest] = useState<{ loading: boolean; result: QzConnectionResult | null }>({
+    loading: false,
+    result: null,
+  });
+
+  async function handleTestQz() {
+    setQzTest({ loading: true, result: null });
+    const result = await testQzConnection();
+    setQzTest({ loading: false, result });
+  }
+
   // Só EXIBIDO pro usuário (ver dica abaixo do botão Imprimir) — não força
   // mais o @page (ver comentário na tag <style> no fim do arquivo: setar o
   // tamanho de página via CSS não é respeitado de forma confiável pelo
@@ -133,6 +149,34 @@ export default function EtiquetasPage() {
       </div>
 
       <ErrorMessage message={errorProducts || ''} />
+
+      {/* Diagnóstico temporário do QZ Tray — remover quando a impressão via
+          ZPL estiver pronta e substituir por um seletor de modo de impressão. */}
+      <div className="print:hidden flex items-center gap-3 bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3">
+        <button
+          onClick={handleTestQz}
+          disabled={qzTest.loading}
+          className="text-xs font-medium bg-zinc-900 text-white px-3 py-1.5 rounded disabled:opacity-50"
+        >
+          {qzTest.loading ? 'Testando...' : 'Testar conexão QZ Tray'}
+        </button>
+        {qzTest.result && (
+          <div className="text-xs">
+            <p
+              className={
+                qzTest.result.status === 'connected' ? 'text-green-700' : 'text-red-600'
+              }
+            >
+              {qzTest.result.message}
+            </p>
+            {qzTest.result.printers && qzTest.result.printers.length > 0 && (
+              <p className="text-zinc-500 mt-0.5">
+                Impressoras: {qzTest.result.printers.join(', ')}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
 
       <LabelPrintConfigPanel config={config} onConfigChange={setConfig} />
 
