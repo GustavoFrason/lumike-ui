@@ -55,7 +55,7 @@ export function LabelContent({ product, config }: LabelContentProps) {
             <>
               <span
                 className="text-zinc-400 line-through leading-none"
-                style={{ fontSize: `${config.fontSize - 2}px` }}
+                style={{ fontSize: `${Math.max(7, config.fontSize - 2)}px` }}
               >
                 {formatCurrency(product.price)}
               </span>

@@ -7,7 +7,7 @@ import { ErrorMessage } from '@/components/ui/error-message';
 import Link from 'next/link';
 import { ArrowLeft, Printer } from 'lucide-react';
 import { Product } from '@/lib/services/products.service';
-import { LabelConfig } from './components/types';
+import { DEFAULT_LABEL_CONFIG, LabelConfig, getLabelGridStyle } from './components/types';
 import { LabelContent } from './components/LabelContent';
 import { LabelPrintConfigPanel } from './components/LabelPrintConfigPanel';
 import { ProductSelectionList } from './components/ProductSelectionList';
@@ -20,23 +20,10 @@ export default function EtiquetasPage() {
   // Novo estado: Map de id -> quantidade
   const [selectedQuantities, setSelectedQuantities] = useState<Record<number, number>>({});
 
-  // Configurações de impressão — padrão já na etiqueta física usada nas peças
-  // (27x15mm, ver preset "Joia" em components/types.ts)
-  const [config, setConfig] = useState<LabelConfig>({
-    width: 27, // mm
-    height: 15, // mm
-    fontSize: 8, // px
-    qrSize: 40, // px (visual)
-    showBranding: false,
-    showProductName: false,
-    offsetX: -4, // px — chute inicial pra ajuste fino na impressora
-    offsetY: 2, // px — chute inicial pra ajuste fino na impressora
-    // Bobina física usada tem 3 colunas de etiqueta lado a lado (9,2cm de
-    // largura total): 2mm de margem em branco em cada borda + 3mm de espaço
-    // entre uma etiqueta e a outra.
-    columnGap: 3, // mm
-    edgeMargin: 2, // mm
-  });
+  // Configurações de impressão — parte de DEFAULT_LABEL_CONFIG (components/types.ts),
+  // a etiqueta física já usada nas peças hoje. Não duplica os valores aqui:
+  // se o default mudar lá, a página acompanha sozinha.
+  const [config, setConfig] = useState<LabelConfig>(() => ({ ...DEFAULT_LABEL_CONFIG }));
 
   useEffect(() => {
     // Carrega produtos (pagination false para pegar tudo, se a API suportar, ou limit alto)
@@ -140,14 +127,7 @@ export default function EtiquetasPage() {
 
       {/* Print Area - Only visible when printing */}
       <div className="hidden print:block">
-        <div
-          className="flex flex-wrap content-start"
-          style={{
-            columnGap: `${config.columnGap}mm`,
-            rowGap: 0,
-            paddingLeft: `${config.edgeMargin}mm`,
-          }}
-        >
+        <div className="flex flex-wrap content-start" style={getLabelGridStyle(config)}>
           {labelList.map((product, idx) => (
             <div
               key={`${product.id}-${idx}-print`}

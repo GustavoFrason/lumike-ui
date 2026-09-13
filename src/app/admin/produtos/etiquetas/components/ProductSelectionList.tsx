@@ -22,7 +22,10 @@ export function ProductSelectionList({
   onUpdateQuantity,
 }: ProductSelectionListProps) {
   return (
-    <div className="bg-white p-4 rounded-lg border border-zinc-200 md:col-span-1 h-[calc(100vh-280px)] flex flex-col">
+    // Mesma altura resiliente do LabelPreviewGrid ao lado — os dois painéis
+    // precisam ficar do mesmo tamanho, e o piso de 420px evita colapsar numa
+    // tela baixa quando o painel de configuração acima cresce.
+    <div className="bg-white p-4 rounded-lg border border-zinc-200 md:col-span-1 h-[max(420px,calc(100vh_-_460px))] flex flex-col">
       <div className="mb-4 space-y-2">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-zinc-400" />
@@ -66,6 +69,13 @@ export function ProductSelectionList({
                 </div>
               </div>
 
+              {/* Stepper -/qtd/+ parecido com o de CartPanel.tsx (vendas/nova),
+                  mas mantido local de propósito: visual diferente (pill com
+                  borda vs. texto inline só-no-hover) e API diferente (delta
+                  aqui, valor absoluto lá) — forçar um componente único pra
+                  duas telas que evoluem por razões diferentes (impressão de
+                  etiqueta vs. carrinho de venda) trocaria uma duplicação
+                  pequena por uma abstração com vários props condicionais. */}
               <div className="flex items-center gap-2 bg-white border rounded-lg p-1 shadow-sm">
                 <button
                   onClick={() => onUpdateQuantity(product.id, -1)}
