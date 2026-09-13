@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Download } from 'lucide-react';
 import { ProductModal } from './ProductModal';
 import { useProducts } from '@/lib/hooks/use-products';
 import { useCategories } from '@/lib/hooks/use-categories';
@@ -12,6 +13,8 @@ import { PaginationInfo } from '@/components/ui/pagination-info';
 import { Product, CreateProductDto, productsService } from '@/lib/services/products.service';
 import { imagesService } from '@/lib/services/images.service';
 import { inventoryService } from '@/lib/services/inventory.service';
+import { exportProductsToExcel } from '@/lib/utils/export-products';
+import { getErrorMessage } from '@/lib/utils';
 import { WarrantyModal } from '../garantias/WarrantyModal';
 import { ProductFiltersBar } from './components/ProductFiltersBar';
 import { BulkActionsBar } from './components/BulkActionsBar';
@@ -52,6 +55,9 @@ export default function ProdutosPage() {
   const [search, setSearch] = useState('');
   const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
 
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+
   // Carrega produtos ao montar o componente ou mudar página/filtros
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -69,6 +75,26 @@ export default function ProdutosPage() {
       await loadProducts(currentPage, ITEMS_PER_PAGE, true);
     } catch (err) {
       console.error('Erro ao atualizar em massa:', err);
+    }
+  }
+
+  /**
+   * Busca TODOS os produtos que batem com os filtros atuais (busca/
+   * categoria) numa página só (limit bem alto) — a paginação da tela
+   * (ITEMS_PER_PAGE) é só de exibição, exportar precisa ignorar isso e
+   * pegar tudo. Mesmo is_active=true já usado pra carregar a tela (não tem
+   * toggle de "mostrar inativos" nesta tela hoje).
+   */
+  async function handleExportExcel() {
+    setExporting(true);
+    setExportError(null);
+    try {
+      const result = await productsService.getAll(1, 100000, true, search, categoryId);
+      exportProductsToExcel(result.data);
+    } catch (err) {
+      setExportError(getErrorMessage(err, 'Erro ao exportar produtos.'));
+    } finally {
+      setExporting(false);
     }
   }
 
@@ -190,16 +216,29 @@ export default function ProdutosPage() {
     <section className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Produtos</h1>
-        <button
-          onClick={handleNovoProduto}
-          className="px-4 py-2 bg-[var(--lumilee-gold)] text-white rounded-lg hover:opacity-90 transition"
-        >
-          + Novo Produto
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Exporta TODOS os produtos que batem com busca/categoria atuais
+              (ignora a paginação da tela) com todas as colunas do produto,
+              não só o que aparece na tabela — ver export-products.ts. */}
+          <button
+            onClick={handleExportExcel}
+            disabled={exporting}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-zinc-200 text-zinc-700 rounded-lg hover:bg-zinc-50 transition disabled:opacity-50"
+          >
+            <Download className="h-4 w-4" />
+            {exporting ? 'Exportando...' : 'Exportar Excel'}
+          </button>
+          <button
+            onClick={handleNovoProduto}
+            className="px-4 py-2 bg-[var(--lumilee-gold)] text-white rounded-lg hover:opacity-90 transition"
+          >
+            + Novo Produto
+          </button>
+        </div>
       </div>
 
       <ErrorMessage
-        message={errorProducts || errorCreating || errorUpdating || errorDeleting || ''}
+        message={errorProducts || errorCreating || errorUpdating || errorDeleting || exportError || ''}
       />
 
       <ProductFiltersBar
