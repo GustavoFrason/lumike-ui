@@ -7,7 +7,12 @@ import { ErrorMessage } from '@/components/ui/error-message';
 import Link from 'next/link';
 import { ArrowLeft, Printer } from 'lucide-react';
 import { Product } from '@/lib/services/products.service';
-import { DEFAULT_LABEL_CONFIG, LabelConfig, getLabelGridStyle } from './components/types';
+import {
+  DEFAULT_LABEL_CONFIG,
+  LabelConfig,
+  getLabelGridStyle,
+  getPrintPageSizeMm,
+} from './components/types';
 import { LabelContent } from './components/LabelContent';
 import { LabelPrintConfigPanel } from './components/LabelPrintConfigPanel';
 import { ProductSelectionList } from './components/ProductSelectionList';
@@ -79,6 +84,13 @@ export default function EtiquetasPage() {
     window.print();
   }
 
+  // Tamanho de página explícito pro @page abaixo — largura da bobina inteira
+  // (todas as columnsPerRow colunas), altura de uma fileira. Ver comentário
+  // de getPrintPageSizeMm: "size: auto" deixava a impressão usar o tamanho
+  // de página já configurado no driver da impressora, que podia não bater
+  // com a largura real da bobina e cortar etiquetas da fileira.
+  const printPageSize = getPrintPageSizeMm(config);
+
   if (loadingProducts && products.length === 0) {
     return <Loading size="lg" text="Carregando produtos..." className="py-12" />;
   }
@@ -127,7 +139,7 @@ export default function EtiquetasPage() {
 
       {/* Print Area - Only visible when printing */}
       <div className="hidden print:block">
-        <div className="flex flex-wrap content-start" style={getLabelGridStyle(config)}>
+        <div style={getLabelGridStyle(config)}>
           {labelList.map((product, idx) => (
             <div
               key={`${product.id}-${idx}-print`}
@@ -148,7 +160,9 @@ export default function EtiquetasPage() {
       <style jsx global>{`
         @media print {
           @page {
-            size: auto;
+            /* Tamanho real da bobina (todas as colunas), não "auto" — ver
+               comentário de getPrintPageSizeMm em components/types.ts. */
+            size: ${printPageSize.width}mm ${printPageSize.height}mm;
             margin: 0mm;
           }
           body {

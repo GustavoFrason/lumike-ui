@@ -15,7 +15,7 @@ export function LabelPreviewGrid({ labelList, config, onUpdateQuantity }: LabelP
     // configuração acima (que cresce conforme os campos dele mudam — daí o
     // `max()` com um piso fixo, pra não colapsar numa tela baixa/notebook em
     // vez de só chutar um número que precisa ser recalibrado toda hora).
-    <div className="bg-zinc-100 p-8 rounded-lg border border-zinc-200 md:col-span-2 overflow-y-auto h-[max(420px,calc(100vh_-_460px))]">
+    <div className="bg-zinc-100 p-8 rounded-lg border border-zinc-200 md:col-span-2 overflow-auto h-[max(420px,calc(100vh_-_460px))]">
       {labelList.length === 0 ? (
         <div className="h-full flex flex-col items-center justify-center text-zinc-400">
           <Printer className="h-12 w-12 mb-4 opacity-20" />
@@ -23,11 +23,11 @@ export function LabelPreviewGrid({ labelList, config, onUpdateQuantity }: LabelP
         </div>
       ) : (
         <div
-          className="flex flex-wrap content-start"
-          // Mesmo cálculo de columnGap/edgeMargin do bloco de impressão em
+          // Mesmo grid (columnsPerRow colunas fixas) do bloco de impressão em
           // page.tsx (via getLabelGridStyle) — sem isso o preview nunca reflete
-          // o espaçamento real entre colunas da bobina, e o ajuste fino vira
-          // tentativa-e-erro gastando etiqueta física.
+          // quantas etiquetas cabem por fileira de verdade, e o ajuste fino vira
+          // tentativa-e-erro gastando etiqueta física. `overflow-auto` no pai
+          // (acima) evita que uma janela estreita quebre esse grid.
           style={getLabelGridStyle(config)}
         >
           {labelList.map((product, idx) => (

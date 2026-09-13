@@ -177,6 +177,15 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
           min={0}
           onChange={(edgeMargin) => onConfigChange({ ...config, edgeMargin })}
         />
+        <NumberField
+          label="Colunas por fileira"
+          value={config.columnsPerRow}
+          min={1}
+          max={10}
+          onChange={(columnsPerRow) =>
+            onConfigChange({ ...config, columnsPerRow: Math.round(columnsPerRow) })
+          }
+        />
         <div className="flex items-center gap-2 pt-4">
           <input
             type="checkbox"
