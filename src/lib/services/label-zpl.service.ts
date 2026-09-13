@@ -1,4 +1,4 @@
-import type { LabelConfig } from '@/app/admin/produtos/etiquetas/components/types';
+import { getColumnLeftMm, type LabelConfig } from '@/app/admin/produtos/etiquetas/components/types';
 import type { Product } from '@/lib/services/products.service';
 import { formatCurrency } from '@/lib/formatters';
 
@@ -66,10 +66,11 @@ export function generateLabelsZpl(labelList: Product[], config: LabelConfig): st
 }
 
 function generateRowZpl(row: Product[], config: LabelConfig): string {
+  // Largura da página = onde a última coluna termina (soma de margem +
+  // colunas anteriores + vãos reais até ali — ver getColumnLeftMm) + a
+  // largura da própria última coluna.
   const pageWidthDots = mm(
-    config.edgeMargin +
-      config.columnsPerRow * config.width +
-      (config.columnsPerRow - 1) * config.columnGap,
+    getColumnLeftMm(config, config.columnsPerRow - 1) + config.width,
   );
   const pageHeightDots = mm(config.height);
 
@@ -87,7 +88,7 @@ function generateRowZpl(row: Product[], config: LabelConfig): string {
 }
 
 function generateColumnZpl(product: Product, column: number, config: LabelConfig): string {
-  const columnLeftDots = mm(config.edgeMargin + column * (config.width + config.columnGap));
+  const columnLeftDots = mm(getColumnLeftMm(config, column));
   const padding = mm(1); // mesmo padding:1mm do bloco de impressão (page.tsx)
 
   // Mesmo deslocamento fino que LabelContent.tsx aplica via CSS transform,

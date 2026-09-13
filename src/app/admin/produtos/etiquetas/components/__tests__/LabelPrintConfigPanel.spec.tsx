@@ -104,16 +104,25 @@ describe('LabelPrintConfigPanel', () => {
     expect(width.value).toBe('30');
   });
 
-  it('espaço entre colunas, distância p/ fileira de baixo e margem da borda são editáveis', () => {
+  it('um campo de espaço por vão (1→2, 2→3), cada um editável independente', () => {
     render(<Harness initial={DEFAULT_LABEL_CONFIG} />);
 
-    const columnGap = screen.getByLabelText('Espaço entre colunas (mm)') as HTMLInputElement;
+    const gap12 = screen.getByLabelText('Espaço etiqueta 1→2 (mm)') as HTMLInputElement;
+    const gap23 = screen.getByLabelText('Espaço etiqueta 2→3 (mm)') as HTMLInputElement;
     const rowGap = screen.getByLabelText('Distância p/ etiqueta de baixo (mm)') as HTMLInputElement;
     const edgeMargin = screen.getByLabelText('Margem da borda (mm)') as HTMLInputElement;
 
-    expect(columnGap.value).toBe('3');
+    expect(gap12.value).toBe('3');
+    expect(gap23.value).toBe('3');
     expect(rowGap.value).toBe('0'); // DEFAULT_LABEL_CONFIG.rowGap
     expect(edgeMargin.value).toBe('2');
+
+    // Pedido real do usuário: 1mm entre 1→2, 3mm entre 2→3 — cada campo
+    // muda o vão dele sem afetar o outro.
+    fireEvent.change(gap12, { target: { value: '1' } });
+    fireEvent.blur(gap12);
+    expect(gap12.value).toBe('1');
+    expect(gap23.value).toBe('3'); // não mexeu
 
     fireEvent.change(rowGap, { target: { value: '4' } });
     fireEvent.blur(rowGap);
@@ -131,5 +140,30 @@ describe('LabelPrintConfigPanel', () => {
 
     fireEvent.change(input, { target: { value: '99' } });
     expect(input.value).toBe('10'); // limitado ao máximo
+  });
+
+  it('aumentar colunas por fileira cria novos campos de vão (reusando o último valor)', () => {
+    render(<Harness initial={DEFAULT_LABEL_CONFIG} />);
+    const columnsInput = screen.getByLabelText('Colunas por fileira') as HTMLInputElement;
+
+    fireEvent.change(columnsInput, { target: { value: '4' } });
+
+    // 4 colunas -> 3 vãos (1→2, 2→3, 3→4); o novo repete o último (3mm).
+    expect((screen.getByLabelText('Espaço etiqueta 1→2 (mm)') as HTMLInputElement).value).toBe(
+      '3',
+    );
+    expect((screen.getByLabelText('Espaço etiqueta 3→4 (mm)') as HTMLInputElement).value).toBe(
+      '3',
+    );
+  });
+
+  it('diminuir colunas por fileira remove os campos de vão que sobraram', () => {
+    render(<Harness initial={DEFAULT_LABEL_CONFIG} />);
+    const columnsInput = screen.getByLabelText('Colunas por fileira') as HTMLInputElement;
+
+    fireEvent.change(columnsInput, { target: { value: '2' } });
+
+    expect(screen.getByLabelText('Espaço etiqueta 1→2 (mm)')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Espaço etiqueta 2→3 (mm)')).not.toBeInTheDocument();
   });
 });

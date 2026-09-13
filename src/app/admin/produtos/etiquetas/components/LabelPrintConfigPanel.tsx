@@ -1,6 +1,6 @@
 import { useEffect, useId, useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
-import { LabelConfig } from './types';
+import { LabelConfig, resizeColumnGaps } from './types';
 
 interface LabelPrintConfigPanelProps {
   config: LabelConfig;
@@ -174,12 +174,23 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
           max={maxOffsetY}
           onChange={(offsetY) => onConfigChange({ ...config, offsetY })}
         />
-        <NumberField
-          label="Espaço entre colunas (mm)"
-          value={config.columnGap}
-          min={0}
-          onChange={(columnGap) => onConfigChange({ ...config, columnGap })}
-        />
+        {/* Um campo por vão — "Espaço entre colunas" (valor único) virou
+            "Espaço etiqueta N→N+1" por par, porque o vão real entre uma
+            etiqueta e a próxima nem sempre é igual em todos os pontos da
+            bobina (pedido direto do usuário). */}
+        {config.columnGaps.map((gap, i) => (
+          <NumberField
+            key={i}
+            label={`Espaço etiqueta ${i + 1}→${i + 2} (mm)`}
+            value={gap}
+            min={0}
+            onChange={(value) => {
+              const columnGaps = [...config.columnGaps];
+              columnGaps[i] = value;
+              onConfigChange({ ...config, columnGaps });
+            }}
+          />
+        ))}
         <NumberField
           label="Distância p/ etiqueta de baixo (mm)"
           value={config.rowGap}
@@ -197,9 +208,17 @@ export function LabelPrintConfigPanel({ config, onConfigChange }: LabelPrintConf
           value={config.columnsPerRow}
           min={1}
           max={10}
-          onChange={(columnsPerRow) =>
-            onConfigChange({ ...config, columnsPerRow: Math.round(columnsPerRow) })
-          }
+          onChange={(value) => {
+            const columnsPerRow = Math.round(value);
+            // columnGaps precisa ter sempre columnsPerRow - 1 entradas —
+            // ver resizeColumnGaps (types.ts): reusa o último vão já
+            // configurado em vez de inventar um valor novo do nada.
+            onConfigChange({
+              ...config,
+              columnsPerRow,
+              columnGaps: resizeColumnGaps(config.columnGaps, columnsPerRow),
+            });
+          }}
         />
         <div className="flex items-center gap-2 pt-4">
           <input

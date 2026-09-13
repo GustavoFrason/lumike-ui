@@ -1,6 +1,6 @@
 import { Printer } from 'lucide-react';
 import { Product } from '@/lib/services/products.service';
-import { LabelConfig, getLabelGridStyle } from './types';
+import { LabelConfig, getLabelGridStyle, getLabelGridColumn } from './types';
 import { LabelContent } from './LabelContent';
 
 interface LabelPreviewGridProps {
@@ -38,6 +38,10 @@ export function LabelPreviewGrid({ labelList, config, onUpdateQuantity }: LabelP
                 width: `${config.width}mm`,
                 height: `${config.height}mm`,
                 padding: '1mm',
+                // As tracks do grid intercalam conteúdo/vão (ver
+                // getLabelGridStyle) — sem isso cada etiqueta cairia numa
+                // track errada (metade nas tracks de vão).
+                gridColumn: getLabelGridColumn(idx % config.columnsPerRow),
               }}
             >
               <LabelContent product={product} config={config} />

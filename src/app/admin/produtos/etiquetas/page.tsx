@@ -11,6 +11,7 @@ import {
   DEFAULT_LABEL_CONFIG,
   LabelConfig,
   getLabelGridStyle,
+  getLabelGridColumn,
   getPrintPageSizeMm,
 } from './components/types';
 import { LabelContent } from './components/LabelContent';
@@ -253,6 +254,10 @@ export default function EtiquetasPage() {
                 height: `${config.height}mm`,
                 padding: '1mm',
                 pageBreakInside: 'avoid',
+                // As tracks do grid intercalam conteúdo/vão (ver
+                // getLabelGridStyle) — sem isso cada etiqueta cairia numa
+                // track errada (metade nas tracks de vão).
+                gridColumn: getLabelGridColumn(idx % config.columnsPerRow),
               }}
             >
               <LabelContent product={product} config={config} />
