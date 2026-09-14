@@ -68,8 +68,12 @@ export default function EtiquetasPage() {
   }
 
   useEffect(() => {
-    // Carrega produtos (pagination false para pegar tudo, se a API suportar, ou limit alto)
-    loadProducts(1, 200, true);
+    // Limite bem alto numa página só (a API não impõe teto de `limit` —
+    // mesma abordagem já usada na exportação de Excel) pra garantir que
+    // TODO produto ativo apareça aqui, não só os primeiros 200. Com um
+    // catálogo maior que esse teto antigo, "Selecionar Tudo"/"Selecionar
+    // por Estoque" e até a busca simplesmente não enxergavam o resto.
+    loadProducts(1, 100000, true);
   }, [loadProducts]);
 
   // Ordenado por código do produto (SKU interno) crescente — pedido direto
