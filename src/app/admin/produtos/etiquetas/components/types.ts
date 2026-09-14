@@ -1,5 +1,16 @@
 import type { CSSProperties } from 'react';
 
+/**
+ * Fixo de propósito, independente de `config.fontSize` — pedido direto: o
+ * nome do produto (geralmente o texto mais longo da etiqueta, por isso já
+ * tem line-clamp-2 no preview) precisa ficar menor que o resto pra não
+ * estourar o espaço disponível, mesmo quando fontSize é aumentado pra
+ * deixar SKU/preço mais legíveis. Usado tanto em LabelContent.tsx (preview/
+ * impressão via navegador) quanto em label-zpl.service.ts (impressão via
+ * QZ Tray) — as duas precisam bater.
+ */
+export const PRODUCT_NAME_FONT_SIZE_PX = 8;
+
 export interface LabelConfig {
   width: number; // mm
   height: number; // mm

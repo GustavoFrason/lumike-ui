@@ -6,6 +6,7 @@ interface ProductSelectionListProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   onSelectAll: () => void;
+  onSelectAllByStock: () => void;
   onDeselectAll: () => void;
   products: Product[];
   selectedQuantities: Record<number, number>;
@@ -16,6 +17,7 @@ export function ProductSelectionList({
   searchTerm,
   onSearchChange,
   onSelectAll,
+  onSelectAllByStock,
   onDeselectAll,
   products,
   selectedQuantities,
@@ -37,9 +39,20 @@ export function ProductSelectionList({
             className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-x-2 gap-y-1">
           <button onClick={onSelectAll} className="text-xs text-[--lumilee-gold] hover:underline">
             Selecionar Tudo
+          </button>
+          {/* Marca a quantidade de cada produto IGUAL ao estoque disponível
+              dele (5 em estoque -> 5 etiquetas), diferente de "Selecionar
+              Tudo" (sempre marca 1) — pra imprimir etiqueta de toda peça
+              disponível de uma vez, sem digitar quantidade uma a uma. */}
+          <button
+            onClick={onSelectAllByStock}
+            className="text-xs text-[--lumilee-gold] hover:underline"
+            title="Marca a quantidade de cada produto igual ao estoque disponível"
+          >
+            Selecionar por Estoque
           </button>
           <button onClick={onDeselectAll} className="text-xs text-red-500 hover:underline">
             Limpar Seleção

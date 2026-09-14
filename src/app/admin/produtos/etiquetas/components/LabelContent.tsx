@@ -1,6 +1,7 @@
 import { QRCodeSVG } from 'qrcode.react';
 import { formatCurrency } from '@/lib/formatters';
 import { Product } from '@/lib/services/products.service';
+import { PRODUCT_NAME_FONT_SIZE_PX } from './types';
 
 interface LabelContentProps {
   product: Product;
@@ -37,7 +38,7 @@ export function LabelContent({ product, config }: LabelContentProps) {
         {config.showProductName && (
           <p
             className="font-bold line-clamp-2 text-zinc-900"
-            style={{ fontSize: `${config.fontSize}px`, lineHeight: '1.2' }}
+            style={{ fontSize: `${PRODUCT_NAME_FONT_SIZE_PX}px`, lineHeight: '1.2' }}
           >
             {product.name}
           </p>

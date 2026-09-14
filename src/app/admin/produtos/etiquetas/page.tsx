@@ -19,6 +19,7 @@ import { LabelPrintConfigPanel } from './components/LabelPrintConfigPanel';
 import { ProductSelectionList } from './components/ProductSelectionList';
 import { LabelPreviewGrid } from './components/LabelPreviewGrid';
 import { loadSavedLabelConfig, saveLabelConfig } from './components/label-config-storage';
+import { compareProductsBySku } from './components/sort-products';
 import {
   testQzConnection,
   printLabelsViaQz,
@@ -71,12 +72,18 @@ export default function EtiquetasPage() {
     loadProducts(1, 200, true);
   }, [loadProducts]);
 
-  const filteredProducts = products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.sku2?.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  // Ordenado por código do produto (SKU interno) crescente — pedido direto
+  // pra imprimir/selecionar na mesma ordem física que as peças ficam
+  // guardadas. A lista de etiquetas geradas (labelList, abaixo) segue essa
+  // mesma ordem, não a ordem em que cada produto foi selecionado na tela.
+  const filteredProducts = products
+    .filter(
+      (p) =>
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.sku2?.toLowerCase().includes(searchTerm.toLowerCase()),
+    )
+    .sort(compareProductsBySku);
 
   function updateQuantity(productId: number, delta: number) {
     setSelectedQuantities((prev) => {
@@ -105,16 +112,43 @@ export default function EtiquetasPage() {
     setSelectedQuantities({});
   }
 
-  // Gera a lista plana de produtos para repetição de etiquetas
+  /**
+   * "Selecionar por estoque": marca a quantidade de cada produto filtrado
+   * IGUAL ao estoque disponível dele (produto com 5 em estoque -> 5
+   * etiquetas, com 3 -> 3, etc.) — diferente de "Selecionar Tudo" (sempre
+   * marca 1). Pedido direto pra imprimir etiqueta de toda peça disponível
+   * de uma vez, sem digitar quantidade produto a produto. Sobrescreve a
+   * quantidade já selecionada dos produtos filtrados (é uma ação explícita
+   * de "quero exatamente o estoque de cada um"); produto com estoque 0 é
+   * removido da seleção, igual quando o stepper chega a 0.
+   */
+  function selectAllByStock() {
+    const newQuantities = { ...selectedQuantities };
+    filteredProducts.forEach((p) => {
+      if (p.current_stock > 0) {
+        newQuantities[p.id] = p.current_stock;
+      } else {
+        delete newQuantities[p.id];
+      }
+    });
+    setSelectedQuantities(newQuantities);
+  }
+
+  // Gera a lista plana de produtos para repetição de etiquetas — ordenada
+  // por código do produto (mesma ordem de filteredProducts), não pela
+  // ordem em que cada um foi selecionado/pela ordem de chave do objeto.
   const labelList: Product[] = [];
-  Object.entries(selectedQuantities).forEach(([id, qty]) => {
-    const product = products.find((p) => p.id === Number(id));
-    if (product) {
+  Object.entries(selectedQuantities)
+    .map(([id, qty]) => ({ product: products.find((p) => p.id === Number(id)), qty }))
+    .filter(
+      (entry): entry is { product: Product; qty: number } => entry.product !== undefined,
+    )
+    .sort((a, b) => compareProductsBySku(a.product, b.product))
+    .forEach(({ product, qty }) => {
       for (let i = 0; i < qty; i++) {
         labelList.push(product);
       }
-    }
-  });
+    });
 
   function handlePrint() {
     window.print();
@@ -262,6 +296,7 @@ export default function EtiquetasPage() {
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           onSelectAll={selectAllFiltered}
+          onSelectAllByStock={selectAllByStock}
           onDeselectAll={deselectAll}
           products={filteredProducts}
           selectedQuantities={selectedQuantities}

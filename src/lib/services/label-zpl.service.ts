@@ -1,4 +1,8 @@
-import { getColumnLeftMm, type LabelConfig } from '@/app/admin/produtos/etiquetas/components/types';
+import {
+  getColumnLeftMm,
+  PRODUCT_NAME_FONT_SIZE_PX,
+  type LabelConfig,
+} from '@/app/admin/produtos/etiquetas/components/types';
 import type { Product } from '@/lib/services/products.service';
 import { formatCurrency } from '@/lib/formatters';
 
@@ -161,8 +165,15 @@ function generateColumnZpl(product: Product, column: number, config: LabelConfig
   }
 
   if (config.showProductName) {
-    const nameFontDots = px(config.fontSize);
-    lines.push(`^FO${textX},${textY}`, `^A0N,${nameFontDots},${nameFontDots}`, `^FD${zplEscape(product.name)}^FS`);
+    // Fixo (não config.fontSize) — mesmo motivo do LabelContent.tsx
+    // (preview/impressão no navegador): o nome é o texto mais longo da
+    // etiqueta, precisa ficar menor que o resto pra não estourar o espaço.
+    const nameFontDots = px(PRODUCT_NAME_FONT_SIZE_PX);
+    lines.push(
+      `^FO${textX},${textY}`,
+      `^A0N,${nameFontDots},${nameFontDots}`,
+      `^FD${zplEscape(product.name)}^FS`,
+    );
     textY += nameFontDots + lineGapDots;
   }
 
