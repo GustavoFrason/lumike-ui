@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { ProductCard } from '@/components/catalog/product-card';
 import { Product } from '@/lib/services/products.service';
+import { stockNotificationsService } from '@/lib/services/stock-notifications.service';
 import { Loader2, Bell, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -12,23 +12,16 @@ export default function StockAlertsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // /minha-conta já exige sessão (proxy.ts); a chamada vai pelo proxy
+    // Next com o cookie httpOnly.
     const fetchStockAlerts = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
       try {
-        const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-        const response = await axios.get(`${backendUrl}/stock-notifications/my-alerts`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const myAlerts = await stockNotificationsService.getMyAlerts();
 
         // Mapeia os dados para extrair os produtos e filtra nulos
-        const alerts: Product[] = response.data
-          .map((alert: { product: Product | null }) => alert.product)
-          .filter((p: Product | null): p is Product => p !== null);
+        const alerts: Product[] = myAlerts
+          .map((alert) => alert.product)
+          .filter((p): p is Product => p !== null);
         setOutOfStockFavorites(alerts);
       } catch (error) {
         console.error('Erro ao buscar alertas de estoque:', error);

@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import axios from 'axios';
 import { Product } from '@/lib/services/products.service';
+import { stockNotificationsService } from '@/lib/services/stock-notifications.service';
+import { useSession } from '@/contexts/session-context';
 import { formatCurrency } from '@/lib/formatters';
 // import { Heart } from 'lucide-react'; // Removing local Heart import if not used elsewhere, or keep it.
 import { FavoriteButton } from '@/components/ui/favorite-button';
@@ -14,6 +15,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { status: sessionStatus } = useSession();
   const productUrl = product.slug ? `/produtos/${product.slug}` : `/produtos/${product.id}`;
 
   // Logic to get hover image if available
@@ -80,22 +82,11 @@ export function ProductCard({ product }: ProductCardProps) {
                 e.preventDefault();
                 e.stopPropagation();
 
-                const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-                if (token) {
-                  // Logado: Salva e vai para o painel
-                  const userId = Number(JSON.parse(atob(token.split('.')[1])).sub);
-                  axios
-                    .post(
-                      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/stock-notifications`,
-                      {
-                        email: 'user-logged-in', // O backend deve preferir o user_id se presente
-                        product_id: product.id,
-                        user_id: userId,
-                      },
-                      {
-                        headers: { Authorization: `Bearer ${token}` },
-                      },
-                    )
+                if (sessionStatus === 'authenticated') {
+                  // Logado: Salva e vai para o painel (o backend identifica
+                  // o usuário pelo cookie/JWT)
+                  stockNotificationsService
+                    .create({ product_id: product.id })
                     .then(() => {
                       window.location.href = '/minha-conta/avisos-estoque';
                     })

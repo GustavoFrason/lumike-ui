@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { COOKIE_NAME } from '@/lib/cookie-name';
+import { decodeJwtPayload, isJwtExpired } from '@/lib/jwt';
 
 /**
  * Proxy de Autenticação e Redirecionamento (Next.js 16)
@@ -7,22 +8,16 @@ import { COOKIE_NAME } from '@/lib/cookie-name';
  * Controla o acesso às rotas /admin e /minha-conta com base no papel (role) do usuário.
  */
 export default async function proxy(request: NextRequest) {
-  const token = request.cookies.get(COOKIE_NAME)?.value;
+  const rawToken = request.cookies.get(COOKIE_NAME)?.value;
   const { pathname } = request.nextUrl;
 
-  let userRole: string | null = null;
-
-  // Decodifica o token JWT para extrair o role de forma segura
-  if (token) {
-    try {
-      const payloadBase64 = token.split('.')[1];
-      const decodedJson = Buffer.from(payloadBase64, 'base64').toString();
-      const payload = JSON.parse(decodedJson);
-      userRole = payload.role;
-    } catch (error) {
-      console.error('[Middleware] Erro ao decodificar token:', error);
-    }
-  }
+  // Decodifica o JWT (sem verificar assinatura — ver aviso abaixo). Cookie
+  // ilegível ou expirado conta como "sem sessão": antes, um token vencido
+  // ainda mandava /login → /admin e a primeira chamada à API derrubava a
+  // sessão com 401.
+  const payload = decodeJwtPayload(rawToken);
+  const token = payload && !isJwtExpired(payload) ? rawToken : undefined;
+  const userRole: string | null = token ? (payload?.role ?? null) : null;
 
   // Papéis de staff com acesso ao painel: 'superadmin' nunca existiu no banco
   // (ver StaffRole no backend — os papéis reais são admin/gestor/vendedor).

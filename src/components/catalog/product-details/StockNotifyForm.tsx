@@ -1,27 +1,20 @@
-import axios from 'axios';
 import { Product } from '@/lib/services/products.service';
+import { stockNotificationsService } from '@/lib/services/stock-notifications.service';
+import { useSession } from '@/contexts/session-context';
 
 interface StockNotifyFormProps {
   product: Product;
 }
 
 export function StockNotifyForm({ product }: StockNotifyFormProps) {
-  const isLoggedIn = typeof window !== 'undefined' && !!localStorage.getItem('token');
+  // Sessão vem do contexto (cookie httpOnly) — ler localStorage durante o
+  // render causava hydration mismatch entre servidor e navegador.
+  const { status } = useSession();
+  const isLoggedIn = status === 'authenticated';
 
   async function handleConfirmAlert() {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-    const userId = Number(JSON.parse(atob(token.split('.')[1])).sub);
-
     try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/stock-notifications`,
-        {
-          email: 'user-logged-in',
-          product_id: product.id,
-          user_id: userId,
-        },
-      );
+      await stockNotificationsService.create({ product_id: product.id });
       window.location.href = '/minha-conta/avisos-estoque';
     } catch (error) {
       console.error('Erro ao registrar:', error);
