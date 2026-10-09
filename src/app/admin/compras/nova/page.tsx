@@ -6,10 +6,10 @@ import { useProducts } from '@/lib/hooks/use-products';
 import { useSuppliers } from '@/lib/hooks/use-suppliers';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { purchasesService, CreatePurchaseDto } from '@/lib/services/purchases.service';
-import { CreateProductDto, Product } from '@/lib/services/products.service';
+import { CreateProductDto, Product, productsService } from '@/lib/services/products.service';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { getErrorMessage } from '@/lib/utils';
-import { ProductModal } from '../../produtos/ProductModal';
+import { ProductModal, type ProductModalSaveData } from '../../produtos/ProductModal';
 import { imagesService } from '@/lib/services/images.service';
 import { FileSpreadsheet, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
@@ -94,20 +94,37 @@ export default function NovaCompraPage() {
     setTimeout(() => setSuccess(null), 5000);
   }
 
-  async function handleQuickProductSave(produtoData: Partial<Product> & { pendingFiles?: File[] }) {
+  async function handleQuickProductSave(produtoData: ProductModalSaveData) {
+    // Instruções do modal — não vão pra API (que recusa campo desconhecido).
+    const { pendingFiles, existingProductId, initial_seller_id: _seller, ...fields } = produtoData;
     try {
       setError(null);
+
+      // Código Zarpellon já cadastrado: só adiciona o produto existente à
+      // compra (a própria compra dá entrada no estoque) em vez de criar
+      // uma duplicata — antes o create recebia existingProductId e dava 400.
+      if (existingProductId) {
+        const existing = await productsService.getById(existingProductId);
+        setItems((prev) => [
+          ...prev,
+          { product: existing, quantity: 1, unit_cost: fields.cost_price || 0 },
+        ]);
+        setIsProductModalOpen(false);
+        setSearchTerm('');
+        return;
+      }
+
       // ProductModal valida os campos obrigatórios antes de chamar onSave,
       // então em tempo de execução isso sempre bate com CreateProductDto —
       // o cast aqui é só porque o tipo do modal é Partial<Product> (cobre
       // tanto criar quanto editar).
-      const newProduct = await createProduct(produtoData as CreateProductDto);
+      const newProduct = await createProduct(fields as CreateProductDto);
 
       if (newProduct) {
         // Handle images if any
-        if (produtoData.pendingFiles && produtoData.pendingFiles.length > 0) {
-          for (let i = 0; i < produtoData.pendingFiles.length; i++) {
-            const file = produtoData.pendingFiles[i];
+        if (pendingFiles && pendingFiles.length > 0) {
+          for (let i = 0; i < pendingFiles.length; i++) {
+            const file = pendingFiles[i];
             const url = await imagesService.uploadImage(newProduct.id, file);
             await imagesService.registerImage(newProduct.id, url, i);
           }
@@ -116,7 +133,7 @@ export default function NovaCompraPage() {
         // Add to purchase items
         setItems((prev) => [
           ...prev,
-          { product: newProduct, quantity: 1, unit_cost: produtoData.cost_price || 0 },
+          { product: newProduct, quantity: 1, unit_cost: fields.cost_price || 0 },
         ]);
 
         setIsProductModalOpen(false);

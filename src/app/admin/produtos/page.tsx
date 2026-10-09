@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Download } from 'lucide-react';
 import { useDebounce } from 'use-debounce';
-import { ProductModal } from './ProductModal';
+import { ProductModal, type ProductModalSaveData } from './ProductModal';
 import { useProducts } from '@/lib/hooks/use-products';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { ErrorMessage } from '@/components/ui/error-message';
@@ -134,14 +134,49 @@ export default function ProdutosPage() {
     setModalAberto(true);
   }
 
-  async function handleSalvar(
-    produtoData: Partial<Product> & { pendingFiles?: File[]; initial_seller_id?: number },
-  ) {
-    const { pendingFiles, initial_seller_id, ...cleanData } = produtoData;
+  /** Sobe as imagens escolhidas antes do produto existir (cadastro novo). */
+  async function uploadPendingImages(productId: number, pendingFiles?: File[]) {
+    if (!pendingFiles || pendingFiles.length === 0) return;
+
+    for (let i = 0; i < pendingFiles.length; i++) {
+      const file = pendingFiles[i];
+      if (!file || !(file instanceof File)) {
+        console.error(`Imagem ${i + 1} inválida (não é um arquivo), pulando upload.`);
+        continue;
+      }
+      try {
+        const url = await imagesService.uploadImage(productId, file);
+        await imagesService.registerImage(productId, url, i);
+      } catch (imgErr) {
+        console.error('Erro ao subir imagem durante criação:', imgErr);
+      }
+    }
+  }
+
+  async function handleSalvar(produtoData: ProductModalSaveData) {
+    const { pendingFiles, initial_seller_id, existingProductId, ...cleanData } = produtoData;
 
     try {
       if (produtoSelecionado?.id) {
         await updateProduct(produtoSelecionado.id, cleanData);
+      } else if (existingProductId) {
+        // Produto já cadastrado (achado pelo código Zarpellon no modal):
+        // atualiza os dados e lança a quantidade digitada como ENTRADA de
+        // estoque. Antes o `existingProductId` ia junto pro create e a API
+        // recusava (400) — o "somar ao estoque" nunca funcionou.
+        const quantityToAdd = Number(cleanData.current_stock) || 0;
+        const { current_stock: _quantityTyped, ...fields } = cleanData;
+        await updateProduct(existingProductId, fields);
+
+        if (quantityToAdd > 0) {
+          await inventoryService.addStock(
+            existingProductId,
+            { quantity: quantityToAdd, reference: 'Entrada pelo cadastro de produto' },
+            initial_seller_id ?? null,
+          );
+        }
+
+        await uploadPendingImages(existingProductId, pendingFiles);
       } else {
         // Lógica de estoque inicial
         const originalStock = Number(cleanData.current_stock) || 0;
@@ -169,33 +204,8 @@ export default function ProdutosPage() {
         }
 
         // Se houver imagens pendentes e o produto foi criado com sucesso
-        if (newProduct?.id && pendingFiles && pendingFiles.length > 0) {
-          console.log(
-            `🚀 Iniciando upload de ${pendingFiles.length} imagens para o produto ${newProduct.id}`,
-          );
-          for (let i = 0; i < pendingFiles.length; i++) {
-            try {
-              const file = pendingFiles[i];
-              console.log(`📸 Processando imagem ${i + 1}/${pendingFiles.length}:`, {
-                name: file?.name,
-                type: file?.type,
-                size: file?.size,
-                isBlob: file instanceof Blob,
-              });
-
-              if (!file || !(file instanceof File)) {
-                console.error(
-                  `❌ Imagem ${i + 1} inválida ou não é um arquivo (File), pulando upload.`,
-                );
-                continue;
-              }
-
-              const url = await imagesService.uploadImage(newProduct.id, file as File);
-              await imagesService.registerImage(newProduct.id, url, i);
-            } catch (imgErr) {
-              console.error('Erro ao subir imagem durante criação:', imgErr);
-            }
-          }
+        if (newProduct?.id) {
+          await uploadPendingImages(newProduct.id, pendingFiles);
         }
       }
       setModalAberto(false);

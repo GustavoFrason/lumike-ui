@@ -19,10 +19,22 @@ import { ProductPricingSection } from './components/ProductPricingSection';
 import { ProductOrganizationSection } from './components/ProductOrganizationSection';
 import { ProductImagesAndToggles } from './components/ProductImagesAndToggles';
 
+/**
+ * O que o modal entrega no onSave. `pendingFiles`, `existingProductId` e
+ * `initial_seller_id` são instruções pra quem salva — NÃO vão pra API (o
+ * backend recusa campo desconhecido com 400).
+ */
+export type ProductModalSaveData = Partial<Product> & {
+  pendingFiles?: File[];
+  /** Produto já cadastrado com o mesmo código Zarpellon: atualizar este. */
+  existingProductId?: number;
+  initial_seller_id?: number;
+};
+
 interface ModalProps {
   produto: Partial<Product> | null;
   onClose: () => void;
-  onSave: (produto: Partial<Product> & { pendingFiles?: File[] }) => void;
+  onSave: (produto: ProductModalSaveData) => void;
   loading?: boolean;
   error?: string | null;
 }
@@ -36,7 +48,9 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
     name: produto?.name || '',
     sku: produto?.sku || '',
     sku2: produto?.sku2 || '',
+    sku2_alt: produto?.sku2_alt || '',
     short_description: produto?.short_description || '',
+    label_text: produto?.label_text || '',
     description: produto?.description || '',
     price: produto?.price?.toString().replace('.', ',') || '',
     preco_promocional: produto?.preco_promocional?.toString().replace('.', ',') || '',
@@ -56,6 +70,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
   const [pendingFiles, setPendingFiles] = useState<{ file: File; url: string }[]>([]);
   const [loadingSku, setLoadingSku] = useState(false);
   const [existingProduct, setExistingProduct] = useState<Product | null>(null);
+  const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [transferModalAberto, setTransferModalAberto] = useState(false);
@@ -132,52 +147,64 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
     if (!sku2 || produto?.id) return;
 
     setLoadingSku(true);
+    setDuplicateWarning(null);
     try {
-      // Search for product by supplier SKU
-      const result = await productsService.getAll(1, 1, undefined, sku2);
+      // Busca EXATA pelo código (antes era uma busca parcial que pegava só
+      // o 1º resultado — se outro produto "contivesse" o código e fosse
+      // mais novo, o existente nunca era achado e virava duplicata). Aqui o
+      // campo é o código do fornecedor, então só vale bater em sku2 ou no
+      // 2º código, não no nº do item.
+      const code = sku2.toUpperCase();
+      const matches = (await productsService.lookup(sku2)).filter((p) =>
+        [p.sku2, p.sku2_alt].some((c) => c?.toUpperCase() === code),
+      );
 
-      if (result.data.length > 0) {
-        const foundProduct = result.data[0];
+      if (matches.length > 0) {
+        const foundProduct = matches.find((p) => p.is_active) ?? matches[0];
 
-        // Exact SKU match (case-insensitive)
-        if (foundProduct.sku2?.toLowerCase() === sku2.toLowerCase()) {
-          setExistingProduct(foundProduct);
+        if (matches.length > 1) {
+          setDuplicateWarning(
+            `Atenção: ${matches.length} produtos têm este código (itens ${matches
+              .map((p) => p.sku || p.id)
+              .join(', ')}). Usando o item ${foundProduct.sku || foundProduct.id}.`,
+          );
+        }
 
-          // Auto-fill ALL fields
-          setForm({
-            name: foundProduct.name,
-            sku: foundProduct.sku || '',
-            sku2: foundProduct.sku2 || '',
-            short_description: foundProduct.short_description || '',
-            description: foundProduct.description || '',
-            price: foundProduct.price?.toString().replace('.', ',') || '',
-            preco_promocional: foundProduct.preco_promocional?.toString().replace('.', ',') || '',
-            cost_price: foundProduct.cost_price?.toString().replace('.', ',') || '',
-            purchase_date: foundProduct.purchase_date || new Date().toISOString().split('T')[0],
-            current_stock: '0', // Reset to 0 so user enters amount to ADD
-            min_stock: foundProduct.min_stock?.toString() || '',
-            category_id: foundProduct.category_id?.toString() || '',
-            supplier_id: foundProduct.supplier_id?.toString() || '',
-            colecao_id: foundProduct.colecao_id || '',
-            collection: foundProduct.collection || '',
-            is_active: foundProduct.is_active ?? true,
-            is_featured: foundProduct.is_featured ?? false,
-          });
+        setExistingProduct(foundProduct);
 
-          // Load images
-          if (foundProduct.id) {
-            await loadProductImages(foundProduct.id);
-          }
-        } else {
-          // Não achou match: garante que não sobra sku de uma busca
-          // anterior que tinha achado outro produto (o campo é somente
-          // leitura na tela, mas o valor continuava no estado e ia junto
-          // no submit — causava "duplicate key" tentando criar produto
-          // novo com o sku de outro produto já existente).
-          setExistingProduct(null);
-          setForm((prev) => ({ ...prev, sku: '' }));
+        // Auto-fill ALL fields
+        setForm({
+          name: foundProduct.name,
+          sku: foundProduct.sku || '',
+          sku2: foundProduct.sku2 || '',
+          sku2_alt: foundProduct.sku2_alt || '',
+          short_description: foundProduct.short_description || '',
+          label_text: foundProduct.label_text || '',
+          description: foundProduct.description || '',
+          price: foundProduct.price?.toString().replace('.', ',') || '',
+          preco_promocional: foundProduct.preco_promocional?.toString().replace('.', ',') || '',
+          cost_price: foundProduct.cost_price?.toString().replace('.', ',') || '',
+          purchase_date: foundProduct.purchase_date || new Date().toISOString().split('T')[0],
+          current_stock: '0', // Reset to 0 so user enters amount to ADD
+          min_stock: foundProduct.min_stock?.toString() || '',
+          category_id: foundProduct.category_id?.toString() || '',
+          supplier_id: foundProduct.supplier_id?.toString() || '',
+          colecao_id: foundProduct.colecao_id || '',
+          collection: foundProduct.collection || '',
+          is_active: foundProduct.is_active ?? true,
+          is_featured: foundProduct.is_featured ?? false,
+        });
+
+        // Load images
+        if (foundProduct.id) {
+          await loadProductImages(foundProduct.id);
         }
       } else {
+        // Não achou match: garante que não sobra sku de uma busca
+        // anterior que tinha achado outro produto (o campo é somente
+        // leitura na tela, mas o valor continuava no estado e ia junto
+        // no submit — causava "duplicate key" tentando criar produto
+        // novo com o sku de outro produto já existente).
         setExistingProduct(null);
         setForm((prev) => ({ ...prev, sku: '' }));
       }
@@ -234,8 +261,8 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
     const { name, value, type } = e.target;
     let finalValue = value;
 
-    // SKU to Uppercase
-    if (name === 'sku' || name === 'sku2') {
+    // Códigos e texto da etiqueta em maiúsculas
+    if (name === 'sku' || name === 'sku2' || name === 'sku2_alt' || name === 'label_text') {
       finalValue = value.toUpperCase();
     }
 
@@ -316,6 +343,9 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
       // de outro produto (ver reset em handleSkuLookup).
       sku: produto?.id || existingProduct ? form.sku.trim() : undefined,
       sku2: form.sku2.trim(),
+      // null = limpar o campo (edição); a API normaliza espaços/maiúsculas
+      sku2_alt: form.sku2_alt.trim() || null,
+      label_text: form.label_text.trim() || null,
       short_description: form.short_description.trim(),
       description: form.description.trim() || undefined,
       price: priceNum,
@@ -378,6 +408,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
               validationErrors={validationErrors}
               loadingSku={loadingSku}
               existingProduct={existingProduct}
+              duplicateWarning={duplicateWarning}
               produto={produto}
               stock={inventory.stock}
               loadingStock={inventory.loadingStock}

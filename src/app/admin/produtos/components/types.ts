@@ -7,7 +7,11 @@ export interface ProductFormState {
   name: string;
   sku: string;
   sku2: string;
+  /** 2º código da Zarpellon (alguns produtos têm dois). */
+  sku2_alt: string;
   short_description: string;
+  /** Linha extra impressa na etiqueta (ex: LINHA PRATA, ARO 16, 45cm). */
+  label_text: string;
   description: string;
   price: string;
   preco_promocional: string;

@@ -34,6 +34,8 @@ describe('exportProductsToExcel', () => {
     const product = buildProduct({
       sku: 'ABC1',
       sku2: 'ZAR1',
+      sku2_alt: 'ZAR1B',
+      label_text: 'LINHA PRATA',
       description: 'Descrição completa',
       slug: 'anel-solitario',
       categories: { id: 3, name: 'Anéis' },
@@ -53,6 +55,8 @@ describe('exportProductsToExcel', () => {
         ID: 1,
         SKU: 'ABC1',
         'SKU Zarpellon': 'ZAR1',
+        'Código Zarpellon 2': 'ZAR1B',
+        'Texto da Etiqueta': 'LINHA PRATA',
         Nome: 'Anel Solitário',
         Descrição: 'Descrição completa',
         Slug: 'anel-solitario',
@@ -81,6 +85,8 @@ describe('exportProductsToExcel', () => {
       expect.objectContaining({
         SKU: '',
         'SKU Zarpellon': '',
+        'Código Zarpellon 2': '',
+        'Texto da Etiqueta': '',
         Categoria: '',
         'Preço Promocional': '',
         'Preço de Custo': '',

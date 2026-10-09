@@ -11,6 +11,8 @@ interface ProductIdentificationSectionProps {
   validationErrors: Record<string, string>;
   loadingSku: boolean;
   existingProduct: Product | null;
+  /** Aviso quando mais de um produto tem o mesmo código Zarpellon. */
+  duplicateWarning?: string | null;
   produto: Partial<Product> | null;
   stock: ProductStock | null | undefined;
   loadingStock: boolean;
@@ -24,6 +26,7 @@ export function ProductIdentificationSection({
   validationErrors,
   loadingSku,
   existingProduct,
+  duplicateWarning,
   produto,
   stock,
   loadingStock,
@@ -35,7 +38,7 @@ export function ProductIdentificationSection({
         📦 Identificação e Estoque
       </h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
           <LabelWithTooltip
             label="SKU (Principal)"
@@ -80,9 +83,31 @@ export function ProductIdentificationSection({
           )}
           {existingProduct && (
             <div className="text-xs bg-amber-50 text-amber-700 px-2 py-1 rounded mt-1 border border-amber-200">
-              ⚠ Produto existente. O valor abaixo será somado ao estoque atual.
+              ⚠ Produto existente (item {existingProduct.sku || existingProduct.id}). O valor
+              abaixo será somado ao estoque atual.
             </div>
           )}
+          {duplicateWarning && (
+            <div className="text-xs bg-red-50 text-red-700 px-2 py-1 rounded mt-1 border border-red-200">
+              {duplicateWarning}
+            </div>
+          )}
+        </div>
+
+        <div>
+          <LabelWithTooltip
+            label="Código Zarpellon 2"
+            tooltip="Alguns produtos da Zarpellon têm dois códigos. Preencha o segundo para a busca e a importação de planilha acharem o produto por qualquer um deles."
+          />
+          <input
+            type="text"
+            name="sku2_alt"
+            placeholder="Opcional"
+            value={form.sku2_alt}
+            onChange={onChange}
+            maxLength={50}
+            className="w-full border rounded-lg px-3 py-2 font-mono font-medium"
+          />
         </div>
 
         <div>

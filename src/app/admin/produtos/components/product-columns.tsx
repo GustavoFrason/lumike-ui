@@ -64,6 +64,11 @@ export function getProductColumns({
         <div className="flex flex-col">
           <span className="text-zinc-700 font-mono text-sm">{produto.sku || '-'}</span>
           {produto.sku2 && <span className="text-zinc-400 text-xs font-mono">{produto.sku2}</span>}
+          {produto.sku2_alt && (
+            <span className="text-zinc-400 text-xs font-mono" title="Código Zarpellon 2">
+              {produto.sku2_alt}
+            </span>
+          )}
         </div>
       ),
     },
