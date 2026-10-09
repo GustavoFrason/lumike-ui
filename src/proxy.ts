@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { COOKIE_NAME } from '@/lib/cookie-name';
 import { decodeJwtPayload, isJwtExpired } from '@/lib/jwt';
+import { canAccessAdminPath, getHomePathForRole } from '@/lib/role-access';
 
 /**
  * Proxy de Autenticação e Redirecionamento (Next.js 16)
  * ------------------------------------------------
  * Controla o acesso às rotas /admin e /minha-conta com base no papel (role) do usuário.
+ *
+ * Precisa ficar em `src/proxy.ts`: com o app em `src/app`, o Next só
+ * carrega o proxy de dentro de `src/`. Na raiz do projeto ele era
+ * ignorado — o middleware compilado saía vazio e nenhuma destas regras
+ * rodava.
  */
 export default async function proxy(request: NextRequest) {
   const rawToken = request.cookies.get(COOKIE_NAME)?.value;
@@ -19,31 +25,31 @@ export default async function proxy(request: NextRequest) {
   const token = payload && !isJwtExpired(payload) ? rawToken : undefined;
   const userRole: string | null = token ? (payload?.role ?? null) : null;
 
-  // Papéis de staff com acesso ao painel: 'superadmin' nunca existiu no banco
-  // (ver StaffRole no backend — os papéis reais são admin/gestor/vendedor).
-  // 'vendedor' não entra aqui: tem acesso ao PDV via API, mas não ao /admin completo.
-  const isAdmin = userRole === 'admin' || userRole === 'gestor';
-
   // Aviso: esta checagem só decodifica o JWT (sem verificar assinatura) para
   // decidir o redirecionamento — é uma otimização de UX (evita renderizar a
   // casca do admin antes de redirecionar), não uma fronteira de segurança.
   // A autorização real é sempre imposta pelo RolesGuard no backend.
+  // Regras por papel (admin/gestor: painel todo; vendedor: só PDV) em
+  // lib/role-access.ts.
 
   // 1. Redirecionamento Inteligente da Tela de Login
   if (pathname.startsWith('/login')) {
     if (token) {
       // Se já está logado, manda pro lugar certo
-      const destination = isAdmin ? '/admin' : '/minha-conta';
-      return NextResponse.redirect(new URL(destination, request.url));
+      return NextResponse.redirect(new URL(getHomePathForRole(userRole), request.url));
     }
     return NextResponse.next();
   }
 
   // 2. Proteção das Rotas Administrativas
   if (pathname.startsWith('/admin')) {
-    if (!token || !isAdmin) {
-      // Se não é admin, manda pro login
+    if (!token) {
       return NextResponse.redirect(new URL('/login', request.url));
+    }
+    if (!canAccessAdminPath(userRole, pathname)) {
+      // Logado mas sem acesso a esta tela: vai para a "casa" do papel
+      // (vendedor → PDV; cliente → /minha-conta).
+      return NextResponse.redirect(new URL(getHomePathForRole(userRole), request.url));
     }
     return NextResponse.next();
   }

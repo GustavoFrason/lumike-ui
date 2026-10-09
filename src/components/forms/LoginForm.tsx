@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { useSession } from '@/contexts/session-context';
 import { stockNotificationsService } from '@/lib/services/stock-notifications.service';
+import { getHomePathForRole } from '@/lib/role-access';
 
 /**
  * Só aceita redirecionar para um caminho interno do próprio site. Sem
@@ -75,12 +76,8 @@ export function LoginForm() {
           return;
         }
 
-        // Papéis de staff reais (ver StaffRole no backend): 'superadmin' nunca existiu no banco.
-        if (user.role === 'admin' || user.role === 'gestor') {
-          router.replace('/admin');
-        } else {
-          router.replace('/minha-conta');
-        }
+        // admin/gestor → painel; vendedor → PDV; cliente → minha conta
+        router.replace(getHomePathForRole(user.role));
       } else {
         setErro(response.data.message || 'Erro ao autenticar');
       }
