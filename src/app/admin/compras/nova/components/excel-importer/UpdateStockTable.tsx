@@ -1,7 +1,9 @@
-import { Trash2 } from 'lucide-react';
+import { Trash2, AlertTriangle } from 'lucide-react';
 import { CurrencyInputATM } from '@/components/ui/currency-input-atm';
-import { parseCurrencyBR } from '@/lib/formatters';
+import { formatCurrency, parseCurrencyBR } from '@/lib/formatters';
+import { perPiece } from '@/lib/utils/kit-conversion';
 import { UpdateStockRow } from './types';
+import { PiecesPerKitInput } from './PiecesPerKitInput';
 
 interface UpdateStockTableProps {
   rows: UpdateStockRow[];
@@ -26,59 +28,115 @@ export function UpdateStockTable({ rows, onUpdate, onRemove }: UpdateStockTableP
               <th className="text-left px-4 py-2">SKU Zarpellon</th>
               <th className="text-left px-4 py-2">Produto no Catálogo</th>
               <th className="text-center px-4 py-2">Estoque Atual</th>
+              <th className="text-center px-4 py-2" title="Kit = peças iguais vendidas soltas">
+                Peças/kit
+              </th>
               <th className="text-center px-4 py-2">Qtd. a Somar</th>
               <th className="text-right px-4 py-2">Custo</th>
               <th></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100">
-            {rows.map((row) => (
-              <tr key={row.row_number}>
-                <td className="px-4 py-2 font-mono text-xs text-zinc-500 whitespace-nowrap">
-                  {row.sku2}
-                  {row.duplicated_in_file && (
-                    <span
-                      className="ml-1 text-amber-500"
-                      title="SKU repetido no arquivo, quantidades somadas"
+            {rows.map((row) => {
+              const product = row.existing_product;
+              const pieces = row.pieces_per_kit || 1;
+              const isKit = pieces > 1;
+              return (
+                <tr key={row.row_number}>
+                  <td className="px-4 py-2 font-mono text-xs text-zinc-500 whitespace-nowrap align-top">
+                    {row.sku2}
+                    {row.duplicated_in_file && (
+                      <span
+                        className="ml-1 text-amber-500"
+                        title="SKU repetido no arquivo, quantidades somadas"
+                      >
+                        *
+                      </span>
+                    )}
+                    {product.matched_by === 'sku2_alt' && (
+                      <span className="block text-[10px] text-zinc-400 font-sans">
+                        achado pelo 2º código
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2 text-zinc-700 align-top">
+                    {product.name}
+                    {product.price !== undefined && (
+                      <span className="block text-[10px] text-zinc-400">
+                        Preço atual: {formatCurrency(product.price)}
+                      </span>
+                    )}
+                    {(product.match_count ?? 1) > 1 && (
+                      <span className="flex items-center gap-1 text-[10px] text-red-600 mt-0.5">
+                        <AlertTriangle className="h-3 w-3" />
+                        {product.match_count} produtos com este código — usando o item {product.id}
+                      </span>
+                    )}
+                    {isKit && (
+                      <span className="flex items-center gap-1 text-[10px] text-amber-600 mt-0.5">
+                        <AlertTriangle className="h-3 w-3" />
+                        Estoque entra em peças: confira se o preço atual é por peça
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2 text-center text-zinc-500 align-top">
+                    {product.current_stock}
+                  </td>
+                  <td className="px-4 py-2 w-20 align-top">
+                    <PiecesPerKitInput
+                      value={pieces}
+                      suggested={row.pieces_per_kit_suggested}
+                      onChange={(value) =>
+                        onUpdate(row.row_number, {
+                          pieces_per_kit: value,
+                          pieces_per_kit_suggested: false,
+                        })
+                      }
+                    />
+                  </td>
+                  <td className="px-4 py-2 w-24 align-top">
+                    <input
+                      type="number"
+                      min="1"
+                      value={row.quantity}
+                      onChange={(e) =>
+                        onUpdate(row.row_number, { quantity: Number(e.target.value) })
+                      }
+                      className="w-full border rounded px-2 py-1 text-center"
+                    />
+                    {isKit && (
+                      <span className="block text-[10px] text-zinc-500 text-center mt-0.5">
+                        = {row.quantity * pieces} peças
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2 w-32 align-top">
+                    <CurrencyInputATM
+                      value={row.unit_cost}
+                      onValueChange={(val: string | undefined) =>
+                        onUpdate(row.row_number, { unit_cost: parseCurrencyBR(val) })
+                      }
+                      prefix="R$ "
+                      className="w-full border rounded px-2 py-1 text-right"
+                    />
+                    {isKit && (
+                      <span className="block text-[10px] text-zinc-500 text-right mt-0.5">
+                        kit · {formatCurrency(perPiece(row.unit_cost, pieces))}/peça
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-2 py-2 align-top">
+                    <button
+                      onClick={() => onRemove(row.row_number)}
+                      className="text-red-400 hover:text-red-600 p-1"
+                      title="Remover da importação"
                     >
-                      *
-                    </span>
-                  )}
-                </td>
-                <td className="px-4 py-2 text-zinc-700">{row.existing_product.name}</td>
-                <td className="px-4 py-2 text-center text-zinc-500">
-                  {row.existing_product.current_stock}
-                </td>
-                <td className="px-4 py-2 w-20">
-                  <input
-                    type="number"
-                    min="1"
-                    value={row.quantity}
-                    onChange={(e) => onUpdate(row.row_number, { quantity: Number(e.target.value) })}
-                    className="w-full border rounded px-2 py-1 text-center"
-                  />
-                </td>
-                <td className="px-4 py-2 w-32">
-                  <CurrencyInputATM
-                    value={row.unit_cost}
-                    onValueChange={(val: string | undefined) =>
-                      onUpdate(row.row_number, { unit_cost: parseCurrencyBR(val) })
-                    }
-                    prefix="R$ "
-                    className="w-full border rounded px-2 py-1 text-right"
-                  />
-                </td>
-                <td className="px-2 py-2">
-                  <button
-                    onClick={() => onRemove(row.row_number)}
-                    className="text-red-400 hover:text-red-600 p-1"
-                    title="Remover da importação"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </td>
-              </tr>
-            ))}
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
