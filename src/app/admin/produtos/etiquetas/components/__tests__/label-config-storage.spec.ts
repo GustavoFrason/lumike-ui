@@ -1,5 +1,9 @@
 import { DEFAULT_LABEL_CONFIG } from '../types';
-import { loadSavedLabelConfig, saveLabelConfig, clearSavedLabelConfig } from '../label-config-storage';
+import {
+  loadSavedLabelConfig,
+  saveLabelConfig,
+  clearSavedLabelConfig,
+} from '../label-config-storage';
 
 describe('label-config-storage', () => {
   beforeEach(() => {

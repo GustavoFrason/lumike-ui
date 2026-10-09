@@ -124,7 +124,11 @@ function NumberField({ label, value, onChange, min, max }: NumberFieldProps) {
  * como constante em `DEFAULT_LABEL_CONFIG` (types.ts) atrapalhava mais do
  * que ajudava — esses valores viram só o CHUTE INICIAL exibido aqui.
  */
-export function LabelPrintConfigPanel({ config, onConfigChange, onReset }: LabelPrintConfigPanelProps) {
+export function LabelPrintConfigPanel({
+  config,
+  onConfigChange,
+  onReset,
+}: LabelPrintConfigPanelProps) {
   // Mesmo limiar do formato Joia (27x15): abaixo disso o nome do produto e a
   // marca não cabem de forma legível.
   const isTinyLabel = config.width <= 27 && config.height <= 15;
@@ -140,8 +144,8 @@ export function LabelPrintConfigPanel({ config, onConfigChange, onReset }: Label
             Configuração de Impressão
           </p>
           <p className="text-[11px] text-zinc-400">
-            Salva automaticamente neste computador — a próxima vez que abrir esta tela, continua
-            do jeito que você deixou.
+            Salva automaticamente neste computador — a próxima vez que abrir esta tela, continua do
+            jeito que você deixou.
           </p>
         </div>
         <button
