@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useProducts } from '@/lib/hooks/use-products';
 import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import Link from 'next/link';
 import { ArrowLeft, Printer } from 'lucide-react';
-import { Product } from '@/lib/services/products.service';
+import { Product, productsService } from '@/lib/services/products.service';
+import { getErrorMessage } from '@/lib/utils';
 import {
   DEFAULT_LABEL_CONFIG,
   LabelConfig,
@@ -19,7 +19,7 @@ import { LabelPrintConfigPanel } from './components/LabelPrintConfigPanel';
 import { ProductSelectionList } from './components/ProductSelectionList';
 import { LabelPreviewGrid } from './components/LabelPreviewGrid';
 import { loadSavedLabelConfig, saveLabelConfig } from './components/label-config-storage';
-import { compareProductsBySku } from './components/sort-products';
+import { compareProductsBySku, rankProductsForSearch } from './components/sort-products';
 import {
   testQzConnection,
   printLabelsViaQz,
@@ -28,7 +28,10 @@ import {
 } from '@/lib/services/qz-print.service';
 
 export default function EtiquetasPage() {
-  const { products, loadingProducts, errorProducts, loadProducts } = useProducts();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [loadProgress, setLoadProgress] = useState<{ loaded: number; total: number } | null>(null);
+  const [errorProducts, setErrorProducts] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   // Novo estado: Map de id -> quantidade
@@ -68,26 +71,46 @@ export default function EtiquetasPage() {
   }
 
   useEffect(() => {
-    // Limite bem alto numa página só (a API não impõe teto de `limit` —
-    // mesma abordagem já usada na exportação de Excel) pra garantir que
-    // TODO produto ativo apareça aqui, não só os primeiros 200. Com um
-    // catálogo maior que esse teto antigo, "Selecionar Tudo"/"Selecionar
-    // por Estoque" e até a busca simplesmente não enxergavam o resto.
-    loadProducts(1, 100000, true);
-  }, [loadProducts]);
+    // TODO produto ativo precisa aparecer aqui ("Selecionar Tudo",
+    // "Selecionar por Estoque" e a busca dependem disso). Pedir
+    // limit=100000 numa requisição só não bastava: o Supabase corta em
+    // 1000 linhas e os produtos mais antigos (códigos baixos) sumiam —
+    // getAllPages pagina de 1000 em 1000 até o total.
+    let cancelled = false;
+    productsService
+      .getAllPages({ isActive: true, sort: 'code' }, (loaded, total) => {
+        if (!cancelled) setLoadProgress({ loaded, total });
+      })
+      .then((all) => {
+        if (!cancelled) setProducts(all);
+      })
+      .catch((err) => {
+        if (!cancelled) setErrorProducts(getErrorMessage(err, 'Erro ao carregar produtos.'));
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingProducts(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-  // Ordenado por código do produto (SKU interno) crescente — pedido direto
-  // pra imprimir/selecionar na mesma ordem física que as peças ficam
-  // guardadas. A lista de etiquetas geradas (labelList, abaixo) segue essa
-  // mesma ordem, não a ordem em que cada produto foi selecionado na tela.
-  const filteredProducts = products
-    .filter(
-      (p) =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.sku2?.toLowerCase().includes(searchTerm.toLowerCase()),
-    )
-    .sort(compareProductsBySku);
+  /** Salva o "Texto da etiqueta" no produto e atualiza a lista local. */
+  async function saveLabelText(productId: number, text: string) {
+    const updated = await productsService.update(productId, { label_text: text || null });
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.id === productId ? { ...p, label_text: updated.label_text ?? (text || null) } : p,
+      ),
+    );
+  }
+
+  // Busca: nº do item exato primeiro, depois código Zarpellon, depois o
+  // resto (ver rankProductsForSearch). Sem busca, ordem crescente do
+  // código — pedido direto pra imprimir/selecionar na mesma ordem física
+  // que as peças ficam guardadas. A lista de etiquetas geradas (labelList,
+  // abaixo) segue sempre a ordem por código, não a ordem de seleção.
+  const filteredProducts = rankProductsForSearch(products, searchTerm);
 
   function updateQuantity(productId: number, delta: number) {
     setSelectedQuantities((prev) => {
@@ -193,7 +216,17 @@ export default function EtiquetasPage() {
   const printPageSize = getPrintPageSizeMm(config);
 
   if (loadingProducts && products.length === 0) {
-    return <Loading size="lg" text="Carregando produtos..." className="py-12" />;
+    return (
+      <Loading
+        size="lg"
+        text={
+          loadProgress
+            ? `Carregando produtos... ${loadProgress.loaded} de ${loadProgress.total}`
+            : 'Carregando produtos...'
+        }
+        className="py-12"
+      />
+    );
   }
 
   return (
@@ -303,6 +336,7 @@ export default function EtiquetasPage() {
           products={filteredProducts}
           selectedQuantities={selectedQuantities}
           onUpdateQuantity={updateQuantity}
+          onSaveLabelText={saveLabelText}
         />
 
         <LabelPreviewGrid labelList={labelList} config={config} onUpdateQuantity={updateQuantity} />

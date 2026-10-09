@@ -1,5 +1,7 @@
 import {
   getColumnLeftMm,
+  LABEL_TEXT_FONT_SIZE_PX,
+  LABEL_TEXT_MAX_CHARS,
   PRODUCT_NAME_FONT_SIZE_PX,
   type LabelConfig,
 } from '@/app/admin/produtos/etiquetas/components/types';
@@ -192,6 +194,24 @@ function generateColumnZpl(product: Product, column: number, config: LabelConfig
     `^A0N,${priceFontDots},${priceFontDots}`,
     `^FD${zplEscape(formatCurrency(priceValue))}^FS`,
   );
+  textY += priceFontDots + lineGapDots;
+
+  // "Texto da etiqueta" do produto (ex: LINHA PRATA, ARO 16, 45cm).
+  // ^FB (field block) quebra em até 2 linhas dentro da largura que sobra na
+  // coluna — sem ele o texto vazaria pra etiqueta vizinha. Já vem cortado em
+  // LABEL_TEXT_MAX_CHARS porque, quando o texto passa das linhas do bloco, o
+  // ZPL sobrepõe a última linha em vez de cortar.
+  const labelText = product.label_text?.trim().slice(0, LABEL_TEXT_MAX_CHARS);
+  if (config.showLabelText && labelText) {
+    const textFontDots = px(LABEL_TEXT_FONT_SIZE_PX);
+    const blockWidthDots = Math.max(mm(5), columnLeftDots + mm(config.width) - padding - textX);
+    lines.push(
+      `^FO${textX},${textY}`,
+      `^A0N,${textFontDots},${textFontDots}`,
+      `^FB${blockWidthDots},2,0,L,0`,
+      `^FD${zplEscape(labelText.toUpperCase())}^FS`,
+    );
+  }
 
   return lines.join('\n');
 }

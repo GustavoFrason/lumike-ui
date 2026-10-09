@@ -32,6 +32,16 @@ describe('label-config-storage', () => {
     expect(loaded.rowGap).toBe(DEFAULT_LABEL_CONFIG.rowGap);
   });
 
+  it('calibração salva antes do "Texto da Etiqueta" existir passa a imprimir o texto', () => {
+    const oldShape = { ...DEFAULT_LABEL_CONFIG, offsetX: -7 } as Record<string, unknown>;
+    delete oldShape.showLabelText;
+    window.localStorage.setItem('lumilee:etiquetas:label-config', JSON.stringify(oldShape));
+
+    const loaded = loadSavedLabelConfig();
+    expect(loaded.showLabelText).toBe(true);
+    expect(loaded.offsetX).toBe(-7); // calibração preservada
+  });
+
   it('JSON corrompido no localStorage cai no default em vez de quebrar', () => {
     window.localStorage.setItem('lumilee:etiquetas:label-config', '{not valid json');
     expect(loadSavedLabelConfig()).toEqual(DEFAULT_LABEL_CONFIG);
