@@ -7,6 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import { setAuthCookie, clearAuthCookie } from '@/lib/cookies';
+import { getClientForwardHeaders } from '@/lib/request-context';
 
 export async function POST(req: Request) {
   try {
@@ -26,6 +27,8 @@ export async function POST(req: Request) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // Rate limit de login (5/min) por visitante, não por servidor
+          ...(await getClientForwardHeaders()),
         },
         body: JSON.stringify({ email, senha }),
       },

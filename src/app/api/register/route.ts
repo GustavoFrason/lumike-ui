@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getClientForwardHeaders } from '@/lib/request-context';
 
 export async function POST(req: Request) {
   try {
@@ -10,6 +11,7 @@ export async function POST(req: Request) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(await getClientForwardHeaders()),
         },
         body: JSON.stringify(body),
       },
