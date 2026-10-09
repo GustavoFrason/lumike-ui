@@ -34,6 +34,7 @@ export const settingsService = {
   },
 
   async uploadBanner(file: File): Promise<string> {
-    return await imagesService.uploadImage(0, file);
+    // Pasta própria — antes ia para "0/", como se fosse o produto de ID 0.
+    return await imagesService.uploadBannerImage(file);
   },
 };

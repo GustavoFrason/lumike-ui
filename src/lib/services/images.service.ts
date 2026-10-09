@@ -1,14 +1,23 @@
 /**
  * Images Service
  * --------------------
- * Serviço para upload e gestão de imagens no Supabase Storage.
+ * Serviço para upload e gestão de imagens (bucket "produtos" do Supabase
+ * Storage). O upload passa pela API (POST /uploads/images, só
+ * admin/gestor) — o front não fala mais com o Storage usando a anon key.
  */
 
-import { supabase } from '../supabase';
 import { api } from '../api';
 import { compressImage } from '../utils/image-compression';
 
-const BUCKET_NAME = 'produtos';
+/**
+ * Teto do corpo da requisição nas funções da Vercel é 4,5MB; a compressão
+ * já deixa a imagem bem abaixo disso, mas checamos para dar uma mensagem
+ * clara em vez de um 413 genérico.
+ */
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
+
+/** Pasta no bucket: ID do produto, "categorias" ou "banners". */
+export type ImageFolder = number | 'categorias' | 'banners';
 
 export interface ProductImage {
   id: string;
@@ -18,104 +27,50 @@ export interface ProductImage {
   created_at: string;
 }
 
+/**
+ * Comprime e envia a imagem para a API, que grava no Storage e devolve a
+ * URL pública.
+ */
+async function uploadFile(folder: ImageFolder, file: File): Promise<string> {
+  const compressedFile = await compressImage(file);
+
+  if (compressedFile.size > MAX_UPLOAD_BYTES) {
+    throw new Error('Imagem muito grande mesmo após compressão (máx. 4MB).');
+  }
+
+  const formData = new FormData();
+  formData.append('file', compressedFile, compressedFile.name || 'imagem.jpg');
+  formData.append('folder', String(folder));
+
+  const { data } = await api.post<{ url: string; path: string }>('/uploads/images', formData, {
+    // O default do axios aqui é JSON; com multipart explícito o navegador
+    // completa o boundary (mesmo padrão de purchase-import.service).
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+  return data.url;
+}
+
 export const imagesService = {
   /**
-   * Faz upload de uma imagem para o Supabase Storage
+   * Faz upload de uma imagem de produto e devolve a URL pública
    */
   async uploadImage(productId: number, file: File): Promise<string> {
-    if (!supabase) {
-      throw new Error('Supabase não configurado. Verifique as variáveis de ambiente.');
-    }
-
-    // Comprimir a imagem antes do upload
-    console.log('🔄 Comprimindo imagem...');
-    const compressedFile = await compressImage(file);
-
-    const fileExt = compressedFile.name.split('.').pop()?.toLowerCase() || 'jpg';
-    const fileName = `${productId}/${Date.now()}.${fileExt}`;
-
-    // Mapeamento de extensões para MIME types comuns
-    const mimeTypes: { [key: string]: string } = {
-      jpg: 'image/jpeg',
-      jpeg: 'image/jpeg',
-      png: 'image/png',
-      webp: 'image/webp',
-      avif: 'image/avif',
-      gif: 'image/gif',
-    };
-
-    // Determina o contentType final:
-    // Prioridade 1: Mapeamento pela extensão (mais confiável em Windows)
-    // Prioridade 2: Tipo do arquivo se não for genérico
-    // Prioridade 3: image/jpeg como fallback
-    const resolvedMimeType =
-      mimeTypes[fileExt] ||
-      (compressedFile.type && compressedFile.type !== 'application/octet-stream'
-        ? compressedFile.type
-        : 'image/jpeg');
-
-    console.log(`📡 Enviando para Supabase: ${fileName} | Content-Type: ${resolvedMimeType}`);
-
-    // Upload para o Storage
-    const { error } = await supabase.storage.from(BUCKET_NAME).upload(fileName, compressedFile, {
-      cacheControl: '3600',
-      upsert: false,
-      contentType: resolvedMimeType,
-    });
-
-    if (error) {
-      console.error('❌ Erro no Supabase Storage:', error);
-      throw new Error(`Erro ao fazer upload: ${error.message}`);
-    }
-
-    // Obtém a URL pública
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from(BUCKET_NAME).getPublicUrl(fileName);
-
-    return publicUrl;
+    return uploadFile(productId, file);
   },
 
   /**
-   * Faz upload de uma imagem de categoria para o Supabase Storage
+   * Faz upload de uma imagem de categoria e devolve a URL pública
    */
   async uploadCategoryImage(file: File): Promise<string> {
-    if (!supabase) {
-      throw new Error('Supabase não configurado.');
-    }
+    return uploadFile('categorias', file);
+  },
 
-    console.log('🔄 Comprimindo imagem de categoria...');
-    const compressedFile = await compressImage(file);
-
-    const fileExt = compressedFile.name.split('.').pop()?.toLowerCase() || 'jpg';
-    const fileName = `categorias/${Date.now()}.${fileExt}`;
-
-    const mimeTypes: { [key: string]: string } = {
-      jpg: 'image/jpeg',
-      jpeg: 'image/jpeg',
-      png: 'image/png',
-      webp: 'image/webp',
-    };
-
-    const resolvedMimeType = mimeTypes[fileExt] || 'image/jpeg';
-
-    console.log(`📡 Enviando para categorias: ${fileName}`);
-
-    const { error } = await supabase.storage.from(BUCKET_NAME).upload(fileName, compressedFile, {
-      cacheControl: '3600',
-      upsert: false,
-      contentType: resolvedMimeType,
-    });
-
-    if (error) {
-      throw new Error(`Erro ao fazer upload: ${error.message}`);
-    }
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from(BUCKET_NAME).getPublicUrl(fileName);
-
-    return publicUrl;
+  /**
+   * Faz upload de um banner do site e devolve a URL pública
+   */
+  async uploadBannerImage(file: File): Promise<string> {
+    return uploadFile('banners', file);
   },
 
   /**
