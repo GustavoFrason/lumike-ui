@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Download } from 'lucide-react';
+import { useDebounce } from 'use-debounce';
 import { ProductModal } from './ProductModal';
 import { useProducts } from '@/lib/hooks/use-products';
 import { useCategories } from '@/lib/hooks/use-categories';
-import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { DataTable } from '@/components/ui/data-table';
 import { Pagination } from '@/components/ui/pagination';
@@ -58,21 +58,30 @@ export default function ProdutosPage() {
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
 
-  // Carrega produtos ao montar o componente ou mudar página/filtros
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      loadProducts(currentPage, ITEMS_PER_PAGE, true, search, categoryId);
-    }, 300);
+  // Espera a pessoa parar de digitar antes de buscar (digitar devagar não
+  // dispara uma busca por número).
+  const [debouncedSearch] = useDebounce(search, 400);
 
-    return () => clearTimeout(timer);
-  }, [loadProducts, currentPage, search, categoryId]);
+  // Lista em ordem crescente do número do item (sort=code). Usado no
+  // carregamento e nas recargas depois de salvar/excluir/ações em massa,
+  // sempre com a busca e a categoria atuais.
+  const reload = useCallback(
+    () => loadProducts(currentPage, ITEMS_PER_PAGE, true, debouncedSearch, categoryId, 'code'),
+    [loadProducts, currentPage, debouncedSearch, categoryId],
+  );
+
+  useEffect(() => {
+    reload().catch(() => {
+      // Erro já é tratado pelo hook
+    });
+  }, [reload]);
 
   async function handleBulkStatus(is_active: boolean) {
     if (selectedIds.length === 0) return;
     try {
       await productsService.bulkUpdateStatus(selectedIds, is_active);
       setSelectedIds([]);
-      await loadProducts(currentPage, ITEMS_PER_PAGE, true);
+      await reload();
     } catch (err) {
       console.error('Erro ao atualizar em massa:', err);
     }
@@ -80,17 +89,22 @@ export default function ProdutosPage() {
 
   /**
    * Busca TODOS os produtos que batem com os filtros atuais (busca/
-   * categoria) numa página só (limit bem alto) — a paginação da tela
-   * (ITEMS_PER_PAGE) é só de exibição, exportar precisa ignorar isso e
-   * pegar tudo. Mesmo is_active=true já usado pra carregar a tela (não tem
-   * toggle de "mostrar inativos" nesta tela hoje).
+   * categoria) — a paginação da tela (ITEMS_PER_PAGE) é só de exibição.
+   * getAllPages pagina de 1000 em 1000 (teto do Supabase por requisição).
+   * Mesmo is_active=true já usado pra carregar a tela (não tem toggle de
+   * "mostrar inativos" nesta tela hoje).
    */
   async function handleExportExcel() {
     setExporting(true);
     setExportError(null);
     try {
-      const result = await productsService.getAll(1, 100000, true, search, categoryId);
-      exportProductsToExcel(result.data);
+      const allProducts = await productsService.getAllPages({
+        isActive: true,
+        search,
+        categoryId,
+        sort: 'code',
+      });
+      exportProductsToExcel(allProducts);
     } catch (err) {
       setExportError(getErrorMessage(err, 'Erro ao exportar produtos.'));
     } finally {
@@ -185,7 +199,7 @@ export default function ProdutosPage() {
         }
       }
       setModalAberto(false);
-      await loadProducts(currentPage, ITEMS_PER_PAGE, true); // Recarrega a lista
+      await reload(); // Recarrega a lista mantendo busca/categoria
     } catch {
       // Erro já é tratado pelo hook
     }
@@ -198,19 +212,16 @@ export default function ProdutosPage() {
 
     try {
       await deleteProduct(id);
-      await loadProducts(currentPage, ITEMS_PER_PAGE, true); // Recarrega a lista
+      await reload(); // Recarrega a lista mantendo busca/categoria
     } catch {
       // Erro já é tratado pelo hook
     }
   }
 
-  if (loadingProducts) {
-    return (
-      <section className="space-y-6">
-        <Loading size="lg" text="Carregando produtos..." className="py-12" />
-      </section>
-    );
-  }
+  // Sem early-return de "Carregando...": ele desmontava a página inteira
+  // (inclusive o campo de busca) a cada busca, e a pessoa perdia o foco a
+  // cada número digitado. O skeleton da tabela só aparece na 1ª carga.
+  const isSearching = loadingProducts && products.length > 0;
 
   return (
     <section className="space-y-6">
@@ -255,6 +266,7 @@ export default function ProdutosPage() {
           setCurrentPage(1);
         }}
         categories={categories}
+        searching={isSearching}
       />
 
       {selectedIds.length > 0 && (
@@ -268,7 +280,7 @@ export default function ProdutosPage() {
 
       <DataTable
         data={products}
-        loading={loadingProducts}
+        loading={loadingProducts && products.length === 0}
         columns={getProductColumns({
           selectedIds,
           allSelected: selectedIds.length === products.length && products.length > 0,

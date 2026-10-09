@@ -1,4 +1,4 @@
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, Loader2 } from 'lucide-react';
 import { Category } from '@/lib/services/categories.service';
 
 interface ProductFiltersBarProps {
@@ -7,6 +7,8 @@ interface ProductFiltersBarProps {
   categoryId: number | undefined;
   onCategoryChange: (id: number | undefined) => void;
   categories: Category[];
+  /** Busca em andamento (mostra um spinner discreto no campo). */
+  searching?: boolean;
 }
 
 export function ProductFiltersBar({
@@ -15,6 +17,7 @@ export function ProductFiltersBar({
   categoryId,
   onCategoryChange,
   categories,
+  searching = false,
 }: ProductFiltersBarProps) {
   return (
     <div className="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm flex flex-col md:flex-row gap-4 items-center">
@@ -22,11 +25,17 @@ export function ProductFiltersBar({
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
         <input
           type="text"
-          placeholder="Buscar por nome ou SKU..."
-          className="w-full pl-10 pr-4 py-2 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-[var(--lumilee-gold)] focus:border-transparent outline-none transition"
+          placeholder="Buscar por nº do item, código Zarpellon ou nome..."
+          className="w-full pl-10 pr-10 py-2 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-[var(--lumilee-gold)] focus:border-transparent outline-none transition"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
         />
+        {searching && (
+          <Loader2
+            aria-label="Buscando"
+            className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 animate-spin"
+          />
+        )}
       </div>
 
       <div className="flex items-center gap-2 w-full md:w-auto">
