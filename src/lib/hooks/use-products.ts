@@ -12,6 +12,7 @@ import {
   Product,
   CreateProductDto,
   UpdateProductDto,
+  ProductSort,
 } from '../services/products.service';
 import { PaginatedResponse } from '../api';
 
@@ -22,8 +23,17 @@ export function useProducts() {
   const { execute: executeDelete, ...deleteApi } = useApi<Product>();
 
   const loadProducts = useCallback(
-    async (page = 1, limit = 50, isActive?: boolean, search?: string, categoryId?: number) => {
-      return executeList(() => productsService.getAll(page, limit, isActive, search, categoryId));
+    async (
+      page = 1,
+      limit = 50,
+      isActive?: boolean,
+      search?: string,
+      categoryId?: number,
+      sort?: ProductSort,
+    ) => {
+      return executeList(() =>
+        productsService.getAll(page, limit, isActive, search, categoryId, undefined, sort),
+      );
     },
     [executeList],
   );

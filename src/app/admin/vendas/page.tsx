@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useOrders, Order } from '@/lib/hooks/use-orders';
 import { DataTable } from '@/components/ui/data-table';
-import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { Pagination } from '@/components/ui/pagination';
 import { PaginationInfo } from '@/components/ui/pagination-info';
@@ -174,14 +173,8 @@ export default function VendasPage() {
     }
   }
 
-  if (loadingOrders) {
-    return (
-      <section className="space-y-6">
-        <Loading size="lg" text="Carregando vendas..." className="py-12" />
-      </section>
-    );
-  }
-
+  // Sem early-return de "Carregando...": desmontava os filtros a cada
+  // requisição (o select de status perdia o foco). Skeleton só na 1ª carga.
   return (
     <section className="space-y-6">
       <div className="flex items-center justify-between">
@@ -220,7 +213,7 @@ export default function VendasPage() {
 
       <DataTable
         data={filteredOrders}
-        loading={loadingOrders}
+        loading={loadingOrders && orders.length === 0}
         columns={getSalesColumns({
           statusLabels,
           statusColors,
