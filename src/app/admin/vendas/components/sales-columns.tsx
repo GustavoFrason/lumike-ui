@@ -44,6 +44,18 @@ export function getSalesColumns({
       render: (pedido) => formatDate(pedido.created_at),
     },
     {
+      key: 'seller',
+      header: 'Vendedora',
+      render: (pedido) => (
+        <div className="flex flex-col">
+          <span>{pedido.seller?.name ?? 'Loja'}</span>
+          {pedido.stock_location && (
+            <span className="text-[10px] text-zinc-400">mala de {pedido.stock_location.name}</span>
+          )}
+        </div>
+      ),
+    },
+    {
       key: 'total_amount',
       header: 'Valor',
       render: (pedido) => (
