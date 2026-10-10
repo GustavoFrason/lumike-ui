@@ -18,6 +18,7 @@ describe('role-access', () => {
     expect(canAccessAdminPath('vendedor', '/admin/vendas/nova')).toBe(true);
     expect(canAccessAdminPath('vendedor', '/admin/vendas/recibo/12')).toBe(true);
     expect(canAccessAdminPath('vendedor', '/admin/vendas/garantia/12')).toBe(true);
+    expect(canAccessAdminPath('vendedor', '/admin/vendas/minhas')).toBe(true);
 
     expect(canAccessAdminPath('vendedor', '/admin')).toBe(false);
     expect(canAccessAdminPath('vendedor', '/admin/vendas')).toBe(false);

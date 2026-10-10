@@ -11,6 +11,7 @@ import {
   Order,
   CreateOrderDto,
   PaginatedResponse,
+  OrderFilters,
 } from '../services/orders.service';
 
 export type { Order };
@@ -22,8 +23,8 @@ export function useOrders() {
   const { execute: executeDelete, ...deleteApi } = useApi<{ message: string }>();
 
   const loadOrders = useCallback(
-    async (page = 1, limit = 50, status?: string, customerId?: number) => {
-      return executeList(() => ordersService.getAll(page, limit, status, customerId));
+    async (page = 1, limit = 50, status?: string, customerId?: number, filters?: OrderFilters) => {
+      return executeList(() => ordersService.getAll(page, limit, status, customerId, filters));
     },
     [executeList],
   );

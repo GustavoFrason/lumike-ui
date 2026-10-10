@@ -9,7 +9,10 @@ import { Product, productsService } from '@/lib/services/products.service';
 import { Customer } from '@/lib/services/customers.service';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { Loading } from '@/components/ui/loading';
-import { formatCurrency, parseCurrencyBR } from '@/lib/formatters';
+import { formatCurrency, getTodayInSaoPaulo, parseCurrencyBR } from '@/lib/formatters';
+import { useSession } from '@/contexts/session-context';
+import { isManagementRole } from '@/lib/role-access';
+import { SaleDateField } from './components/SaleDateField';
 import { getErrorMessage } from '@/lib/utils';
 import { Save, ArrowLeft } from 'lucide-react';
 import { usersService, User } from '@/lib/services/users.service';
@@ -25,6 +28,13 @@ import { PaymentSection } from './components/PaymentSection';
 
 export default function NovaVendaPage() {
   const router = useRouter();
+  const { user } = useSession();
+  // Revendedora (papel vendedor): venda sempre dela e da mala dela; sem
+  // fiado e sem data passada (a API garante — aqui só ajusta a tela).
+  const isResellerUser = user?.role === 'vendedor';
+  const canBackdate = isManagementRole(user?.role);
+  const today = getTodayInSaoPaulo();
+  const [saleDate, setSaleDate] = useState(today);
   const { products, loadingProducts, loadProducts } = useProducts();
   const { playBeep, playErrorBeep } = usePosBeeper();
 
@@ -67,6 +77,14 @@ export default function NovaVendaPage() {
       .then(setSellers)
       .catch((err) => console.error('Erro ao carregar vendedores:', err));
   }, []);
+
+  // Revendedora: vendedora e estoque de origem são ela mesma.
+  useEffect(() => {
+    if (isResellerUser && user) {
+      setSelectedSellerId(user.id);
+      setStockLocationUserId(user.id);
+    }
+  }, [isResellerUser, user]);
 
   // Com 2+ caracteres digitados a busca vai ao servidor — antes só filtrava
   // os 200 produtos mais novos carregados, e peça mais antiga não aparecia.
@@ -346,10 +364,14 @@ export default function NovaVendaPage() {
           quantity: item.quantity,
           unit_price: item.product.preco_promocional || item.product.price,
         })),
+        // Só a gestão lança venda com data passada; hoje = "agora".
+        sale_date: canBackdate && saleDate && saleDate !== today ? saleDate : undefined,
       };
 
-      await ordersService.create(payload);
-      router.push('/admin/vendas');
+      const order = await ordersService.create(payload);
+      // Revendedora não tem acesso à lista geral de vendas: vai direto
+      // pro recibo da venda que acabou de fazer.
+      router.push(isResellerUser ? `/admin/vendas/recibo/${order.id}` : '/admin/vendas');
     } catch (err: unknown) {
       setError(getErrorMessage(err, 'Erro ao criar venda'));
     } finally {
@@ -360,7 +382,10 @@ export default function NovaVendaPage() {
   return (
     <section className="space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/admin/vendas" className="text-zinc-500 hover:text-zinc-900">
+        <Link
+          href={isResellerUser ? '/admin/vendas/minhas' : '/admin/vendas'}
+          className="text-zinc-500 hover:text-zinc-900"
+        >
           <ArrowLeft className="h-6 w-6" />
         </Link>
         <h1 className="text-2xl font-semibold">Nova Venda (POS)</h1>
@@ -393,7 +418,10 @@ export default function NovaVendaPage() {
               stockLocationUserId={stockLocationUserId}
               onSelectStockLocation={setStockLocationUserId}
               stockWarning={stockWarning}
+              lockedToSelf={isResellerUser}
             />
+
+            {canBackdate && <SaleDateField value={saleDate} today={today} onChange={setSaleDate} />}
 
             <CartPanel
               cart={cart}
@@ -426,6 +454,7 @@ export default function NovaVendaPage() {
               maxInstallments={maxInstallments}
               notes={notes}
               onNotesChange={setNotes}
+              allowOnCredit={!isResellerUser}
             />
           </div>
 
