@@ -24,6 +24,7 @@ import {
   Component,
   UserCog,
   Receipt,
+  HandCoins,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useSession } from '@/contexts/session-context';
@@ -102,6 +103,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       items: [
         { href: '/admin/fluxo-caixa', label: 'Fluxo de Caixa', icon: <BarChart3 size={18} /> },
         { href: '/admin/clientes-pagar', label: 'Contas a Receber', icon: <Wallet size={18} /> },
+        {
+          href: '/admin/acertos',
+          label: 'Acertos (Revendedoras)',
+          icon: <HandCoins size={18} />,
+        },
         { href: '/admin/comissoes', label: 'Comissões', icon: <BadgePercent size={18} /> },
         { href: '/admin/analise-roi', label: 'Análise de ROI', icon: <TrendingUp size={18} /> },
       ],
