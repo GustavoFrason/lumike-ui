@@ -178,11 +178,14 @@ export default function ProdutosPage() {
 
         await uploadPendingImages(existingProductId, pendingFiles);
       } else {
-        // Lógica de estoque inicial
-        const originalStock = Number(cleanData.current_stock) || 0;
-        if (initial_seller_id && originalStock > 0) {
-          cleanData.current_stock = 0; // Se vai para vendedor, cria com 0 no central
-        }
+        // Estoque inicial entra como MOVIMENTO (entrada no Central e, se
+        // houver, transferência pra revendedora) — não direto no campo do
+        // produto. Gravar current_stock na criação só mexia no número
+        // exibido: o controle por localidade ficava zerado e a 1ª venda
+        // dava "estoque insuficiente". A transferência também fica
+        // registrada pro acerto com a revendedora.
+        const initialStock = Number(cleanData.current_stock) || 0;
+        cleanData.current_stock = 0;
 
         // ProductModal valida os campos obrigatórios antes de chamar onSave
         // (é o mesmo contrato usado em compras/nova/page.tsx pro cadastro
@@ -190,14 +193,20 @@ export default function ProdutosPage() {
         // CreateProductDto.
         const newProduct = await createProduct(cleanData as CreateProductDto);
 
-        // Se houver revendedor inicial, aloca o saldo
-        if (newProduct?.id && initial_seller_id && originalStock > 0) {
+        if (newProduct?.id && initialStock > 0) {
           try {
-            await inventoryService.addStock(
-              newProduct.id,
-              { quantity: originalStock, reference: 'Estoque inicial da peça' },
-              initial_seller_id,
-            );
+            await inventoryService.addStock(newProduct.id, {
+              quantity: initialStock,
+              reference: 'Estoque inicial da peça',
+            });
+            if (initial_seller_id) {
+              await inventoryService.transfer(newProduct.id, {
+                from_user_id: null,
+                to_user_id: initial_seller_id,
+                quantity: initialStock,
+                notes: 'Estoque inicial para a revendedora',
+              });
+            }
           } catch (err) {
             console.error('Erro ao registrar estoque inicial:', err);
           }
