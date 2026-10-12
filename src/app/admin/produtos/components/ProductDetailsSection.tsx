@@ -1,5 +1,6 @@
 import { LabelWithTooltip } from './LabelWithTooltip';
 import { ProductFormChangeHandler, ProductFormState } from './types';
+import { LABEL_TEXT_MAX_CHARS } from '../etiquetas/components/types';
 
 interface ProductDetailsSectionProps {
   form: ProductFormState;
@@ -38,9 +39,11 @@ export function ProductDetailsSection({
         </div>
 
         <div>
+          {/* Nunca foi impressa na etiqueta — o que sai na etiqueta é o
+              "Texto da Etiqueta" ao lado. */}
           <LabelWithTooltip
-            label="Descrição Resumida (Etiqueta)"
-            tooltip="Descrição curta para etiqueta e Nota Fiscal. Máx 40 caracteres."
+            label="Descrição Resumida"
+            tooltip="Descrição curta para a Nota Fiscal. Máx 40 caracteres. (O que sai impresso na etiqueta é o campo 'Texto da Etiqueta'.)"
             required
           />
           <div className="relative">
@@ -60,6 +63,33 @@ export function ProductDetailsSection({
               }`}
             >
               {form.short_description.length}/40
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <LabelWithTooltip
+            label="Texto da Etiqueta"
+            tooltip="Linha extra impressa na etiqueta, no lugar de escrever à mão. Ex: LINHA PRATA, ARO 16, 45cm. Máx 24 caracteres."
+          />
+          <div className="relative">
+            <input
+              type="text"
+              name="label_text"
+              placeholder="Ex: LINHA PRATA, ARO 16, 45cm"
+              value={form.label_text}
+              onChange={onChange}
+              maxLength={LABEL_TEXT_MAX_CHARS}
+              className="w-full border rounded-lg px-3 py-2 pr-12 uppercase"
+            />
+            <span
+              className={`absolute right-3 top-2 text-xs font-medium pointer-events-none ${
+                form.label_text.length >= LABEL_TEXT_MAX_CHARS - 4
+                  ? 'text-amber-500'
+                  : 'text-zinc-400'
+              }`}
+            >
+              {form.label_text.length}/{LABEL_TEXT_MAX_CHARS}
             </span>
           </div>
         </div>

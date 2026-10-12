@@ -266,6 +266,22 @@ export function LabelPrintConfigPanel({
             Nome do Produto
           </label>
         </div>
+        <div className="flex items-center gap-2 pt-4">
+          <input
+            type="checkbox"
+            id="show-label-text"
+            checked={config.showLabelText}
+            onChange={(e) => onConfigChange({ ...config, showLabelText: e.target.checked })}
+            className="rounded text-(--lumilee-gold) focus:ring-(--lumilee-gold)"
+          />
+          <label
+            htmlFor="show-label-text"
+            className="text-xs font-medium text-zinc-600"
+            title="Linha extra cadastrada no produto (ex: LINHA PRATA, ARO 16, 45cm)"
+          >
+            Texto da Etiqueta
+          </label>
+        </div>
       </div>
 
       {showLegibilityWarning && (

@@ -11,6 +11,17 @@ import type { CSSProperties } from 'react';
  */
 export const PRODUCT_NAME_FONT_SIZE_PX = 8;
 
+/**
+ * "Texto da etiqueta" do produto (ex: LINHA PRATA, ARO 16, 45cm) — linha
+ * extra no fim da etiqueta, no lugar do que era escrito à mão. Fonte fixa e
+ * pequena, igual ao nome do produto, e no máximo 24 caracteres (2 linhas de
+ * ~12 na etiqueta Joia 27x15mm — mesmo limite validado na API). Usado no
+ * preview (LabelContent) e no ZPL (label-zpl.service) — os dois precisam
+ * bater.
+ */
+export const LABEL_TEXT_FONT_SIZE_PX = 7;
+export const LABEL_TEXT_MAX_CHARS = 24;
+
 export interface LabelConfig {
   width: number; // mm
   height: number; // mm
@@ -18,6 +29,8 @@ export interface LabelConfig {
   qrSize: number; // px (visual)
   showBranding: boolean;
   showProductName: boolean;
+  /** Imprime o "Texto da etiqueta" do produto, quando ele tiver um. */
+  showLabelText: boolean;
   offsetX: number; // px (visual) — desloca a etiqueta inteira (QR + textos), ajuste fino de alinhamento
   offsetY: number; // px (visual) — desloca a etiqueta inteira (QR + textos), ajuste fino de alinhamento
   /**
@@ -65,6 +78,7 @@ export const DEFAULT_LABEL_CONFIG: LabelConfig = {
   qrSize: 45,
   showBranding: false,
   showProductName: false,
+  showLabelText: true,
   offsetX: -4, // px — ajuste fino de alinhamento calibrado na impressora
   offsetY: 2, // px — ajuste fino de alinhamento calibrado na impressora
   // Bobina física usada tem 3 colunas de etiqueta lado a lado (9,2cm de

@@ -71,7 +71,17 @@ export default function RevendedorasInventarioPage() {
                   </div>
                   <span className="font-bold text-zinc-800">{seller.name}</span>
                 </div>
-                <span className="text-xs font-bold text-zinc-500">{seller.total_items} peças</span>
+                <div className="flex items-center gap-4">
+                  <span className="text-xs font-bold text-zinc-500">
+                    {seller.total_items} peças
+                  </span>
+                  <Link
+                    href={`/admin/acertos/${seller.user_id}`}
+                    className="text-xs font-semibold text-(--lumilee-gold) hover:underline"
+                  >
+                    Fazer acerto
+                  </Link>
+                </div>
               </div>
 
               <table className="w-full text-sm">

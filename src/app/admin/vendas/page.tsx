@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useOrders, Order } from '@/lib/hooks/use-orders';
+import { ordersService, OrderFilters, OrdersSummary } from '@/lib/services/orders.service';
+import { usersService, User } from '@/lib/services/users.service';
+import { SalesSellerSummary } from './components/SalesSellerSummary';
 import { DataTable } from '@/components/ui/data-table';
-import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { Pagination } from '@/components/ui/pagination';
 import { PaginationInfo } from '@/components/ui/pagination-info';
@@ -52,40 +54,83 @@ export default function VendasPage() {
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [sellerFilter, setSellerFilter] = useState('');
+  const [stockFilter, setStockFilter] = useState('');
+  const [sellers, setSellers] = useState<User[]>([]);
+  const [summary, setSummary] = useState<OrdersSummary | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
-    loadOrders(currentPage, ITEMS_PER_PAGE, statusFilter || undefined);
-  }, [loadOrders, currentPage, statusFilter]);
+    usersService
+      .getSellers()
+      .then(setSellers)
+      .catch((err) => console.error('Erro ao carregar vendedoras:', err));
+  }, []);
 
-  // Filtragem no frontend (Complementar ao backend)
-  const filteredOrders = orders.filter((order) => {
-    const matchesSearch =
+  // Período, vendedora e estoque de origem são filtrados NO SERVIDOR —
+  // antes a data filtrava só as 20 vendas da página atual.
+  const filters = useMemo<OrderFilters>(
+    () => ({
+      sellerId:
+        sellerFilter === '' ? undefined : sellerFilter === 'none' ? 'none' : Number(sellerFilter),
+      stockLocation:
+        stockFilter === ''
+          ? undefined
+          : stockFilter === 'central'
+            ? 'central'
+            : Number(stockFilter),
+      dateFrom: dateRange.start || undefined,
+      dateTo: dateRange.end || undefined,
+    }),
+    [sellerFilter, stockFilter, dateRange],
+  );
+
+  const reload = useCallback(
+    () => loadOrders(currentPage, ITEMS_PER_PAGE, statusFilter || undefined, undefined, filters),
+    [loadOrders, currentPage, statusFilter, filters],
+  );
+
+  useEffect(() => {
+    reload().catch(() => {
+      // Erro já é tratado pelo hook
+    });
+  }, [reload]);
+
+  // Totais por vendedora no período (todas as páginas, sem canceladas)
+  useEffect(() => {
+    let cancelled = false;
+    ordersService
+      .getSummary(filters)
+      .then((s) => {
+        if (!cancelled) setSummary(s);
+      })
+      .catch((err) => console.error('Erro ao carregar resumo de vendas:', err));
+    return () => {
+      cancelled = true;
+    };
+  }, [filters]);
+
+  // Busca por cliente/nº do pedido: só na página carregada
+  const filteredOrders = orders.filter(
+    (order) =>
       !searchTerm ||
       order.id.toString().includes(searchTerm) ||
-      order.customers?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+      order.customers?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
-    const orderDate = new Date(order.created_at).toISOString().split('T')[0];
-    const matchesDate =
-      (!dateRange.start || orderDate >= dateRange.start) &&
-      (!dateRange.end || orderDate <= dateRange.end);
-
-    return matchesSearch && matchesDate;
-  });
-
-  // Cálculos de KPIs baseados na lista filtrada
   const kpis = {
-    total: filteredOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0),
+    // Total e ticket médio do PERÍODO inteiro (resumo do servidor), não só
+    // da página exibida.
+    total: summary?.totals.total ?? 0,
+    ticketMedio:
+      summary && summary.totals.orders_count > 0
+        ? summary.totals.total / summary.totals.orders_count
+        : 0,
     pendente: filteredOrders.reduce((sum, o) => {
       // Se cancelado, não conta como pendente
       if (o.status === 'cancelled') return sum;
       return sum + getOrderPaymentBreakdown(o).saldo;
     }, 0),
-    ticketMedio:
-      filteredOrders.length > 0
-        ? filteredOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0) /
-          filteredOrders.length
-        : 0,
   };
 
   function handleWhatsApp(pedido: Order) {
@@ -155,7 +200,7 @@ export default function VendasPage() {
     }
     try {
       await updateOrderStatus(id, newStatus);
-      await loadOrders(currentPage, ITEMS_PER_PAGE, statusFilter || undefined);
+      await reload();
     } catch {
       // Erro já é tratado pelo hook
     }
@@ -168,20 +213,14 @@ export default function VendasPage() {
 
     try {
       await deleteOrder(id);
-      await loadOrders(currentPage, ITEMS_PER_PAGE, statusFilter || undefined);
+      await reload();
     } catch {
       // Erro já é tratado pelo hook
     }
   }
 
-  if (loadingOrders) {
-    return (
-      <section className="space-y-6">
-        <Loading size="lg" text="Carregando vendas..." className="py-12" />
-      </section>
-    );
-  }
-
+  // Sem early-return de "Carregando...": desmontava os filtros a cada
+  // requisição (o select de status perdia o foco). Skeleton só na 1ª carga.
   return (
     <section className="space-y-6">
       <div className="flex items-center justify-between">
@@ -208,19 +247,35 @@ export default function VendasPage() {
         searchTerm={searchTerm}
         onSearchTermChange={setSearchTerm}
         dateRange={dateRange}
-        onDateRangeChange={setDateRange}
+        onDateRangeChange={(range) => {
+          setDateRange(range);
+          setCurrentPage(1);
+        }}
         statusFilter={statusFilter}
         onStatusFilterChange={(value) => {
           setStatusFilter(value);
           setCurrentPage(1);
         }}
+        sellers={sellers}
+        sellerFilter={sellerFilter}
+        onSellerFilterChange={(value) => {
+          setSellerFilter(value);
+          setCurrentPage(1);
+        }}
+        stockFilter={stockFilter}
+        onStockFilterChange={(value) => {
+          setStockFilter(value);
+          setCurrentPage(1);
+        }}
       />
+
+      <SalesSellerSummary summary={summary} />
 
       <ErrorMessage message={errorOrders || errorUpdating || errorDeleting || ''} />
 
       <DataTable
         data={filteredOrders}
-        loading={loadingOrders}
+        loading={loadingOrders && orders.length === 0}
         columns={getSalesColumns({
           statusLabels,
           statusColors,

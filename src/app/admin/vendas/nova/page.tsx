@@ -2,13 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useDebounce } from 'use-debounce';
 import { useProducts } from '@/lib/hooks/use-products';
 import { ordersService, CreateOrderDto } from '@/lib/services/orders.service';
-import { Product } from '@/lib/services/products.service';
+import { Product, productsService } from '@/lib/services/products.service';
 import { Customer } from '@/lib/services/customers.service';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { Loading } from '@/components/ui/loading';
-import { formatCurrency, parseCurrencyBR } from '@/lib/formatters';
+import { formatCurrency, getTodayInSaoPaulo, parseCurrencyBR } from '@/lib/formatters';
+import { useSession } from '@/contexts/session-context';
+import { isManagementRole } from '@/lib/role-access';
+import { SaleDateField } from './components/SaleDateField';
 import { getErrorMessage } from '@/lib/utils';
 import { Save, ArrowLeft } from 'lucide-react';
 import { usersService, User } from '@/lib/services/users.service';
@@ -24,6 +28,13 @@ import { PaymentSection } from './components/PaymentSection';
 
 export default function NovaVendaPage() {
   const router = useRouter();
+  const { user } = useSession();
+  // Revendedora (papel vendedor): venda sempre dela e da mala dela; sem
+  // fiado e sem data passada (a API garante — aqui só ajusta a tela).
+  const isResellerUser = user?.role === 'vendedor';
+  const canBackdate = isManagementRole(user?.role);
+  const today = getTodayInSaoPaulo();
+  const [saleDate, setSaleDate] = useState(today);
   const { products, loadingProducts, loadProducts } = useProducts();
   const { playBeep, playErrorBeep } = usePosBeeper();
 
@@ -57,13 +68,36 @@ export default function NovaVendaPage() {
   const [cardTax, setCardTax] = useState('');
   const [installments, setInstallments] = useState(1); // só modo "parcelado"
 
+  // Carga dos vendedores uma vez só. Antes ficava no mesmo efeito dos
+  // atalhos de teclado (que depende do carrinho) e recarregava vendedores
+  // e produtos a cada item adicionado.
   useEffect(() => {
-    loadProducts(1, 200, true);
+    usersService
+      .getSellers()
+      .then(setSellers)
+      .catch((err) => console.error('Erro ao carregar vendedores:', err));
+  }, []);
 
-    usersService.getSellers().then((data) => {
-      setSellers(data);
+  // Revendedora: vendedora e estoque de origem são ela mesma.
+  useEffect(() => {
+    if (isResellerUser && user) {
+      setSelectedSellerId(user.id);
+      setStockLocationUserId(user.id);
+    }
+  }, [isResellerUser, user]);
+
+  // Com 2+ caracteres digitados a busca vai ao servidor — antes só filtrava
+  // os 200 produtos mais novos carregados, e peça mais antiga não aparecia.
+  const [debouncedSearch] = useDebounce(searchTerm, 300);
+  useEffect(() => {
+    const term = debouncedSearch.trim();
+    const searching = term.length >= 2;
+    loadProducts(1, searching ? 50 : 200, true, searching ? term : undefined).catch(() => {
+      // Erro já é tratado pelo hook
     });
+  }, [debouncedSearch, loadProducts]);
 
+  useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       // Atalhos Globais
       if (e.key === 'F2') {
@@ -91,43 +125,45 @@ export default function NovaVendaPage() {
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cart, creating, loadProducts]);
+  }, [cart, creating]);
 
-  const filteredProducts = products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.sku2?.toLowerCase().includes(searchTerm.toLowerCase()),
+  const searchLower = searchTerm.trim().toLowerCase();
+  const filteredProducts = products.filter((p) =>
+    [p.name, p.sku, p.sku2, p.sku2_alt].some((field) => field?.toLowerCase().includes(searchLower)),
   );
 
-  function tryAutoAdd(term: string) {
-    if (!term) return;
-    const match = products.find((p) => p.sku?.toLowerCase() === term.toLowerCase());
+  /**
+   * Leitor de código / Enter: adiciona o produto cujo código bate
+   * EXATAMENTE (nº do item, código Zarpellon, 2º código ou id). Procura
+   * primeiro na lista carregada e, se não achar, consulta o servidor —
+   * antes a peça precisava estar entre os 200 produtos mais novos.
+   */
+  async function tryAutoAdd(rawTerm: string) {
+    const term = rawTerm.trim();
+    if (!term) return false;
+    const code = term.toUpperCase();
+
+    let match =
+      products.find((p) => p.sku?.toUpperCase() === code) ??
+      products.find((p) => p.sku2?.toUpperCase() === code || p.sku2_alt?.toUpperCase() === code) ??
+      products.find((p) => p.id.toString() === term);
+
+    if (!match) {
+      try {
+        [match] = await productsService.lookup(term, true);
+      } catch (err) {
+        console.error('Erro na busca por código:', err);
+      }
+    }
+
     if (match) {
       addToCart(match);
       setSearchTerm('');
       playBeep();
       return true;
     }
-    // Match SKU2
-    const matchSku2 = products.find((p) => p.sku2?.toLowerCase() === term.toLowerCase());
-    if (matchSku2) {
-      addToCart(matchSku2);
-      setSearchTerm('');
-      playBeep();
-      return true;
-    }
-    // Match ID
-    const matchId = products.find((p) => p.id.toString() === term);
-    if (matchId) {
-      addToCart(matchId);
-      setSearchTerm('');
-      playBeep();
-      return true;
-    }
 
-    // Se chegou aqui e tem algo digitado, é porque falhou
-    if (term) playErrorBeep();
+    playErrorBeep();
     return false;
   }
 
@@ -137,25 +173,24 @@ export default function NovaVendaPage() {
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
-      tryAutoAdd(searchTerm);
+      void tryAutoAdd(searchTerm);
     }
   }
 
   function handleCameraScan(code: string) {
-    tryAutoAdd(code);
+    void tryAutoAdd(code);
   }
 
   function addToCart(product: Product) {
-    const existing = cart.find((item) => item.product.id === product.id);
-    if (existing) {
-      setCart(
-        cart.map((item) =>
-          item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item,
-        ),
-      );
-    } else {
-      setCart([...cart, { product, quantity: 1 }]);
-    }
+    // Forma funcional: tryAutoAdd pode chamar depois de um await, com o
+    // `cart` da renderização anterior.
+    setCart((prev) =>
+      prev.some((item) => item.product.id === product.id)
+        ? prev.map((item) =>
+            item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item,
+          )
+        : [...prev, { product, quantity: 1 }],
+    );
   }
 
   function removeFromCart(productId: number) {
@@ -329,10 +364,14 @@ export default function NovaVendaPage() {
           quantity: item.quantity,
           unit_price: item.product.preco_promocional || item.product.price,
         })),
+        // Só a gestão lança venda com data passada; hoje = "agora".
+        sale_date: canBackdate && saleDate && saleDate !== today ? saleDate : undefined,
       };
 
-      await ordersService.create(payload);
-      router.push('/admin/vendas');
+      const order = await ordersService.create(payload);
+      // Revendedora não tem acesso à lista geral de vendas: vai direto
+      // pro recibo da venda que acabou de fazer.
+      router.push(isResellerUser ? `/admin/vendas/recibo/${order.id}` : '/admin/vendas');
     } catch (err: unknown) {
       setError(getErrorMessage(err, 'Erro ao criar venda'));
     } finally {
@@ -343,7 +382,10 @@ export default function NovaVendaPage() {
   return (
     <section className="space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/admin/vendas" className="text-zinc-500 hover:text-zinc-900">
+        <Link
+          href={isResellerUser ? '/admin/vendas/minhas' : '/admin/vendas'}
+          className="text-zinc-500 hover:text-zinc-900"
+        >
           <ArrowLeft className="h-6 w-6" />
         </Link>
         <h1 className="text-2xl font-semibold">Nova Venda (POS)</h1>
@@ -376,7 +418,10 @@ export default function NovaVendaPage() {
               stockLocationUserId={stockLocationUserId}
               onSelectStockLocation={setStockLocationUserId}
               stockWarning={stockWarning}
+              lockedToSelf={isResellerUser}
             />
+
+            {canBackdate && <SaleDateField value={saleDate} today={today} onChange={setSaleDate} />}
 
             <CartPanel
               cart={cart}
@@ -409,6 +454,7 @@ export default function NovaVendaPage() {
               maxInstallments={maxInstallments}
               notes={notes}
               onNotesChange={setNotes}
+              allowOnCredit={!isResellerUser}
             />
           </div>
 

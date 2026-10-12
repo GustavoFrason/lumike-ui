@@ -21,6 +21,7 @@ export function isManagementRole(role: string | null | undefined): boolean {
  */
 const VENDEDOR_ADMIN_PREFIXES = [
   '/admin/vendas/nova',
+  '/admin/vendas/minhas',
   '/admin/vendas/recibo',
   '/admin/vendas/garantia',
 ];

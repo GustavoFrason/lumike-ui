@@ -98,4 +98,40 @@ describe('generateLabelsZpl', () => {
     const zpl = generateLabelsZpl([buildProduct({ sku: 'A^B~C\\D' })], DEFAULT_LABEL_CONFIG);
     expect(zpl).toContain('^FDLA,ABCD^FS');
   });
+
+  describe('texto da etiqueta (label_text)', () => {
+    it('imprime o texto em maiúsculas num bloco ^FB de até 2 linhas, depois do preço', () => {
+      const zpl = generateLabelsZpl(
+        [buildProduct({ label_text: 'Linha prata' })],
+        DEFAULT_LABEL_CONFIG,
+      );
+
+      expect(zpl).toMatch(/\^FB\d+,2,0,L,0\n\^FDLINHA PRATA\^FS/);
+      expect(zpl.indexOf('LINHA PRATA')).toBeGreaterThan(zpl.indexOf('R$'));
+    });
+
+    it('corta em 24 caracteres e remove delimitadores ZPL', () => {
+      const zpl = generateLabelsZpl(
+        [buildProduct({ label_text: 'ab^cdefghijklmnopqrstuvwxyz0123' })],
+        DEFAULT_LABEL_CONFIG,
+      );
+
+      // 24 primeiros caracteres ("ab^cdefghijklmnopqrstuvw"), sem o ^
+      expect(zpl).toContain('^FDABCDEFGHIJKLMNOPQRSTUVW^FS');
+    });
+
+    it('não imprime nada quando o produto não tem texto ou a opção está desligada', () => {
+      const semTexto = generateLabelsZpl(
+        [buildProduct({ label_text: '  ' })],
+        DEFAULT_LABEL_CONFIG,
+      );
+      const desligado = generateLabelsZpl([buildProduct({ label_text: 'ARO 16' })], {
+        ...DEFAULT_LABEL_CONFIG,
+        showLabelText: false,
+      });
+
+      expect(semTexto).not.toContain('^FB');
+      expect(desligado).not.toContain('ARO 16');
+    });
+  });
 });

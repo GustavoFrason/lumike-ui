@@ -34,6 +34,11 @@ interface PaymentSectionProps {
 
   notes: string;
   onNotesChange: (value: string) => void;
+  /**
+   * false = esconde "Boca (Fiado)" e "Em Aberto" (revendedora: ela recebe
+   * do cliente e acerta com a loja; fiado não é permitido pela API).
+   */
+  allowOnCredit?: boolean;
 }
 
 export function PaymentSection({
@@ -60,6 +65,7 @@ export function PaymentSection({
   maxInstallments,
   notes,
   onNotesChange,
+  allowOnCredit = true,
 }: PaymentSectionProps) {
   const isFixedPayment =
     paymentMethod === 'dinheiro' || paymentMethod === 'cartao' || paymentMethod === 'parcelado';
@@ -81,8 +87,12 @@ export function PaymentSection({
               <option value="dinheiro">💵 Dinheiro</option>
               <option value="cartao">💳 Cartão</option>
               <option value="parcelado">📅 Parcelado</option>
-              <option value="boca">👄 Boca (Fiado)</option>
-              <option value="aberto">⏳ Em Aberto</option>
+              {allowOnCredit && (
+                <>
+                  <option value="boca">👄 Boca (Fiado)</option>
+                  <option value="aberto">⏳ Em Aberto</option>
+                </>
+              )}
             </select>
           </div>
           <div>

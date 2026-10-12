@@ -92,9 +92,12 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
     if (!preview) return;
 
     const items = [
+      // quantity/unit_cost/price vão POR UNIDADE COMPRADA (kit, quando for
+      // kit) + pieces_per_kit — a API desmembra em peças no confirm.
       ...preview.novos.map((r) => ({
         is_new: true,
         sku2: r.sku2,
+        sku2_alt: r.sku2_alt?.trim() || undefined,
         name: r.name,
         category_id: r.category_id,
         quantity: r.quantity,
@@ -103,12 +106,14 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
         // regra padrão (unit_cost×3) — nos dois casos, editável no preview
         // (NewProductsTable) antes de chegar aqui.
         price: r.suggested_price,
+        pieces_per_kit: r.pieces_per_kit || 1,
       })),
       ...preview.atualizacoes.map((r) => ({
         is_new: false,
         product_id: r.existing_product.id,
         quantity: r.quantity,
         unit_cost: r.unit_cost,
+        pieces_per_kit: r.pieces_per_kit || 1,
       })),
     ];
 

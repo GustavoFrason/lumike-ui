@@ -23,11 +23,29 @@ import {
   BadgePercent,
   Component,
   UserCog,
+  Receipt,
+  HandCoins,
 } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { useSession } from '@/contexts/session-context';
+import { canAccessAdminPath } from '@/lib/role-access';
 
 interface SidebarProps {
   isOpen?: boolean;
   onClose?: () => void;
+}
+
+interface MenuItem {
+  href: string;
+  label: string;
+  icon: ReactNode;
+  /** Só aparece para a revendedora (ex: "Minhas Vendas"). */
+  resellerOnly?: boolean;
+}
+
+interface MenuGroup {
+  label: string;
+  items: MenuItem[];
 }
 
 /**
@@ -35,7 +53,10 @@ interface SidebarProps {
  * Responsiva e animada (abre/fecha no mobile).
  */
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const menuGroups = [
+  const { status, user } = useSession();
+  const role = user?.role;
+
+  const allMenuGroups: MenuGroup[] = [
     {
       label: 'Geral',
       items: [{ href: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={18} /> }],
@@ -44,6 +65,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       label: 'Operações (PDV)',
       items: [
         { href: '/admin/vendas/nova', label: 'Nova Venda', icon: <PlusCircle size={18} /> },
+        {
+          href: '/admin/vendas/minhas',
+          label: 'Minhas Vendas',
+          icon: <Receipt size={18} />,
+          resellerOnly: true,
+        },
         { href: '/admin/vendas', label: 'Histórico de Pedidos', icon: <History size={18} /> },
         { href: '/admin/clientes', label: 'Clientes (CRM)', icon: <Users size={18} /> },
         { href: '/admin/garantias', label: 'Garantias', icon: <ShieldCheck size={18} /> },
@@ -76,6 +103,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       items: [
         { href: '/admin/fluxo-caixa', label: 'Fluxo de Caixa', icon: <BarChart3 size={18} /> },
         { href: '/admin/clientes-pagar', label: 'Contas a Receber', icon: <Wallet size={18} /> },
+        {
+          href: '/admin/acertos',
+          label: 'Acertos (Revendedoras)',
+          icon: <HandCoins size={18} />,
+        },
         { href: '/admin/comissoes', label: 'Comissões', icon: <BadgePercent size={18} /> },
         { href: '/admin/analise-roi', label: 'Análise de ROI', icon: <TrendingUp size={18} /> },
       ],
@@ -88,6 +120,22 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       ],
     },
   ];
+
+  // Só o que o papel pode abrir (antes a revendedora via o menu inteiro e
+  // cada clique a mandava de volta pro PDV). Enquanto a sessão carrega,
+  // nada — evita piscar o menu da gestão pra revendedora.
+  const menuGroups =
+    status === 'loading'
+      ? []
+      : allMenuGroups
+          .map((group) => ({
+            ...group,
+            items: group.items.filter(
+              (item) =>
+                (!item.resellerOnly || role === 'vendedor') && canAccessAdminPath(role, item.href),
+            ),
+          }))
+          .filter((group) => group.items.length > 0);
 
   const renderNav = (mobile = false) => (
     <nav className="flex-1 p-4 space-y-6 overflow-y-auto custom-scrollbar">

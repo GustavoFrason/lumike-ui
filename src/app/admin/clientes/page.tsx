@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useCustomers, Customer } from '@/lib/hooks/use-customers';
 import { DataTable, Column } from '@/components/ui/data-table';
-import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { ActionButtons } from '@/components/ui/action-buttons';
 import { Pagination } from '@/components/ui/pagination';
@@ -152,14 +151,8 @@ export default function ClientesPage() {
     },
   ];
 
-  if (loadingCustomers) {
-    return (
-      <section className="space-y-6">
-        <Loading size="lg" text="Carregando clientes..." className="py-12" />
-      </section>
-    );
-  }
-
+  // Sem early-return de "Carregando...": desmontava a busca a cada
+  // requisição e o campo perdia o foco. Skeleton só na 1ª carga.
   return (
     <section className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -257,7 +250,7 @@ export default function ClientesPage() {
 
       <DataTable
         data={customers}
-        loading={loadingCustomers}
+        loading={loadingCustomers && customers.length === 0}
         columns={columns}
         emptyTitle="Nenhum cliente cadastrado"
         emptyDescription="Comece criando seu primeiro cliente"

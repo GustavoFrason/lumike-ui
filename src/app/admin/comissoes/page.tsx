@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { usersService, User } from '@/lib/services/users.service';
 import { ordersService, Order } from '@/lib/services/orders.service';
-import { formatCurrency } from '@/lib/formatters';
+import { formatCurrency, getTodayInSaoPaulo } from '@/lib/formatters';
 import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { DollarSign, TrendingUp, Filter, Download, CheckCircle2, Clock } from 'lucide-react';
@@ -16,45 +16,52 @@ export default function ComissoesPage() {
   const [error, setError] = useState<string | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
 
-  // Filtros
-  const [dateRange, setDateRange] = useState({
-    start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-    end: new Date().toISOString().split('T')[0],
+  // Filtros (dias do calendário de São Paulo)
+  const [dateRange, setDateRange] = useState(() => {
+    const today = getTodayInSaoPaulo();
+    return { start: `${today.slice(0, 7)}-01`, end: today };
   });
 
   useEffect(() => {
-    loadData();
+    usersService
+      .getSellers()
+      .then(setSellers)
+      .catch(() => setError('Erro ao carregar vendedoras'));
   }, []);
 
-  async function loadData() {
-    try {
-      setLoading(true);
-      const [sellersData, ordersData] = await Promise.all([
-        usersService.getSellers(),
-        ordersService.getAll(1, 1000), // Busca uma boa quantidade para o relatório
-      ]);
-      setSellers(sellersData);
-      setOrders(ordersData.data);
-    } catch {
-      setError('Erro ao carregar dados de comissões');
-    } finally {
-      setLoading(false);
-    }
-  }
+  // Período e vendedora filtrados no servidor: antes baixava os 1000
+  // pedidos mais recentes e filtrava aqui pela data em UTC (venda depois
+  // das 21h caía no dia seguinte, e períodos antigos ficavam de fora).
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    ordersService
+      .getAll(1, 1000, undefined, undefined, {
+        dateFrom: dateRange.start,
+        dateTo: dateRange.end,
+        sellerId: selectedSellerId === 'all' ? undefined : Number(selectedSellerId),
+      })
+      .then((res) => {
+        if (!cancelled) setOrders(res.data);
+      })
+      .catch(() => {
+        if (!cancelled) setError('Erro ao carregar dados de comissões');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [dateRange, selectedSellerId]);
 
-  // Lógica de Filtragem e Cálculo
-  const filteredOrders = orders.filter((order) => {
-    const orderDate = order.created_at.split('T')[0];
-    const matchDate = orderDate >= dateRange.start && orderDate <= dateRange.end;
-    const matchSeller = selectedSellerId === 'all' || order.seller_id === Number(selectedSellerId);
-    // Venda sem vendedora atribuída (PDV/balcão) não gera comissão pra
-    // ninguém — sem esse filtro, order.seller_id null caía no default de
-    // 20% mesmo assim, inflando o total com comissão "fantasma". Venda
-    // cancelada também não deve contar (nem como venda, nem como pendente).
-    const hasSeller = order.seller_id != null;
-    const notCancelled = order.status !== 'cancelled';
-    return matchDate && matchSeller && hasSeller && notCancelled;
-  });
+  // Venda sem vendedora atribuída (PDV/balcão) não gera comissão pra
+  // ninguém — sem esse filtro, order.seller_id null caía no default de 20%
+  // mesmo assim, inflando o total com comissão "fantasma". Venda cancelada
+  // também não deve contar (nem como venda, nem como pendente).
+  const filteredOrders = orders.filter(
+    (order) => order.seller_id != null && order.status !== 'cancelled',
+  );
 
   const stats = filteredOrders.reduce(
     (acc, order) => {
@@ -85,7 +92,8 @@ export default function ComissoesPage() {
     },
   );
 
-  if (loading)
+  // Só na 1ª carga: depois o filtro de período recarrega sem desmontar a tela.
+  if (loading && orders.length === 0)
     return (
       <div className="flex justify-center py-12">
         <Loading />

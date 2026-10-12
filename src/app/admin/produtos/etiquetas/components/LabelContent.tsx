@@ -1,7 +1,7 @@
 import { QRCodeSVG } from 'qrcode.react';
 import { formatCurrency } from '@/lib/formatters';
 import { Product } from '@/lib/services/products.service';
-import { PRODUCT_NAME_FONT_SIZE_PX } from './types';
+import { LABEL_TEXT_FONT_SIZE_PX, LABEL_TEXT_MAX_CHARS, PRODUCT_NAME_FONT_SIZE_PX } from './types';
 
 interface LabelContentProps {
   product: Product;
@@ -10,12 +10,15 @@ interface LabelContentProps {
     qrSize: number;
     showBranding: boolean;
     showProductName: boolean;
+    showLabelText: boolean;
     offsetX: number;
     offsetY: number;
   };
 }
 
 export function LabelContent({ product, config }: LabelContentProps) {
+  const labelText = product.label_text?.trim().slice(0, LABEL_TEXT_MAX_CHARS);
+
   return (
     <div
       className="w-full h-full flex items-center gap-1.5 p-1 relative"
@@ -76,6 +79,16 @@ export function LabelContent({ product, config }: LabelContentProps) {
             </span>
           )}
         </div>
+
+        {config.showLabelText && labelText && (
+          <p
+            data-testid="label-text"
+            className="font-semibold uppercase text-zinc-900 line-clamp-2 wrap-break-word"
+            style={{ fontSize: `${LABEL_TEXT_FONT_SIZE_PX}px`, lineHeight: '1.1' }}
+          >
+            {labelText}
+          </p>
+        )}
       </div>
     </div>
   );

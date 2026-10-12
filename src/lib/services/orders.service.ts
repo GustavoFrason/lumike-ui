@@ -42,7 +42,54 @@ export interface Order {
     email?: string;
     phone?: string;
   };
+  /** Vendedora que recebe a comissão (null = venda da loja). */
+  seller?: { id: number; name: string } | null;
+  /** De qual mala o estoque saiu (null = Estoque Central). */
+  stock_location?: { id: number; name: string } | null;
   items?: OrderItem[];
+}
+
+/** Filtros extras da lista/resumo de vendas. */
+export interface OrderFilters {
+  /** Id da vendedora, ou 'none' para vendas da loja (sem vendedora). */
+  sellerId?: number | 'none';
+  /** Id da revendedora de cuja mala o estoque saiu, ou 'central'. */
+  stockLocation?: number | 'central';
+  /** Dias do calendário ('YYYY-MM-DD'), inclusive. */
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+export interface SellerSummary {
+  /** null = Loja (sem vendedora ou vendida pela gestão). */
+  seller_id: number | null;
+  name: string;
+  orders_count: number;
+  total: number;
+  commission_rate: number;
+  commission: number;
+}
+
+export interface StockLocationSummary {
+  /** null = Estoque Central. */
+  user_id: number | null;
+  name: string;
+  orders_count: number;
+  total: number;
+}
+
+export interface OrdersSummary {
+  totals: { orders_count: number; total: number; commission: number };
+  by_seller: SellerSummary[];
+  by_stock_location: StockLocationSummary[];
+}
+
+function appendOrderFilters(params: URLSearchParams, filters: OrderFilters = {}) {
+  if (filters.sellerId !== undefined) params.append('seller_id', String(filters.sellerId));
+  if (filters.stockLocation !== undefined)
+    params.append('stock_location', String(filters.stockLocation));
+  if (filters.dateFrom) params.append('date_from', filters.dateFrom);
+  if (filters.dateTo) params.append('date_to', filters.dateTo);
 }
 
 export interface CreateOrderItemDto {
@@ -73,17 +120,23 @@ export interface CreateOrderDto {
     installments?: number;
   };
   items: CreateOrderItemDto[];
+  /**
+   * Data da venda ('YYYY-MM-DD') para lançar depois uma venda já feita —
+   * só admin/gestor. Ausente = agora.
+   */
+  sale_date?: string;
 }
 
 export const ordersService = {
   /**
-   * Lista todos os pedidos
+   * Lista os pedidos (a revendedora logada recebe só os dela).
    */
   async getAll(
     page = 1,
     limit = 50,
     status?: string,
     customerId?: number,
+    filters?: OrderFilters,
   ): Promise<PaginatedResponse<Order>> {
     const params = new URLSearchParams({
       page: page.toString(),
@@ -95,8 +148,21 @@ export const ordersService = {
     if (customerId) {
       params.append('customer_id', customerId.toString());
     }
+    appendOrderFilters(params, filters);
 
     const { data } = await api.get<PaginatedResponse<Order>>(`/pedidos?${params.toString()}`);
+    return data;
+  },
+
+  /**
+   * Totais por vendedora (com comissão) e por estoque de origem no período,
+   * sem canceladas — calculado no servidor sobre todas as vendas.
+   */
+  async getSummary(filters: OrderFilters = {}): Promise<OrdersSummary> {
+    const params = new URLSearchParams();
+    appendOrderFilters(params, filters);
+    const query = params.toString();
+    const { data } = await api.get<OrdersSummary>(`/pedidos/summary${query ? `?${query}` : ''}`);
     return data;
   },
 

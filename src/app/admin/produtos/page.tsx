@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Download } from 'lucide-react';
-import { ProductModal } from './ProductModal';
+import { useDebounce } from 'use-debounce';
+import { ProductModal, type ProductModalSaveData } from './ProductModal';
 import { useProducts } from '@/lib/hooks/use-products';
 import { useCategories } from '@/lib/hooks/use-categories';
-import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { DataTable } from '@/components/ui/data-table';
 import { Pagination } from '@/components/ui/pagination';
@@ -58,21 +58,30 @@ export default function ProdutosPage() {
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
 
-  // Carrega produtos ao montar o componente ou mudar página/filtros
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      loadProducts(currentPage, ITEMS_PER_PAGE, true, search, categoryId);
-    }, 300);
+  // Espera a pessoa parar de digitar antes de buscar (digitar devagar não
+  // dispara uma busca por número).
+  const [debouncedSearch] = useDebounce(search, 400);
 
-    return () => clearTimeout(timer);
-  }, [loadProducts, currentPage, search, categoryId]);
+  // Lista em ordem crescente do número do item (sort=code). Usado no
+  // carregamento e nas recargas depois de salvar/excluir/ações em massa,
+  // sempre com a busca e a categoria atuais.
+  const reload = useCallback(
+    () => loadProducts(currentPage, ITEMS_PER_PAGE, true, debouncedSearch, categoryId, 'code'),
+    [loadProducts, currentPage, debouncedSearch, categoryId],
+  );
+
+  useEffect(() => {
+    reload().catch(() => {
+      // Erro já é tratado pelo hook
+    });
+  }, [reload]);
 
   async function handleBulkStatus(is_active: boolean) {
     if (selectedIds.length === 0) return;
     try {
       await productsService.bulkUpdateStatus(selectedIds, is_active);
       setSelectedIds([]);
-      await loadProducts(currentPage, ITEMS_PER_PAGE, true);
+      await reload();
     } catch (err) {
       console.error('Erro ao atualizar em massa:', err);
     }
@@ -80,17 +89,22 @@ export default function ProdutosPage() {
 
   /**
    * Busca TODOS os produtos que batem com os filtros atuais (busca/
-   * categoria) numa página só (limit bem alto) — a paginação da tela
-   * (ITEMS_PER_PAGE) é só de exibição, exportar precisa ignorar isso e
-   * pegar tudo. Mesmo is_active=true já usado pra carregar a tela (não tem
-   * toggle de "mostrar inativos" nesta tela hoje).
+   * categoria) — a paginação da tela (ITEMS_PER_PAGE) é só de exibição.
+   * getAllPages pagina de 1000 em 1000 (teto do Supabase por requisição).
+   * Mesmo is_active=true já usado pra carregar a tela (não tem toggle de
+   * "mostrar inativos" nesta tela hoje).
    */
   async function handleExportExcel() {
     setExporting(true);
     setExportError(null);
     try {
-      const result = await productsService.getAll(1, 100000, true, search, categoryId);
-      exportProductsToExcel(result.data);
+      const allProducts = await productsService.getAllPages({
+        isActive: true,
+        search,
+        categoryId,
+        sort: 'code',
+      });
+      exportProductsToExcel(allProducts);
     } catch (err) {
       setExportError(getErrorMessage(err, 'Erro ao exportar produtos.'));
     } finally {
@@ -120,20 +134,58 @@ export default function ProdutosPage() {
     setModalAberto(true);
   }
 
-  async function handleSalvar(
-    produtoData: Partial<Product> & { pendingFiles?: File[]; initial_seller_id?: number },
-  ) {
-    const { pendingFiles, initial_seller_id, ...cleanData } = produtoData;
+  /** Sobe as imagens escolhidas antes do produto existir (cadastro novo). */
+  async function uploadPendingImages(productId: number, pendingFiles?: File[]) {
+    if (!pendingFiles || pendingFiles.length === 0) return;
+
+    for (let i = 0; i < pendingFiles.length; i++) {
+      const file = pendingFiles[i];
+      if (!file || !(file instanceof File)) {
+        console.error(`Imagem ${i + 1} inválida (não é um arquivo), pulando upload.`);
+        continue;
+      }
+      try {
+        const url = await imagesService.uploadImage(productId, file);
+        await imagesService.registerImage(productId, url, i);
+      } catch (imgErr) {
+        console.error('Erro ao subir imagem durante criação:', imgErr);
+      }
+    }
+  }
+
+  async function handleSalvar(produtoData: ProductModalSaveData) {
+    const { pendingFiles, initial_seller_id, existingProductId, ...cleanData } = produtoData;
 
     try {
       if (produtoSelecionado?.id) {
         await updateProduct(produtoSelecionado.id, cleanData);
-      } else {
-        // Lógica de estoque inicial
-        const originalStock = Number(cleanData.current_stock) || 0;
-        if (initial_seller_id && originalStock > 0) {
-          cleanData.current_stock = 0; // Se vai para vendedor, cria com 0 no central
+      } else if (existingProductId) {
+        // Produto já cadastrado (achado pelo código Zarpellon no modal):
+        // atualiza os dados e lança a quantidade digitada como ENTRADA de
+        // estoque. Antes o `existingProductId` ia junto pro create e a API
+        // recusava (400) — o "somar ao estoque" nunca funcionou.
+        const quantityToAdd = Number(cleanData.current_stock) || 0;
+        const { current_stock: _quantityTyped, ...fields } = cleanData;
+        await updateProduct(existingProductId, fields);
+
+        if (quantityToAdd > 0) {
+          await inventoryService.addStock(
+            existingProductId,
+            { quantity: quantityToAdd, reference: 'Entrada pelo cadastro de produto' },
+            initial_seller_id ?? null,
+          );
         }
+
+        await uploadPendingImages(existingProductId, pendingFiles);
+      } else {
+        // Estoque inicial entra como MOVIMENTO (entrada no Central e, se
+        // houver, transferência pra revendedora) — não direto no campo do
+        // produto. Gravar current_stock na criação só mexia no número
+        // exibido: o controle por localidade ficava zerado e a 1ª venda
+        // dava "estoque insuficiente". A transferência também fica
+        // registrada pro acerto com a revendedora.
+        const initialStock = Number(cleanData.current_stock) || 0;
+        cleanData.current_stock = 0;
 
         // ProductModal valida os campos obrigatórios antes de chamar onSave
         // (é o mesmo contrato usado em compras/nova/page.tsx pro cadastro
@@ -141,51 +193,32 @@ export default function ProdutosPage() {
         // CreateProductDto.
         const newProduct = await createProduct(cleanData as CreateProductDto);
 
-        // Se houver revendedor inicial, aloca o saldo
-        if (newProduct?.id && initial_seller_id && originalStock > 0) {
+        if (newProduct?.id && initialStock > 0) {
           try {
-            await inventoryService.addStock(
-              newProduct.id,
-              { quantity: originalStock, reference: 'Estoque inicial da peça' },
-              initial_seller_id,
-            );
+            await inventoryService.addStock(newProduct.id, {
+              quantity: initialStock,
+              reference: 'Estoque inicial da peça',
+            });
+            if (initial_seller_id) {
+              await inventoryService.transfer(newProduct.id, {
+                from_user_id: null,
+                to_user_id: initial_seller_id,
+                quantity: initialStock,
+                notes: 'Estoque inicial para a revendedora',
+              });
+            }
           } catch (err) {
             console.error('Erro ao registrar estoque inicial:', err);
           }
         }
 
         // Se houver imagens pendentes e o produto foi criado com sucesso
-        if (newProduct?.id && pendingFiles && pendingFiles.length > 0) {
-          console.log(
-            `🚀 Iniciando upload de ${pendingFiles.length} imagens para o produto ${newProduct.id}`,
-          );
-          for (let i = 0; i < pendingFiles.length; i++) {
-            try {
-              const file = pendingFiles[i];
-              console.log(`📸 Processando imagem ${i + 1}/${pendingFiles.length}:`, {
-                name: file?.name,
-                type: file?.type,
-                size: file?.size,
-                isBlob: file instanceof Blob,
-              });
-
-              if (!file || !(file instanceof File)) {
-                console.error(
-                  `❌ Imagem ${i + 1} inválida ou não é um arquivo (File), pulando upload.`,
-                );
-                continue;
-              }
-
-              const url = await imagesService.uploadImage(newProduct.id, file as File);
-              await imagesService.registerImage(newProduct.id, url, i);
-            } catch (imgErr) {
-              console.error('Erro ao subir imagem durante criação:', imgErr);
-            }
-          }
+        if (newProduct?.id) {
+          await uploadPendingImages(newProduct.id, pendingFiles);
         }
       }
       setModalAberto(false);
-      await loadProducts(currentPage, ITEMS_PER_PAGE, true); // Recarrega a lista
+      await reload(); // Recarrega a lista mantendo busca/categoria
     } catch {
       // Erro já é tratado pelo hook
     }
@@ -198,19 +231,16 @@ export default function ProdutosPage() {
 
     try {
       await deleteProduct(id);
-      await loadProducts(currentPage, ITEMS_PER_PAGE, true); // Recarrega a lista
+      await reload(); // Recarrega a lista mantendo busca/categoria
     } catch {
       // Erro já é tratado pelo hook
     }
   }
 
-  if (loadingProducts) {
-    return (
-      <section className="space-y-6">
-        <Loading size="lg" text="Carregando produtos..." className="py-12" />
-      </section>
-    );
-  }
+  // Sem early-return de "Carregando...": ele desmontava a página inteira
+  // (inclusive o campo de busca) a cada busca, e a pessoa perdia o foco a
+  // cada número digitado. O skeleton da tabela só aparece na 1ª carga.
+  const isSearching = loadingProducts && products.length > 0;
 
   return (
     <section className="space-y-6">
@@ -255,6 +285,7 @@ export default function ProdutosPage() {
           setCurrentPage(1);
         }}
         categories={categories}
+        searching={isSearching}
       />
 
       {selectedIds.length > 0 && (
@@ -268,7 +299,7 @@ export default function ProdutosPage() {
 
       <DataTable
         data={products}
-        loading={loadingProducts}
+        loading={loadingProducts && products.length === 0}
         columns={getProductColumns({
           selectedIds,
           allSelected: selectedIds.length === products.length && products.length > 0,

@@ -6,6 +6,11 @@
 
 import { api } from '../api';
 
+/**
+ * Linha da planilha. quantity, unit_cost e suggested_price são POR UNIDADE
+ * COMPRADA — num kit, quantidade de kits e custo/preço do kit inteiro. A
+ * conversão pra peças acontece na API no confirm (pieces_per_kit).
+ */
 export interface ImportRow {
   row_number: number;
   /** Valor literal da célula "Produto" — sem normalização, nem strip nem padding de zero à esquerda. */
@@ -13,20 +18,37 @@ export interface ImportRow {
   name: string;
   quantity: number;
   unit_cost: number;
+  /** "Valor de Venda" da planilha (NaN/null quando vazio). */
+  sale_price?: number | null;
   duplicated_in_file?: boolean;
+  /** Peças por kit (kit = N peças iguais vendidas soltas). 1 = produto comum. */
+  pieces_per_kit: number;
+  /** true quando o nº de peças foi sugerido pela descrição ("KIT 12 ..."). */
+  pieces_per_kit_suggested: boolean;
 }
 
 export interface NewProductRow extends ImportRow {
   category_id: number;
   category_name: string;
   category_low_confidence: boolean;
+  /** Preço de venda por unidade comprada (num kit, o preço do kit inteiro). */
   suggested_price: number;
+  /** 2º código da Zarpellon, preenchido no preview (opcional). */
+  sku2_alt?: string;
 }
 
 export interface ExistingProductRef {
   id: number;
   name: string;
   current_stock: number;
+  /** Preço atual (por peça) no catálogo. */
+  price?: number;
+  sku2?: string | null;
+  sku2_alt?: string | null;
+  /** Por qual código o produto foi reconhecido. */
+  matched_by?: 'sku2' | 'sku2_alt';
+  /** Quantos produtos têm esse código no catálogo (>1 = duplicata). */
+  match_count?: number;
 }
 
 export interface UpdateStockRow extends ImportRow {
@@ -62,8 +84,12 @@ export interface ConfirmImportItem {
   category_id?: number;
   quantity: number;
   unit_cost: number;
-  /** Preço de venda do produto novo — só usado quando is_new = true. */
+  /** Preço de venda do produto novo (por unidade comprada) — só usado quando is_new = true. */
   price?: number;
+  /** Peças por kit; a API desmembra (estoque em peças, custo/preço por peça). */
+  pieces_per_kit?: number;
+  /** 2º código da Zarpellon — só usado quando is_new = true. */
+  sku2_alt?: string;
 }
 
 export interface ConfirmImportResult {

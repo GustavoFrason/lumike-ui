@@ -13,6 +13,11 @@ interface CustomerSellerSectionProps {
   onSelectStockLocation: (userId: number | null) => void;
   /** Aviso client-side: itens do carrinho sem saldo na localidade selecionada acima. */
   stockWarning: string | null;
+  /**
+   * Revendedora logada: a venda é dela e sai da mala dela (a API força
+   * isso) — mostra só um resumo no lugar dos seletores.
+   */
+  lockedToSelf?: boolean;
 }
 
 export function CustomerSellerSection({
@@ -24,7 +29,28 @@ export function CustomerSellerSection({
   stockLocationUserId,
   onSelectStockLocation,
   stockWarning,
+  lockedToSelf = false,
 }: CustomerSellerSectionProps) {
+  if (lockedToSelf) {
+    return (
+      <div className="mb-6 border-b pb-4 space-y-4">
+        <CustomerSearch onSelect={onSelectCustomer} selectedCustomer={selectedCustomer} />
+        <div className="text-xs bg-zinc-50 border border-zinc-200 rounded-lg p-2.5 text-zinc-600 flex items-center gap-2">
+          <Warehouse className="h-3.5 w-3.5 text-(--lumilee-gold)" />
+          <span>
+            Venda sua, saindo da <strong>sua mala</strong>.
+          </span>
+        </div>
+        {stockWarning && (
+          <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2 py-1.5 flex items-start gap-1.5">
+            <AlertTriangle className="h-3 w-3 shrink-0 mt-0.5" />
+            <span>{stockWarning}</span>
+          </p>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="mb-6 border-b pb-4 space-y-4">
       <CustomerSearch onSelect={onSelectCustomer} selectedCustomer={selectedCustomer} />
