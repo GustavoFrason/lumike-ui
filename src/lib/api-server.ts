@@ -1,4 +1,5 @@
 // import { cookies } from 'next/headers';
+import { getClientForwardHeaders } from './request-context';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -13,6 +14,8 @@ export async function fetchServer<T>(path: string, options: FetchOptions = {}): 
 
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
+    // IP do visitante para o rate limit da API (ver request-context.ts)
+    ...(await getClientForwardHeaders()),
   };
 
   // Opcional: passar cookies/auth se necessário (para vitrine pública não precisa)

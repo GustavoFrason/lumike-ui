@@ -120,7 +120,18 @@ export const ordersService = {
    * Atualiza o status de um pedido
    */
   async updateStatus(id: number, status: string): Promise<Order> {
-    const { data } = await api.patch<Order>(`/pedidos/${id}/status`, { status });
+    // A rota Next é PATCH /api/pedidos/[id] — ela mesma acrescenta
+    // `/status` ao chamar o backend. `/pedidos/${id}/status` não existe (404).
+    const { data } = await api.patch<Order>(`/pedidos/${id}`, { status });
+    return data;
+  },
+
+  /**
+   * Cancela uma venda: devolve o estoque e registra o estorno no caixa
+   * (fn_cancel_order no backend).
+   */
+  async cancel(id: number, input: { refundAmount: number; notes?: string }): Promise<Order> {
+    const { data } = await api.post<Order>(`/orders/${id}/cancel`, input);
     return data;
   },
 

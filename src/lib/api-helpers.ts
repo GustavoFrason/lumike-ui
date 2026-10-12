@@ -22,6 +22,20 @@ export function createErrorResponse(
 }
 
 /**
+ * Repassa a querystring da requisição recebida para o backend.
+ *
+ * Se `backendPath` já tiver `?` (a rota montou a própria query), não
+ * acrescenta nada — antes o handleGet sempre concatenava de novo e várias
+ * rotas mandavam `/dashboard/low-stock?limit=5?limit=5` (400 no
+ * ParseIntPipe). E handlePost/handlePatch descartavam a query, então
+ * `?userId=` de entrada/saída de estoque nunca chegava ao backend.
+ */
+export function withSearch(request: NextRequest, backendPath: string): string {
+  if (backendPath.includes('?')) return backendPath;
+  return `${backendPath}${request.nextUrl.search}`;
+}
+
+/**
  * Handler genérico para GET requests
  */
 export async function handleGet(
@@ -30,11 +44,7 @@ export async function handleGet(
   errorMessage: string = 'Erro ao buscar dados',
 ) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const queryString = searchParams.toString();
-    const path = queryString ? `${backendPath}?${queryString}` : backendPath;
-
-    const response = await proxyRequest('GET', path);
+    const response = await proxyRequest('GET', withSearch(request, backendPath));
     const data = await response.json();
 
     if (!response.ok) {
@@ -57,7 +67,7 @@ export async function handlePost(
 ) {
   try {
     const body = await request.json();
-    const response = await proxyRequest('POST', backendPath, body);
+    const response = await proxyRequest('POST', withSearch(request, backendPath), body);
     const data = await response.json();
 
     if (!response.ok) {
@@ -81,7 +91,7 @@ export async function handlePatch(
 ) {
   try {
     const body = await request.json();
-    const response = await proxyRequest('PATCH', `${backendPath}/${id}`, body);
+    const response = await proxyRequest('PATCH', withSearch(request, `${backendPath}/${id}`), body);
     const data = await response.json();
 
     if (!response.ok) {

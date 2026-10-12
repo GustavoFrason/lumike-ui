@@ -82,26 +82,20 @@ describe('generateLabelsZpl', () => {
   });
 
   it('não inclui nome do produto quando showProductName está desligado (default)', () => {
-    const zpl = generateLabelsZpl(
-      [buildProduct({ name: 'Colar Especial' })],
-      DEFAULT_LABEL_CONFIG,
-    );
+    const zpl = generateLabelsZpl([buildProduct({ name: 'Colar Especial' })], DEFAULT_LABEL_CONFIG);
     expect(zpl).not.toContain('Colar Especial');
   });
 
   it('inclui nome do produto quando showProductName está ligado', () => {
-    const zpl = generateLabelsZpl(
-      [buildProduct({ name: 'Colar Especial' })],
-      { ...DEFAULT_LABEL_CONFIG, showProductName: true },
-    );
+    const zpl = generateLabelsZpl([buildProduct({ name: 'Colar Especial' })], {
+      ...DEFAULT_LABEL_CONFIG,
+      showProductName: true,
+    });
     expect(zpl).toContain('Colar Especial');
   });
 
   it('remove caracteres delimitadores de comando ZPL (^ ~ \\) de SKU/nome pra não quebrar o job', () => {
-    const zpl = generateLabelsZpl(
-      [buildProduct({ sku: 'A^B~C\\D' })],
-      DEFAULT_LABEL_CONFIG,
-    );
+    const zpl = generateLabelsZpl([buildProduct({ sku: 'A^B~C\\D' })], DEFAULT_LABEL_CONFIG);
     expect(zpl).toContain('^FDLA,ABCD^FS');
   });
 });

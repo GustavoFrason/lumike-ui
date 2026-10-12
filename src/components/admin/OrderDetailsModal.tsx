@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Order, OrderItem } from '@/lib/services/orders.service';
+import { Order, OrderItem, ordersService } from '@/lib/services/orders.service';
+import { getErrorMessage } from '@/lib/utils';
 import {
   accountsReceivableService,
   OrderPayment,
@@ -79,19 +80,14 @@ export function OrderDetailsModal({ order, onClose }: OrderDetailsModalProps) {
     if (!confirm('Tem certeza que deseja cancelar esta venda? Esta ação é irreversível.')) return;
     setSubmittingCancel(true);
     try {
-      await fetch(`/api/orders/${order.id}/cancel`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          refundAmount,
-          notes: cancelNotes,
-        }),
-      });
+      // Via service (axios): erro do backend agora vira exceção. Antes o
+      // fetch cru não checava response.ok e sempre dizia "sucesso".
+      await ordersService.cancel(order.id, { refundAmount, notes: cancelNotes });
       alert('Venda cancelada com sucesso!');
       window.location.reload();
     } catch (error) {
       console.error(error);
-      alert('Erro ao cancelar venda.');
+      alert(`Erro ao cancelar venda: ${getErrorMessage(error)}`);
     } finally {
       setSubmittingCancel(false);
     }

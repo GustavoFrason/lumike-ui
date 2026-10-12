@@ -155,12 +155,8 @@ describe('LabelPrintConfigPanel', () => {
     fireEvent.change(columnsInput, { target: { value: '4' } });
 
     // 4 colunas -> 3 vãos (1→2, 2→3, 3→4); o novo repete o último (3mm).
-    expect((screen.getByLabelText('Espaço etiqueta 1→2 (mm)') as HTMLInputElement).value).toBe(
-      '3',
-    );
-    expect((screen.getByLabelText('Espaço etiqueta 3→4 (mm)') as HTMLInputElement).value).toBe(
-      '3',
-    );
+    expect((screen.getByLabelText('Espaço etiqueta 1→2 (mm)') as HTMLInputElement).value).toBe('3');
+    expect((screen.getByLabelText('Espaço etiqueta 3→4 (mm)') as HTMLInputElement).value).toBe('3');
   });
 
   it('botão "Restaurar padrão" chama onReset', () => {

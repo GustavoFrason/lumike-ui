@@ -25,9 +25,6 @@ api.interceptors.response.use(
       if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
         console.warn('[API] Token inválido ou expirado. Limpando sessão...');
 
-        // Remove localStorage
-        localStorage.removeItem('token');
-
         // Chama a rota de logout para limpar o cookie httpOnly
         try {
           // Usamos axios puro para evitar o interceptor da própria 'api'

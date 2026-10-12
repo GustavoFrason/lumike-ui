@@ -99,7 +99,10 @@ export default function UsuariosPage() {
     try {
       setSaving(true);
       if (editingUser?.id) {
-        await usersService.update(editingUser.id, modalData);
+        // Senha em branco = "não alterar": não manda o campo (o backend
+        // recusava '' com 400 e nenhuma edição sem troca de senha salvava).
+        const { password, ...rest } = modalData;
+        await usersService.update(editingUser.id, password ? modalData : rest);
       } else {
         await usersService.create(modalData);
       }

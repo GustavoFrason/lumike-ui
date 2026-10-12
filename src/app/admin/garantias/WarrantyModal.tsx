@@ -3,15 +3,14 @@
 import { useState, useEffect } from 'react';
 import { X, Loader2, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { api } from '@/lib/api';
 import {
   warrantiesService,
   CreateWarrantyDto,
   WarrantyOrigin,
 } from '@/lib/services/warranties.service';
-import { Customer } from '@/lib/services/customers.service';
-import { Order } from '@/lib/services/orders.service';
-import { Product } from '@/lib/services/products.service';
+import { Customer, customersService } from '@/lib/services/customers.service';
+import { Order, ordersService } from '@/lib/services/orders.service';
+import { Product, productsService } from '@/lib/services/products.service';
 import { OriginToggle } from './components/OriginToggle';
 import { CustomerOrderSection } from './components/CustomerOrderSection';
 import { ProductSelectionSection } from './components/ProductSelectionSection';
@@ -52,10 +51,12 @@ export function WarrantyModal({ onClose, onSave, initialData }: WarrantyModalPro
       setSelectedProduct(null);
       return;
     }
+    // Chamadas via services: as rotas Next são /produtos, /clientes e
+    // /pedidos — os paths em inglês que estavam aqui davam 404 e o modal
+    // nunca carregava nada.
     const loadProductDetails = async () => {
       try {
-        const { data } = await api.get(`/products/${selectedProductId}`);
-        setSelectedProduct(data);
+        setSelectedProduct(await productsService.getById(selectedProductId));
       } catch (err) {
         console.error(err);
       }
@@ -68,8 +69,8 @@ export function WarrantyModal({ onClose, onSave, initialData }: WarrantyModalPro
     if (search.length < 3 || form.origin === 'stock') return;
     const timer = setTimeout(async () => {
       try {
-        const { data } = await api.get(`/customers?q=${search}`);
-        setCustomers(data.data || []);
+        const res = await customersService.getAll(1, 20, search);
+        setCustomers(res.data || []);
       } catch (err) {
         console.error(err);
       }
@@ -82,12 +83,12 @@ export function WarrantyModal({ onClose, onSave, initialData }: WarrantyModalPro
     if (!selectedCustomerId || form.origin === 'stock') return;
     const loadCustomerData = async () => {
       try {
-        const { data } = await api.get(`/orders?customer_id=${selectedCustomerId}`);
-        setOrders(data.data || []);
+        const ordersRes = await ordersService.getAll(1, 50, undefined, selectedCustomerId);
+        setOrders(ordersRes.data || []);
 
         // If we have an order_id from initialData, it helps filter
-        const { data: pData } = await api.get('/products?limit=100');
-        setProducts(pData.data || []);
+        const productsRes = await productsService.getAll(1, 100);
+        setProducts(productsRes.data || []);
       } catch (err) {
         console.error(err);
       }
@@ -100,8 +101,8 @@ export function WarrantyModal({ onClose, onSave, initialData }: WarrantyModalPro
     if (form.origin !== 'stock') return;
     const loadAllProducts = async () => {
       try {
-        const { data: pData } = await api.get('/products?limit=200&is_active=true');
-        setProducts(pData.data || []);
+        const productsRes = await productsService.getAll(1, 200, true);
+        setProducts(productsRes.data || []);
       } catch (err) {
         console.error(err);
       }

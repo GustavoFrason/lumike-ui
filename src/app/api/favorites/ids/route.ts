@@ -1,31 +1,18 @@
-import { NextResponse } from 'next/server';
+/**
+ * /api/favorites/ids
+ * ------------------------------------
+ * Proxy para os IDs dos produtos favoritos do usuário logado.
+ *
+ * Usa o cookie httpOnly (via handleGet/proxyRequest). Antes repassava só
+ * um header Authorization que o front nunca mandava — o backend
+ * respondia 401 e o interceptor do axios deslogava o usuário a cada F5.
+ */
+
+import { NextRequest } from 'next/server';
+import { handleGet } from '@/lib/api-helpers';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: Request) {
-  try {
-    const authHeader = req.headers.get('authorization');
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/favorites/ids`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(authHeader ? { Authorization: authHeader } : {}),
-        },
-      },
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return NextResponse.json([], { status: response.status });
-    }
-
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Erro ao buscar IDs favoritos:', error);
-    // Retorna array vazio com 200 para degradar graciosamente (ex: API ainda inicializando)
-    return NextResponse.json([]);
-  }
+export async function GET(request: NextRequest) {
+  return handleGet(request, '/favorites/ids', 'Erro ao buscar IDs favoritos');
 }

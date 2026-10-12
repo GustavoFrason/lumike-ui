@@ -6,6 +6,7 @@
  */
 
 import { getAuthCookie } from './cookies';
+import { getClientForwardHeaders } from './request-context';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -19,6 +20,7 @@ export async function proxyRequest(
 
   const requestHeaders: HeadersInit = {
     'Content-Type': 'application/json',
+    ...(await getClientForwardHeaders()),
     ...headers,
   };
 
@@ -58,7 +60,7 @@ export async function proxyRequest(
 export async function proxyFormData(path: string, formData: FormData): Promise<Response> {
   const token = await getAuthCookie();
 
-  const headers: HeadersInit = {};
+  const headers: HeadersInit = { ...(await getClientForwardHeaders()) };
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   } else {

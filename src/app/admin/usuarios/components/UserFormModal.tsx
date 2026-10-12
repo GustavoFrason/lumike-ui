@@ -71,6 +71,7 @@ export function UserFormModal({
               </label>
               <input
                 required={!isEditing}
+                minLength={6}
                 type="password"
                 value={data.password}
                 onChange={(e) => onChange({ ...data, password: e.target.value })}

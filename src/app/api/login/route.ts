@@ -7,6 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import { setAuthCookie, clearAuthCookie } from '@/lib/cookies';
+import { getClientForwardHeaders } from '@/lib/request-context';
 
 export async function POST(req: Request) {
   try {
@@ -26,6 +27,8 @@ export async function POST(req: Request) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // Rate limit de login (5/min) por visitante, não por servidor
+          ...(await getClientForwardHeaders()),
         },
         body: JSON.stringify({ email, senha }),
       },
@@ -44,7 +47,9 @@ export async function POST(req: Request) {
 
     if (data.access_token) {
       await setAuthCookie(data.access_token);
-      return NextResponse.json({ success: true, user: data.user, token: data.access_token });
+      // O token NÃO volta no corpo: fica só no cookie httpOnly, fora do
+      // alcance de JavaScript (e de qualquer XSS).
+      return NextResponse.json({ success: true, user: data.user });
     } else {
       await clearAuthCookie();
       return NextResponse.json({ success: false, message: 'Token não recebido' }, { status: 500 });

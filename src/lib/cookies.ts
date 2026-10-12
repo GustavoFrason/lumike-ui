@@ -33,12 +33,9 @@ export async function clearAuthCookie() {
 export async function getAuthCookie(): Promise<string | undefined> {
   try {
     const store = await cookies();
-    const cookie = store.get(COOKIE_NAME);
-    if (!cookie) {
-      console.warn(`[Cookies] Cookie ${COOKIE_NAME} não encontrado`);
-      return undefined;
-    }
-    return cookie.value;
+    // Ausência do cookie é o caso normal de visitante anônimo (ex: toda
+    // chamada a /api/session) — não loga.
+    return store.get(COOKIE_NAME)?.value;
   } catch (error) {
     console.error('[Cookies] Erro ao ler cookie:', error);
     return undefined;

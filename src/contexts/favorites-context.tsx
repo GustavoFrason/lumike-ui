@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { favoritesService } from '@/lib/services/favorites.service';
+import { useSession } from '@/contexts/session-context';
 
 interface FavoritesContextType {
   favoriteIds: number[];
@@ -16,37 +17,37 @@ const FavoritesContext = createContext<FavoritesContextType>({
 });
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
+  const { status } = useSession();
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
-  const loadFavorites = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+  // Carrega os favoritos quando a sessão fica conhecida (e de novo em
+  // login/logout). Só chama a API logado: deslogado o backend responde 401
+  // e o interceptor do axios mandaria para a tela de login.
+  useEffect(() => {
+    if (status !== 'authenticated') {
       setFavoriteIds([]);
       return;
     }
 
-    try {
-      const ids = await favoritesService.getFavoriteIds();
-      setFavoriteIds(ids);
-    } catch (error) {
-      console.error('Erro carregando favoritos', error);
-      setFavoriteIds([]);
-    }
-  };
+    let cancelled = false;
+    favoritesService
+      .getFavoriteIds()
+      .then((ids) => {
+        if (!cancelled) setFavoriteIds(ids);
+      })
+      .catch((error) => {
+        console.error('Erro carregando favoritos', error);
+        if (!cancelled) setFavoriteIds([]);
+      });
 
-  // Carregar favoritos ao montar
-  useEffect(() => {
-    loadFavorites();
-
-    // Listener para login/logout
-    window.addEventListener('storage', loadFavorites);
-    return () => window.removeEventListener('storage', loadFavorites);
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [status]);
 
   const toggleFavorite = async (productId: number) => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (status !== 'authenticated') {
       alert('Faça login para favoritar produtos!');
       return;
     }

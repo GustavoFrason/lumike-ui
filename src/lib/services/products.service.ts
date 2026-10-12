@@ -148,6 +148,7 @@ export const productsService = {
   },
 
   async bulkUpdateStatus(ids: number[], is_active: boolean): Promise<void> {
-    await api.patch('/products/bulk-status', { ids, is_active });
+    // Rota Next em português, como as demais (/products/... não existe → 404).
+    await api.patch('/produtos/bulk-status', { ids, is_active });
   },
 };

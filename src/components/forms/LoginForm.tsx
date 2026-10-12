@@ -13,12 +13,27 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
+import { useSession } from '@/contexts/session-context';
+import { stockNotificationsService } from '@/lib/services/stock-notifications.service';
+import { getHomePathForRole } from '@/lib/role-access';
+
+/**
+ * Só aceita redirecionar para um caminho interno do próprio site. Sem
+ * isso, `/login?redirect=https://site-falso.com` levava o usuário recém
+ * logado para fora (open redirect).
+ */
+function getSafeRedirect(redirect: string | null): string | null {
+  if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')) return null;
+  if (redirect.includes('\\')) return null;
+  return redirect;
+}
 
 export function LoginForm() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
+  const { refresh: refreshSession } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const registered = searchParams.get('registered');
@@ -29,34 +44,23 @@ export function LoginForm() {
     setLoading(true);
 
     try {
+      // O token fica só no cookie httpOnly gravado por /api/login.
       const response = await axios.post('/api/login', { email, senha });
       if (response.data.success) {
         const user = response.data.user;
-        const token = response.data.token;
-
-        if (token) {
-          localStorage.setItem('token', token);
-        }
 
         // --- Lógica de Alerta de Estoque Pendente ---
         const pendingAlert =
           typeof window !== 'undefined' ? localStorage.getItem('pending_stock_alert') : null;
         if (pendingAlert) {
-          const alertData = JSON.parse(pendingAlert);
           try {
-            // Registra o alerta no backend agora que temos o ID do usuário
-            await axios.post(
-              `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/stock-notifications`,
-              {
-                email: user.email,
-                product_id: alertData.product_id,
-                variant_id: alertData.variant_id,
-                user_id: Number(user.id),
-              },
-              {
-                headers: { Authorization: `Bearer ${token}` },
-              },
-            );
+            const alertData = JSON.parse(pendingAlert);
+            // O cookie acabou de ser gravado: o backend identifica o
+            // usuário pelo JWT (e-mail incluso).
+            await stockNotificationsService.create({
+              product_id: alertData.product_id,
+              variant_id: alertData.variant_id,
+            });
             localStorage.removeItem('pending_stock_alert');
           } catch (err) {
             console.error('Erro ao registrar alerta pendente:', err);
@@ -64,18 +68,16 @@ export function LoginForm() {
         }
         // ------------------------------------------
 
-        const redirectPath = searchParams.get('redirect');
+        await refreshSession();
+
+        const redirectPath = getSafeRedirect(searchParams.get('redirect'));
         if (redirectPath) {
           router.replace(redirectPath);
           return;
         }
 
-        // Papéis de staff reais (ver StaffRole no backend): 'superadmin' nunca existiu no banco.
-        if (user.role === 'admin' || user.role === 'gestor') {
-          router.replace('/admin');
-        } else {
-          router.replace('/minha-conta');
-        }
+        // admin/gestor → painel; vendedor → PDV; cliente → minha conta
+        router.replace(getHomePathForRole(user.role));
       } else {
         setErro(response.data.message || 'Erro ao autenticar');
       }

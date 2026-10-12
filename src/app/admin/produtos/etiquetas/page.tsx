@@ -144,9 +144,7 @@ export default function EtiquetasPage() {
   const labelList: Product[] = [];
   Object.entries(selectedQuantities)
     .map(([id, qty]) => ({ product: products.find((p) => p.id === Number(id)), qty }))
-    .filter(
-      (entry): entry is { product: Product; qty: number } => entry.product !== undefined,
-    )
+    .filter((entry): entry is { product: Product; qty: number } => entry.product !== undefined)
     .sort((a, b) => compareProductsBySku(a.product, b.product))
     .forEach(({ product, qty }) => {
       for (let i = 0; i < qty; i++) {
@@ -158,7 +156,7 @@ export default function EtiquetasPage() {
     window.print();
   }
 
-// Diagnóstico: confirma que o QZ Tray (programinha local que permite
+  // Diagnóstico: confirma que o QZ Tray (programinha local que permite
   // mandar comando direto pra impressora, sem passar pelo
   // window.print()/Chrome) está instalado, rodando e enxergando a
   // impressora.
@@ -243,8 +241,8 @@ export default function EtiquetasPage() {
               impressora permitir cadastrar um tamanho de papel
               personalizado, é esse o número a usar lá. */}
           <p className="text-[11px] text-zinc-400 max-w-[220px] text-right">
-            No diálogo de impressão: desligue &quot;Cabeçalhos e rodapés&quot; e, se o
-            driver permitir papel personalizado, use{' '}
+            No diálogo de impressão: desligue &quot;Cabeçalhos e rodapés&quot; e, se o driver
+            permitir papel personalizado, use{' '}
             <strong>
               {printPageSize.width}x{printPageSize.height}mm
             </strong>
@@ -276,11 +274,7 @@ export default function EtiquetasPage() {
         </button>
         {qzTest.result && (
           <div className="text-xs">
-            <p
-              className={
-                qzTest.result.status === 'connected' ? 'text-green-700' : 'text-red-600'
-              }
-            >
+            <p className={qzTest.result.status === 'connected' ? 'text-green-700' : 'text-red-600'}>
               {qzTest.result.message}
             </p>
             {qzTest.result.printers && qzTest.result.printers.length > 0 && (
@@ -292,7 +286,11 @@ export default function EtiquetasPage() {
         )}
       </div>
 
-      <LabelPrintConfigPanel config={config} onConfigChange={setConfig} onReset={handleResetConfig} />
+      <LabelPrintConfigPanel
+        config={config}
+        onConfigChange={setConfig}
+        onReset={handleResetConfig}
+      />
 
       {/* Selection Area - Hidden on Print */}
       <div className="print:hidden grid grid-cols-1 md:grid-cols-3 gap-6">

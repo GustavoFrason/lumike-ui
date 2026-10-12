@@ -8,6 +8,7 @@ import { Footer } from '@/components/footer';
 import { FloatingWhatsApp } from '@/components/ui/floating-whatsapp';
 import { LeadCaptureModal } from '@/components/lead-capture-modal';
 import { Toaster } from '@/components/ui/toaster';
+import { SessionProvider } from '@/contexts/session-context';
 import { FavoritesProvider } from '@/contexts/favorites-context';
 import { CartProvider } from '@/contexts/cart-context';
 
@@ -47,22 +48,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <body className="h-full w-full font-sans antialiased bg-(--off-white) text-(--deep-black) flex flex-col">
-        <FavoritesProvider>
-          <CartProvider>
-            {!isAdmin && !isLogin && <Header />}
+        <SessionProvider>
+          <FavoritesProvider>
+            <CartProvider>
+              {!isAdmin && !isLogin && <Header />}
 
-            <div className="grow">{children}</div>
+              <div className="grow">{children}</div>
 
-            {!isAdmin && !isLogin && (
-              <>
-                <FloatingWhatsApp />
-                <LeadCaptureModal />
-                <Footer />
-              </>
-            )}
-            <Toaster />
-          </CartProvider>
-        </FavoritesProvider>
+              {!isAdmin && !isLogin && (
+                <>
+                  <FloatingWhatsApp />
+                  <LeadCaptureModal />
+                  <Footer />
+                </>
+              )}
+              <Toaster />
+            </CartProvider>
+          </FavoritesProvider>
+        </SessionProvider>
       </body>
     </html>
   );

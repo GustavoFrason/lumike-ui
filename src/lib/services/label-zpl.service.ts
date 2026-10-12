@@ -103,9 +103,7 @@ function generateRowZpl(row: Product[], config: LabelConfig): string {
   // Largura da página = onde a última coluna termina (soma de margem +
   // colunas anteriores + vãos reais até ali — ver getColumnLeftMm) + a
   // largura da própria última coluna.
-  const pageWidthDots = mm(
-    getColumnLeftMm(config, config.columnsPerRow - 1) + config.width,
-  );
+  const pageWidthDots = mm(getColumnLeftMm(config, config.columnsPerRow - 1) + config.width);
   const pageHeightDots = mm(config.height);
 
   const columns = row.map((product, column) => generateColumnZpl(product, column, config));
