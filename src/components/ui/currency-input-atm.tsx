@@ -39,6 +39,11 @@ export function CurrencyInputATM(props: CurrencyInputProps) {
     <CurrencyInput
       {...props}
       transformRawValue={props.transformRawValue || transformRawValue}
+      // Sempre 2 casas na exibição ("49,50", não "49,5"). A máscara acima
+      // trata os 2 últimos dígitos como centavos — e a lib a reaplica ao
+      // SAIR do campo sobre o texto exibido. Valor vindo do banco como
+      // "49,5" virava "495" → 4,95 (e 159,9 → 15,99) só de clicar e sair.
+      decimalScale={props.decimalScale ?? 2}
       decimalSeparator={decimalSeparator}
       groupSeparator={props.groupSeparator || '.'}
       intlConfig={props.intlConfig || { locale: 'pt-BR', currency: 'BRL' }}
