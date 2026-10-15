@@ -352,7 +352,9 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
       preco_promocional: promoPriceNum,
       cost_price: costPriceNum,
       purchase_date: form.purchase_date,
-      current_stock: parseInt(form.current_stock) || 0,
+      // Só no cadastro (vira entrada de estoque em quem salva). Na edição
+      // não vai: o estoque só muda por movimentação.
+      current_stock: produto?.id ? undefined : parseInt(form.current_stock) || 0,
       min_stock: parseInt(form.min_stock) || 0,
       category_id: form.category_id ? parseInt(form.category_id) : undefined,
       supplier_id: form.supplier_id ? parseInt(form.supplier_id) : undefined,

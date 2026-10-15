@@ -133,26 +133,46 @@ export function ProductOrganizationSection({
       <div
         className={`grid ${!produto?.id ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'} gap-4`}
       >
-        <div>
-          <LabelWithTooltip label="Estoque Inicial" tooltip="Quantidade atual em estoque." />
-          <input
-            type="number"
-            name="current_stock"
-            placeholder="0"
-            min="0"
-            value={form.current_stock}
-            onChange={onChange}
-            className={`w-full border rounded-lg px-3 py-2 text-center font-mono ${
-              existingProduct ? 'bg-amber-100 border-amber-300' : ''
-            } ${validationErrors.current_stock ? 'border-red-300 focus:ring-red-200' : ''}`}
-            required
-          />
-          {validationErrors.current_stock && (
-            <p className="text-[10px] text-red-500 mt-1 font-medium">
-              {validationErrors.current_stock}
+        {produto?.id ? (
+          // Na edição o estoque não é digitado: ele só muda por movimentação
+          // (gravar o número direto no cadastro fazia a lista divergir do
+          // controle por local). Os números reais estão no painel "Estoque
+          // vs Revendedores" no topo do modal.
+          <div>
+            <LabelWithTooltip
+              label="Estoque"
+              tooltip="Muda só por movimentação, para ficar registrado no histórico."
+            />
+            <p className="text-xs text-zinc-500 border border-dashed border-zinc-200 rounded-lg px-3 py-2 bg-zinc-50">
+              Para mudar a quantidade, use <strong>Entrada</strong>, <strong>Saída</strong> ou{' '}
+              <strong>Conferência</strong> na tela de Estoque.
             </p>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div>
+            <LabelWithTooltip
+              label="Estoque Inicial"
+              tooltip="Entra como movimentação de entrada no estoque."
+            />
+            <input
+              type="number"
+              name="current_stock"
+              placeholder="0"
+              min="0"
+              value={form.current_stock}
+              onChange={onChange}
+              className={`w-full border rounded-lg px-3 py-2 text-center font-mono ${
+                existingProduct ? 'bg-amber-100 border-amber-300' : ''
+              } ${validationErrors.current_stock ? 'border-red-300 focus:ring-red-200' : ''}`}
+              required
+            />
+            {validationErrors.current_stock && (
+              <p className="text-[10px] text-red-500 mt-1 font-medium">
+                {validationErrors.current_stock}
+              </p>
+            )}
+          </div>
+        )}
         {!produto?.id && (
           <div>
             <LabelWithTooltip
