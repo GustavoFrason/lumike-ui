@@ -12,7 +12,7 @@ import { PaginationInfo } from '@/components/ui/pagination-info';
 import { StockMovementModal } from './StockMovementModal';
 import { TransferStockModal } from './TransferStockModal';
 import { StockAdjustmentModal } from './StockAdjustmentModal';
-import { User as UserIcon } from 'lucide-react';
+import { ArrowLeftRight, User as UserIcon } from 'lucide-react';
 import { Product, productsService } from '@/lib/services/products.service';
 import { inventoryService, SellerInventory } from '@/lib/services/inventory.service';
 import { getErrorMessage } from '@/lib/utils';
@@ -203,12 +203,20 @@ export default function EstoquePage() {
         <p className="text-zinc-500 mt-1">
           Monitore e transfira mercadorias entre estoque Lumilee e revendedores
         </p>
-        <Link
-          href="/admin/estoque/revendedores"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-(--lumilee-gold) hover:underline mt-2"
-        >
-          <UserIcon className="h-3.5 w-3.5" /> Ver inventário por revendedora
-        </Link>
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1 mt-2">
+          <Link
+            href="/admin/estoque/revendedores"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-(--lumilee-gold) hover:underline"
+          >
+            <UserIcon className="h-3.5 w-3.5" /> Ver inventário por revendedora
+          </Link>
+          <Link
+            href="/admin/estoque/transferencias"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-(--lumilee-gold) hover:underline"
+          >
+            <ArrowLeftRight className="h-3.5 w-3.5" /> Transferências em lote
+          </Link>
+        </div>
       </div>
 
       <ErrorMessage

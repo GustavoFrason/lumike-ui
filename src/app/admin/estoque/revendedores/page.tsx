@@ -76,6 +76,13 @@ export default function RevendedorasInventarioPage() {
                     {seller.total_items} peças
                   </span>
                   <Link
+                    href={`/admin/estoque/transferencias/nova?origem=${seller.user_id}&destino=central`}
+                    className="text-xs font-semibold text-(--lumilee-gold) hover:underline"
+                    title="Leva todas as peças dela de volta ao Estoque Lumilee (você revisa antes)"
+                  >
+                    Devolver tudo
+                  </Link>
+                  <Link
                     href={`/admin/acertos/${seller.user_id}`}
                     className="text-xs font-semibold text-(--lumilee-gold) hover:underline"
                   >
