@@ -14,8 +14,17 @@ import { LuxuryBackground } from '@/components/ui/luxury-background';
 import { TrustSection } from '@/components/trust-section';
 import { TestimonialsSection } from '@/components/testimonials-section';
 import { FAQSection } from '@/components/faq-section';
-import { WhatsAppWidget } from '@/components/ui/whatsapp-widget';
-import { LeadCaptureModal } from '@/components/lead-capture-modal';
+import { CatalogPagination } from '@/components/catalog/catalog-pagination';
+import {
+  buildCatalogProductsQuery,
+  CATALOG_FEATURED_LIMIT,
+  CATALOG_GRID_ID,
+  CATALOG_PAGE_SIZE,
+  CatalogFilters,
+  CatalogSearchParams,
+  hasActiveCatalogFilters,
+  parseCatalogFilters,
+} from '@/lib/catalog-query';
 
 interface Setting {
   key: string;
@@ -41,39 +50,27 @@ interface PaginatedResponse<T> {
   };
 }
 
-async function getProducts(searchParams: { [key: string]: string | string[] | undefined }) {
-  const page = 1;
-  const searchTerm = searchParams.q as string | undefined;
-  const categoryId = searchParams.category as string | undefined;
-  const collectionId = searchParams.collection as string | undefined;
+const EMPTY_PAGE: PaginatedResponse<Product> = {
+  data: [],
+  pagination: { total: 0, page: 1, limit: CATALOG_PAGE_SIZE },
+};
 
+/** Página da grade "Todas as Peças", com busca e filtros aplicados no banco. */
+async function getProducts(filters: CatalogFilters) {
+  const response = await fetchServer<PaginatedResponse<Product>>(
+    `/products?${buildCatalogProductsQuery(filters)}`,
+  );
+  return response ?? EMPTY_PAGE;
+}
+
+async function getFeaturedProducts() {
   const query = new URLSearchParams({
-    page: page.toString(),
-    limit: '100',
+    is_featured: 'true',
     is_active: 'true',
+    limit: String(CATALOG_FEATURED_LIMIT),
   });
-
   const response = await fetchServer<PaginatedResponse<Product>>(`/products?${query.toString()}`);
-  let products = response?.data || [];
-
-  if (searchTerm) {
-    const lowerTerm = searchTerm.toLowerCase();
-    products = products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(lowerTerm) ||
-        p.description?.toLowerCase().includes(lowerTerm),
-    );
-  }
-
-  if (categoryId) {
-    products = products.filter((p) => p.category_id?.toString() === categoryId);
-  }
-
-  if (collectionId) {
-    products = products.filter((p) => p.colecao_id === collectionId);
-  }
-
-  return products;
+  return response?.data ?? [];
 }
 
 async function getCategories() {
@@ -100,12 +97,15 @@ async function safeFetch<T>(promise: Promise<T>, fallback: T): Promise<T> {
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: Promise<CatalogSearchParams>;
 }) {
-  const params = await searchParams;
+  const filters = parseCatalogFilters(await searchParams);
+  // Destaques só na vitrine "limpa" (1ª página, sem busca/filtro).
+  const showFeatured = filters.page === 1 && !hasActiveCatalogFilters(filters);
 
-  const [products, categories, collections, settingsArr] = await Promise.all([
-    safeFetch(getProducts(params), []),
+  const [productsPage, featuredProducts, categories, collections, settingsArr] = await Promise.all([
+    safeFetch(getProducts(filters), EMPTY_PAGE),
+    showFeatured ? safeFetch(getFeaturedProducts(), []) : Promise.resolve([]),
     safeFetch(getCategories(), []),
     safeFetch(getCollections(), []),
     safeFetch(getSettings(), []),
@@ -115,6 +115,10 @@ export default async function HomePage({
     (acc, curr) => ({ ...acc, [curr.key]: curr.value }),
     {} as Record<string, string>,
   );
+
+  const products = productsPage.data;
+  const totalProducts = productsPage.pagination.total;
+  const totalPages = Math.ceil(totalProducts / CATALOG_PAGE_SIZE);
 
   const heroImage = settings['hero_banner_url']; // This will be passed to Client Component
   const title = settings['hero_title'] || 'Elegância Atemporal';
@@ -135,12 +139,12 @@ export default async function HomePage({
 
       <main className="container mx-auto px-6 md:px-12 relative z-20 mt-12">
         {/* Featured Products */}
-        {products.filter((p) => p.is_featured).length > 0 && (
+        {featuredProducts.length > 0 && (
           <FadeIn delay={0.2} className="mb-16">
             <ProductCarousel
               title="Nossos Destaques"
               subtitle="Peças exclusivas selecionadas para brilhar com você"
-              products={products.filter((p) => p.is_featured)}
+              products={featuredProducts}
             />
           </FadeIn>
         )}
@@ -149,12 +153,12 @@ export default async function HomePage({
         <FadeIn className="bg-white/95 backdrop-blur-md p-6 shadow-luxury rounded-sm mb-12 border border-zinc-100 relative z-30">
           <Filters categories={categories} collections={collections} />
           <p className="text-[10px] text-zinc-400 mt-4 text-right font-inter tracking-widest uppercase">
-            {products.length} Peças Disponíveis
+            {totalProducts} {totalProducts === 1 ? 'Peça Disponível' : 'Peças Disponíveis'}
           </p>
         </FadeIn>
 
         {/* Product Grid Section Title */}
-        <div className="mb-12 text-center">
+        <div id={CATALOG_GRID_ID} className="mb-12 text-center scroll-mt-24">
           <h2 className="text-3xl font-playfair font-bold text-deep-black mb-2 uppercase tracking-[0.2em]">
             Todas as Peças
           </h2>
@@ -183,6 +187,8 @@ export default async function HomePage({
           </Suspense>
         </FadeIn>
 
+        <CatalogPagination filters={filters} totalPages={totalPages} className="mt-16 mb-24" />
+
         {/* Categories Carousel */}
         {categories.length > 0 && (
           <FadeIn delay={0.4} className="mb-24">
@@ -194,9 +200,6 @@ export default async function HomePage({
 
         <FAQSection />
       </main>
-
-      <LeadCaptureModal />
-      <WhatsAppWidget />
     </div>
   );
 }

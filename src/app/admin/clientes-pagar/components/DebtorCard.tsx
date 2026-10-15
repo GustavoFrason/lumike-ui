@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronUp, DollarSign, Phone, MessageCircle } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { generateWhatsAppCollectionLink } from '@/lib/utils/whatsapp';
+import { useSiteSettings } from '@/contexts/site-settings-context';
 import { Debtor, OrderPayment } from '@/lib/services/accounts-receivable.service';
 import { PaymentFormState } from './types';
 import { DebtorOrderRow } from './DebtorOrderRow';
@@ -22,13 +23,15 @@ export function DebtorCard({
   paymentHistory,
   loadingHistory,
 }: DebtorCardProps) {
+  const { pixKey } = useSiteSettings();
+
   function handleCollectViaWhatsApp() {
     const whatsappUrl = generateWhatsAppCollectionLink({
       customerName: debtor.customer_name,
       customerPhone: debtor.customer_phone || '',
       amount: debtor.total_debt,
       orderDate: formatDate(debtor.orders[0]?.date || new Date().toISOString()),
-      pixKey: 'sua-chave-pix@exemplo.com', // TODO: Add to settings
+      pixKey,
     });
     window.open(whatsappUrl, '_blank');
   }

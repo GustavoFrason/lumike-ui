@@ -5,7 +5,9 @@ import { Breadcrumb } from '@/components/admin/Breadcrumb';
 import { settingsService, Setting } from '@/lib/services/settings.service';
 import Image from 'next/image';
 import { Palette, Store, Share2, Upload, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, getErrorMessage } from '@/lib/utils';
+import { useSiteSettings } from '@/contexts/site-settings-context';
+import { StoreContactSettings } from './components/StoreContactSettings';
 
 type Tab = 'appearance' | 'store' | 'integrations';
 
@@ -15,6 +17,7 @@ export default function ConfiguracoesPage() {
   const [saving, setSaving] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('appearance');
   const [uploading, setUploading] = useState(false);
+  const { setSetting } = useSiteSettings();
 
   useEffect(() => {
     loadSettings();
@@ -31,14 +34,18 @@ export default function ConfiguracoesPage() {
     }
   }
 
-  async function handleUpdate(key: string, value: string) {
+  async function handleUpdate(key: string, value: string): Promise<boolean> {
     try {
       setSaving(key);
       await settingsService.update(key, value);
       setSettings((prev) => prev.map((s) => (s.key === key ? { ...s, value } : s)));
+      // Vitrine e Clientes a Pagar leem o contexto: reflete sem recarregar.
+      setSetting(key, value);
+      return true;
     } catch (error) {
       console.error('Erro ao salvar:', error);
-      alert('Erro ao salvar alteração');
+      alert(getErrorMessage(error, 'Erro ao salvar alteração'));
+      return false;
     } finally {
       setSaving(null);
     }
@@ -169,13 +176,7 @@ export default function ConfiguracoesPage() {
         )}
 
         {activeTab === 'store' && (
-          <div className="bg-white p-12 rounded-xl shadow-sm border text-center space-y-4">
-            <Store className="mx-auto text-zinc-300" size={48} />
-            <h3 className="text-lg font-medium">Dados Gerais da Loja</h3>
-            <p className="text-zinc-500 text-sm">
-              Em breve: Endereço, Telefones de Contato, Redes Sociais.
-            </p>
-          </div>
+          <StoreContactSettings settings={settings} savingKey={saving} onSave={handleUpdate} />
         )}
 
         {activeTab === 'integrations' && (

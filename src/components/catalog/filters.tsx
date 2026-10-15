@@ -23,35 +23,22 @@ export function Filters({ categories, collections }: FiltersProps) {
   const searchParams = useSearchParams();
   const { replace } = useRouter();
 
-  const handleSearch = useDebouncedCallback((term: string) => {
+  // Mudar um filtro volta para a 1ª página (a página atual pode nem existir
+  // no novo resultado) e não rola a tela para o topo.
+  const setFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams);
-    if (term) {
-      params.set('q', term);
+    if (value) {
+      params.set(key, value);
     } else {
-      params.delete('q');
+      params.delete(key);
     }
-    replace(`/?${params.toString()}`);
-  }, 300);
-
-  const handleCategory = (category: string) => {
-    const params = new URLSearchParams(searchParams);
-    if (category) {
-      params.set('category', category);
-    } else {
-      params.delete('category');
-    }
-    replace(`/?${params.toString()}`);
+    params.delete('page');
+    replace(`/?${params.toString()}`, { scroll: false });
   };
 
-  const handleCollection = (collection: string) => {
-    const params = new URLSearchParams(searchParams);
-    if (collection) {
-      params.set('collection', collection);
-    } else {
-      params.delete('collection');
-    }
-    replace(`/?${params.toString()}`);
-  };
+  const handleSearch = useDebouncedCallback((term: string) => setFilter('q', term), 300);
+  const handleCategory = (category: string) => setFilter('category', category);
+  const handleCollection = (collection: string) => setFilter('collection', collection);
 
   return (
     <div className="flex flex-col md:flex-row gap-4">
