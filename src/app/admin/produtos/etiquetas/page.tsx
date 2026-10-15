@@ -19,7 +19,7 @@ import { LabelPrintConfigPanel } from './components/LabelPrintConfigPanel';
 import { ProductSelectionList } from './components/ProductSelectionList';
 import { LabelPreviewGrid } from './components/LabelPreviewGrid';
 import { loadSavedLabelConfig, saveLabelConfig } from './components/label-config-storage';
-import { compareProductsBySku, rankProductsForSearch } from './components/sort-products';
+import { compareProductsBySku, rankProductsForSearch } from '@/lib/utils/sort-products';
 import {
   testQzConnection,
   printLabelsViaQz,

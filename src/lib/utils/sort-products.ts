@@ -23,7 +23,8 @@ export function compareProductsBySku(a: Product, b: Product): number {
 }
 
 /**
- * Filtra e ordena pela busca digitada na tela de Etiquetas.
+ * Filtra e ordena pela busca digitada (telas de Etiquetas e Estoque).
+ * Genérica: devolve o mesmo tipo de linha recebido (ex: StockRow).
  *
  * Antes: o termo não era aparado ("7 " não achava o item 7) e qualquer
  * produto que CONTIVESSE o número vinha misturado (17, 70, 107...). Agora,
@@ -35,12 +36,12 @@ export function compareProductsBySku(a: Product, b: Product): number {
  *   4. termo contido no nome, nos códigos ou no texto da etiqueta
  * Empate (e busca vazia): ordem crescente do nº do item.
  */
-export function rankProductsForSearch(products: Product[], rawTerm: string): Product[] {
+export function rankProductsForSearch<T extends Product>(products: T[], rawTerm: string): T[] {
   const term = rawTerm.trim().toLowerCase();
   if (!term) return [...products].sort(compareProductsBySku);
 
   const lower = (value?: string | null) => (value ?? '').toLowerCase();
-  const ranked: { product: Product; rank: number }[] = [];
+  const ranked: { product: T; rank: number }[] = [];
 
   for (const product of products) {
     const sku = lower(product.sku);
