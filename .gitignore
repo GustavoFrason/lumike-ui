@@ -50,3 +50,6 @@ typecheck*.txt
 typecheck*.log
 test_output.txt
 test_results.json
+
+# python (scripts/gen-import-template.py)
+__pycache__/

@@ -10,7 +10,6 @@ import { LeadCaptureModal } from '@/components/lead-capture-modal';
 import { Toaster } from '@/components/ui/toaster';
 import { SessionProvider } from '@/contexts/session-context';
 import { FavoritesProvider } from '@/contexts/favorites-context';
-import { CartProvider } from '@/contexts/cart-context';
 import { SiteSettingsProvider } from '@/contexts/site-settings-context';
 
 const playfair = Playfair_Display({
@@ -52,20 +51,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SessionProvider>
           <SiteSettingsProvider>
             <FavoritesProvider>
-              <CartProvider>
-                {!isAdmin && !isLogin && <Header />}
+              {!isAdmin && !isLogin && <Header />}
 
-                <div className="grow">{children}</div>
+              <div className="grow">{children}</div>
 
-                {!isAdmin && !isLogin && (
-                  <>
-                    <FloatingWhatsApp />
-                    <LeadCaptureModal />
-                    <Footer />
-                  </>
-                )}
-                <Toaster />
-              </CartProvider>
+              {!isAdmin && !isLogin && (
+                <>
+                  <FloatingWhatsApp />
+                  <LeadCaptureModal />
+                  <Footer />
+                </>
+              )}
+              <Toaster />
             </FavoritesProvider>
           </SiteSettingsProvider>
         </SessionProvider>
