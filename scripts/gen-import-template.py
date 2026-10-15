@@ -3,9 +3,10 @@ Gera os modelos .xlsx que o usuário baixa, preenche e sobe no admin:
 
   public/modelos/modelo-importacao-zarpellon.xlsx  -> /admin/compras/nova
   public/modelos/modelo-importacao-clientes.xlsx   -> /admin/clientes
+  public/modelos/modelo-transferencia-estoque.xlsx -> /admin/estoque/transferencias/nova
 
 Cada layout TEM que bater com o parser do backend correspondente
-(`parseWorkbook` em lumike-api/src/{purchase-import,customer-import}/*.service.ts):
+(`parseWorkbook` em lumike-api/src/{purchase-import,customer-import,transfer-batches}/*.service.ts):
 
   - primeira aba, linha 1 = cabeçalho (o parser SEMPRE ignora a linha 1)
   - dados a partir da linha 2, lidos por POSIÇÃO de coluna
@@ -143,9 +144,42 @@ def build_customers() -> Path:
     return out
 
 
+def build_transfer() -> Path:
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Transferência"
+    # Sem linha de exemplo: aqui um exemplo esquecido viraria peça transferida
+    # de verdade (nos outros modelos ele só cadastraria algo inofensivo).
+    _write_sheet(
+        ws,
+        headers=["Código", "Quantidade"],
+        example=[],
+        instructions=[
+            "COMO PREENCHER (apague esta coluna se quiser):",
+            "1. Uma linha por peça, a partir da linha 2.",
+            "2. Código = o nº do item do sistema (o número grande da etiqueta),",
+            "   não o código da Zarpellon.",
+            "3. Quantidade = número inteiro maior que zero.",
+            "4. Código repetido em mais de uma linha tem as quantidades somadas.",
+            "5. Origem e destino são escolhidos na tela, não aqui.",
+            "6. Você revisa tudo na prévia antes de transferir.",
+            "7. Não mexa na linha 1 (cabeçalho).",
+        ],
+        text_cols=set(),
+        widths={"A": 16, "B": 14, "D": 66},
+        instr_col=4,  # D (o parser só lê A–B)
+    )
+    # Código como texto em todas as linhas (não perde zero à esquerda).
+    for row in range(2, 1001):
+        ws.cell(row=row, column=1).number_format = "@"
+    out = MODELOS_DIR / "modelo-transferencia-estoque.xlsx"
+    wb.save(out)
+    return out
+
+
 def main() -> None:
     MODELOS_DIR.mkdir(parents=True, exist_ok=True)
-    for out in (build_zarpellon(), build_customers()):
+    for out in (build_zarpellon(), build_customers(), build_transfer()):
         print(f"gerado: {out}")
 
 
