@@ -16,6 +16,7 @@ import { getErrorMessage } from '@/lib/utils';
 import { TransferUploadPrompt } from '../components/TransferUploadPrompt';
 import { TransferBatchPreview } from '../components/TransferBatchPreview';
 import { TransferBatchFooter } from '../components/TransferBatchFooter';
+import { TransferConfirmModal } from '../components/TransferConfirmModal';
 import {
   CENTRAL_LABEL,
   locationLabel,
@@ -51,6 +52,7 @@ function NovaTransferencia() {
   const [preview, setPreview] = useState<TransferBatchPreviewResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const appliedQueryRef = useRef(false);
@@ -133,13 +135,6 @@ function NovaTransferencia() {
   async function handleConfirm() {
     if (!preview || preview.validos.length === 0) return;
 
-    const totals = summarizeItems(preview.validos);
-    const ok = confirm(
-      `Transferir ${totals.units} unidade(s) de ${totals.pieces} peça(s)\n` +
-        `de: ${fromLabel}\npara: ${toLabel}?`,
-    );
-    if (!ok) return;
-
     setConfirming(true);
     setError(null);
     try {
@@ -156,6 +151,7 @@ function NovaTransferencia() {
     } catch (err) {
       setError(getErrorMessage(err, 'Erro ao transferir as peças.'));
       setConfirming(false);
+      setConfirmOpen(false);
     }
   }
 
@@ -277,10 +273,27 @@ function NovaTransferencia() {
               setPreview(null);
               setError(null);
             }}
-            onConfirm={handleConfirm}
+            onConfirm={() => {
+              setError(null);
+              setConfirmOpen(true);
+            }}
           />
         )}
       </div>
+
+      {confirmOpen && preview && (
+        <TransferConfirmModal
+          fromLabel={fromLabel}
+          toLabel={toLabel}
+          fromIsCentral={fromUserId === null}
+          toIsCentral={toUserId === null}
+          totals={summarizeItems(preview.validos)}
+          notes={notes}
+          confirming={confirming}
+          onCancel={() => setConfirmOpen(false)}
+          onConfirm={handleConfirm}
+        />
+      )}
     </section>
   );
 }
