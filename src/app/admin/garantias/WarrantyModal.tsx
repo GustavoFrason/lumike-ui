@@ -15,6 +15,8 @@ import { OriginToggle } from './components/OriginToggle';
 import { CustomerOrderSection } from './components/CustomerOrderSection';
 import { ProductSelectionSection } from './components/ProductSelectionSection';
 import { DefectDetailsSection } from './components/DefectDetailsSection';
+import { notify } from '@/components/ui/notify';
+import { getErrorMessage } from '@/lib/utils';
 
 interface WarrantyModalProps {
   onClose: () => void;
@@ -113,11 +115,11 @@ export function WarrantyModal({ onClose, onSave, initialData }: WarrantyModalPro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (form.origin === 'sold' && !selectedCustomerId) {
-      alert('Por favor, selecione um cliente.');
+      notify.error('Por favor, selecione um cliente.');
       return;
     }
     if (!selectedProductId) {
-      alert('Por favor, selecione um produto.');
+      notify.error('Por favor, selecione um produto.');
       return;
     }
 
@@ -135,7 +137,7 @@ export function WarrantyModal({ onClose, onSave, initialData }: WarrantyModalPro
       onClose();
     } catch (err) {
       console.error(err);
-      alert('Erro ao registrar concerto/garantia');
+      notify.error(getErrorMessage(err, 'Erro ao registrar concerto/garantia'));
     } finally {
       setLoading(false);
     }

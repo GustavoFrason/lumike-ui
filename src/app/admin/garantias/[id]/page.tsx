@@ -19,6 +19,9 @@ import { Button } from '@/components/ui/button';
 import { Loading } from '@/components/ui/loading';
 import { warrantiesService, Warranty, WarrantyStatus } from '@/lib/services/warranties.service';
 import { formatCurrency } from '@/lib/formatters';
+import { useConfirm } from '@/components/ui/confirm-dialog';
+import { notify } from '@/components/ui/notify';
+import { getErrorMessage } from '@/lib/utils';
 
 const statusMap: Record<WarrantyStatus, { label: string; color: string }> = {
   pending: { label: 'Pendente', color: 'bg-amber-100 text-amber-800' },
@@ -30,6 +33,7 @@ const statusMap: Record<WarrantyStatus, { label: string; color: string }> = {
 };
 
 export default function WarrantyDetailPage() {
+  const { confirm, confirmDialog } = useConfirm();
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
@@ -64,23 +68,28 @@ export default function WarrantyDetailPage() {
         internal_notes: notes,
       });
       router.refresh();
-      alert('Alterações salvas com sucesso!');
+      notify.success('Alterações salvas com sucesso!');
     } catch (err) {
       console.error(err);
-      alert('Erro ao salvar alterações');
+      notify.error(getErrorMessage(err, 'Erro ao salvar alterações'));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!confirm('Tem certeza que deseja excluir este registro de garantia?')) return;
+    const ok = await confirm({
+      title: 'Excluir este registro de garantia?',
+      confirmLabel: 'Excluir',
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       await warrantiesService.remove(id);
       router.push('/admin/garantias');
     } catch (err) {
       console.error(err);
-      alert('Erro ao excluir');
+      notify.error(getErrorMessage(err, 'Erro ao excluir'));
     }
   };
 
@@ -264,6 +273,7 @@ export default function WarrantyDetailPage() {
           )}
         </div>
       </div>
+      {confirmDialog}
     </section>
   );
 }

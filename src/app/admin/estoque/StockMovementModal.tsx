@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Product } from '@/lib/services/products.service';
+import { notify } from '@/components/ui/notify';
 
 interface ModalProps {
   produto: Product;
@@ -25,12 +26,12 @@ export function StockMovementModal({
     e.preventDefault();
     const qty = parseInt(quantity);
     if (qty <= 0) {
-      alert('Quantidade deve ser maior que zero');
+      notify.error('Quantidade deve ser maior que zero');
       return;
     }
 
     if (type === 'exit' && qty > produto.current_stock) {
-      alert(`Estoque insuficiente. Disponível: ${produto.current_stock}`);
+      notify.error(`Estoque insuficiente. Disponível: ${produto.current_stock}`);
       return;
     }
 

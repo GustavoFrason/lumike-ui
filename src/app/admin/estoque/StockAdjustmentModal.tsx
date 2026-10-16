@@ -5,6 +5,7 @@ import { Product } from '@/lib/services/products.service';
 import { usersService, User } from '@/lib/services/users.service';
 import { ClipboardCheck, Home, User as UserIcon } from 'lucide-react';
 import { ProductStock } from '@/lib/services/inventory.service';
+import { notify } from '@/components/ui/notify';
 
 interface StockAdjustmentModalProps {
   produto: Product;
@@ -42,12 +43,12 @@ export function StockAdjustmentModal({
     e.preventDefault();
 
     if (countedQuantity === '' || counted < 0) {
-      alert('Informe a quantidade contada (não pode ser negativa)');
+      notify.error('Informe a quantidade contada (não pode ser negativa)');
       return;
     }
 
     if (!reason.trim()) {
-      alert('Descreva o motivo/observação da conferência');
+      notify.error('Descreva o motivo/observação da conferência');
       return;
     }
 

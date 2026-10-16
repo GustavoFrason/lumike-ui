@@ -16,6 +16,8 @@ import { OrderDetailsModal } from '@/components/admin/OrderDetailsModal';
 import { SalesKpiCards } from './components/SalesKpiCards';
 import { SalesFiltersBar } from './components/SalesFiltersBar';
 import { getSalesColumns } from './components/sales-columns';
+import { useConfirm } from '@/components/ui/confirm-dialog';
+import { notify } from '@/components/ui/notify';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -36,6 +38,7 @@ const statusColors: Record<string, 'pending' | 'active' | 'completed' | 'cancell
 };
 
 export default function VendasPage() {
+  const { confirm, confirmDialog } = useConfirm();
   const {
     orders,
     pagination,
@@ -59,6 +62,8 @@ export default function VendasPage() {
   const [sellers, setSellers] = useState<User[]>([]);
   const [summary, setSummary] = useState<OrdersSummary | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  // Incrementado para o resumo (KPIs e vendedoras) buscar de novo.
+  const [summaryVersion, setSummaryVersion] = useState(0);
 
   useEffect(() => {
     usersService
@@ -108,7 +113,7 @@ export default function VendasPage() {
     return () => {
       cancelled = true;
     };
-  }, [filters]);
+  }, [filters, summaryVersion]);
 
   // Busca por cliente/nº do pedido: só na página carregada
   const filteredOrders = orders.filter(
@@ -135,7 +140,7 @@ export default function VendasPage() {
 
   function handleWhatsApp(pedido: Order) {
     if (!pedido.customers?.phone) {
-      alert('Telefone do cliente não cadastrado.');
+      notify.error('Telefone do cliente não cadastrado.');
       return;
     }
 
@@ -192,8 +197,8 @@ export default function VendasPage() {
       const pedido = orders.find((o) => o.id === id);
       if (pedido) {
         setSelectedOrder(pedido);
-        alert(
-          'Para cancelar com estorno e devolução de estoque, utilize o botão "Cancelar Venda" dentro dos detalhes do pedido.',
+        notify.info(
+          'Para cancelar com estorno e devolução de estoque, use o botão "Cancelar Venda" nos detalhes do pedido.',
         );
         return;
       }
@@ -207,7 +212,13 @@ export default function VendasPage() {
   }
 
   async function handleExcluir(id: number) {
-    if (!confirm('Tem certeza que deseja excluir este pedido?')) {
+    if (
+      !(await confirm({
+        title: 'Excluir este pedido?',
+        confirmLabel: 'Excluir',
+        destructive: true,
+      }))
+    ) {
       return;
     }
 
@@ -310,8 +321,19 @@ export default function VendasPage() {
       )}
 
       {selectedOrder && (
-        <OrderDetailsModal order={selectedOrder} onClose={() => setSelectedOrder(null)} />
+        <OrderDetailsModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          onChanged={() => {
+            setSelectedOrder(null);
+            setSummaryVersion((v) => v + 1);
+            reload().catch(() => {
+              // Erro já é tratado pelo hook
+            });
+          }}
+        />
       )}
+      {confirmDialog}
     </section>
   );
 }

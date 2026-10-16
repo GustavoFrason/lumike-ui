@@ -9,6 +9,7 @@ import { Plus, Search } from 'lucide-react';
 import { UserInventoryModal } from './UserInventoryModal';
 import { UserCard } from './components/UserCard';
 import { UserFormModal, UserFormData } from './components/UserFormModal';
+import { notify } from '@/components/ui/notify';
 
 export default function UsuariosPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -109,7 +110,7 @@ export default function UsuariosPage() {
       setIsModalOpen(false);
       loadData();
     } catch (err) {
-      alert('Erro ao salvar usuário: ' + getErrorMessage(err));
+      notify.error('Erro ao salvar usuário: ' + getErrorMessage(err));
     } finally {
       setSaving(false);
     }

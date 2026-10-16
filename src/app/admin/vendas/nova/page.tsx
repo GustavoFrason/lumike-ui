@@ -25,8 +25,10 @@ import { ProductSearchGrid } from './components/ProductSearchGrid';
 import { CartPanel } from './components/CartPanel';
 import { CustomerSellerSection } from './components/CustomerSellerSection';
 import { PaymentSection } from './components/PaymentSection';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 
 export default function NovaVendaPage() {
+  const { confirm, confirmDialog } = useConfirm();
   const router = useRouter();
   const { user } = useSession();
   // Revendedora (papel vendedor): venda sempre dela e da mala dela; sem
@@ -115,17 +117,22 @@ export default function NovaVendaPage() {
           handleFinalizar();
         }
       }
-      if (e.key === 'Escape') {
-        if (cart.length > 0 && confirm('Limpar carrinho?')) {
-          setCart([]);
-        }
+      if (e.key === 'Escape' && cart.length > 0) {
+        void confirm({
+          title: 'Limpar carrinho?',
+          description: 'Os itens adicionados saem desta venda.',
+          confirmLabel: 'Limpar',
+          destructive: true,
+        }).then((ok) => {
+          if (ok) setCart([]);
+        });
       }
     };
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cart, creating]);
+  }, [cart, creating, confirm]);
 
   const searchLower = searchTerm.trim().toLowerCase();
   const filteredProducts = products.filter((p) =>
@@ -480,6 +487,7 @@ export default function NovaVendaPage() {
         onClose={() => setIsScannerOpen(false)}
         onScan={handleCameraScan}
       />
+      {confirmDialog}
     </section>
   );
 }

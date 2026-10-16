@@ -5,6 +5,7 @@ import { Product } from '@/lib/services/products.service';
 import { usersService, User } from '@/lib/services/users.service';
 import { Package, ArrowRight, Home, User as UserIcon } from 'lucide-react';
 import { ProductStock } from '@/lib/services/inventory.service';
+import { notify } from '@/components/ui/notify';
 
 interface TransferModalProps {
   produto: Partial<Product>;
@@ -46,17 +47,17 @@ export function TransferStockModal({
     const qty = parseInt(quantity);
 
     if (qty <= 0) {
-      alert('Quantidade deve ser maior que zero');
+      notify.error('Quantidade deve ser maior que zero');
       return;
     }
 
     if (fromUserId === toUserId) {
-      alert('Origem e destino devem ser diferentes');
+      notify.error('Origem e destino devem ser diferentes');
       return;
     }
 
     if (qty > currentFromStock) {
-      alert(`Estoque insuficiente na origem. Disponível: ${currentFromStock}`);
+      notify.error(`Estoque insuficiente na origem. Disponível: ${currentFromStock}`);
       return;
     }
 

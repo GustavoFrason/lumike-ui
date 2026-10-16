@@ -27,6 +27,7 @@ import {
   StockFilters,
   StockRow,
 } from './components/stock-rows';
+import { notify } from '@/components/ui/notify';
 
 const ITEMS_PER_PAGE = 25;
 
@@ -171,7 +172,7 @@ export default function EstoquePage() {
       setAdjustmentModalAberto(false);
       await refreshAfterChange();
       if (result && result.delta !== 0) {
-        alert(
+        notify.success(
           `Estoque ajustado: diferença de ${result.delta > 0 ? '+' : ''}${result.delta} unidade(s).`,
         );
       }

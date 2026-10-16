@@ -9,6 +9,8 @@ import {
 import { Loading } from '@/components/ui/loading';
 import { formatCurrency, parseCurrencyBR } from '@/lib/formatters';
 import { DebtorCard } from './components/DebtorCard';
+import { notify } from '@/components/ui/notify';
+import { getErrorMessage } from '@/lib/utils';
 
 export default function AccountsReceivablePage() {
   const [debtors, setDebtors] = useState<Debtor[]>([]);
@@ -82,7 +84,7 @@ export default function AccountsReceivablePage() {
       setPayingOrderId(null);
     } catch (err) {
       console.error(err);
-      alert('Erro ao registrar pagamento');
+      notify.error(getErrorMessage(err, 'Erro ao registrar pagamento'));
     } finally {
       setProcessingPayment(false);
     }

@@ -7,6 +7,8 @@ import { api } from '@/lib/api';
 import { validateLeadField } from './lead-capture/lead-validation';
 import { LeadCaptureForm } from './lead-capture/LeadCaptureForm';
 import { LeadCaptureSuccess } from './lead-capture/LeadCaptureSuccess';
+import { notify } from '@/components/ui/notify';
+import { getErrorMessage } from '@/lib/utils';
 
 // Key for localStorage to prevent showing again
 const STORE_KEY = 'lumilee_lead_captured_v1';
@@ -111,7 +113,7 @@ export function LeadCaptureModal() {
       }
     } catch (error) {
       console.error(error);
-      alert('Erro ao enviar. Tente novamente.');
+      notify.error(getErrorMessage(error, 'Erro ao enviar. Tente novamente.'));
     } finally {
       setLoading(false);
     }

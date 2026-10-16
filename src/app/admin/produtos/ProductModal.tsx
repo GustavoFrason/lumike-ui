@@ -18,6 +18,7 @@ import { ProductDetailsSection } from './components/ProductDetailsSection';
 import { ProductPricingSection } from './components/ProductPricingSection';
 import { ProductOrganizationSection } from './components/ProductOrganizationSection';
 import { ProductImagesAndToggles } from './components/ProductImagesAndToggles';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 
 /**
  * O que o modal entrega no onSave. `pendingFiles`, `existingProductId` e
@@ -40,6 +41,7 @@ interface ModalProps {
 }
 
 export function ProductModal({ produto, onClose, onSave, loading = false, error }: ModalProps) {
+  const { confirm, confirmDialog } = useConfirm();
   const { categories, loadCategories } = useCategories();
   const { loadCollections } = useCollections();
   const { suppliers, loadSuppliers } = useSuppliers();
@@ -280,7 +282,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setValidationErrors({});
 
@@ -324,13 +326,13 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
       productImages.length === 0 &&
       pendingFiles.length === 0
     ) {
-      if (
-        !confirm(
-          'Deseja salvar este produto sem imagens? Ele está marcado como Ativo/Destaque e pode não aparecer corretamente no site.',
-        )
-      ) {
-        return;
-      }
+      const ok = await confirm({
+        title: 'Salvar sem imagens?',
+        description:
+          'O produto está marcado como Ativo/Destaque e pode não aparecer corretamente no site.',
+        confirmLabel: 'Salvar mesmo assim',
+      });
+      if (!ok) return;
     }
 
     const produtoData = {
@@ -488,6 +490,7 @@ export function ProductModal({ produto, onClose, onSave, loading = false, error 
           loading={inventory.transferring}
         />
       )}
+      {confirmDialog}
     </div>
   );
 }

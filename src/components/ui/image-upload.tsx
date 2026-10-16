@@ -8,9 +8,10 @@
 
 import { useState, useRef } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
-import { cn, normalizeImageUrl } from '@/lib/utils';
+import { cn, normalizeImageUrl, getErrorMessage } from '@/lib/utils';
 import { Loading } from './loading';
 import { useEffect } from 'react';
+import { notify } from '@/components/ui/notify';
 
 interface ImageUploadProps {
   onUpload: (file: File, previewUrl: string) => Promise<void>;
@@ -42,7 +43,7 @@ export function ImageUpload({
     if (!files || files.length === 0) return;
 
     if (previews.length + files.length > maxImages) {
-      alert(`Você pode adicionar no máximo ${maxImages} imagens`);
+      notify.error(`Você pode adicionar no máximo ${maxImages} imagens`);
       return;
     }
 
@@ -60,8 +61,7 @@ export function ImageUpload({
       }
     } catch (err: unknown) {
       console.error('Erro ao fazer upload:', err);
-      const message = err instanceof Error ? err.message : 'Erro ao fazer upload da imagem';
-      alert(message);
+      notify.error(getErrorMessage(err, 'Erro ao fazer upload da imagem'));
       // Remove previews em caso de erro
       setPreviews((prev) => prev.slice(0, prev.length - files.length));
     } finally {
