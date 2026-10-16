@@ -45,6 +45,8 @@ export interface ExistingProductRef {
   price?: number;
   sku2?: string | null;
   sku2_alt?: string | null;
+  /** Fornecedor cadastrado na peça (null = sem fornecedor). */
+  supplier_id?: number | null;
   /** Por qual código o produto foi reconhecido. */
   matched_by?: 'sku2' | 'sku2_alt';
   /** Quantos produtos têm esse código no catálogo (>1 = duplicata). */
@@ -112,13 +114,14 @@ export const purchaseImportService = {
   /** Persiste os itens já revisados pelo usuário (só "novos" + "atualizações"). */
   async confirm(
     items: ConfirmImportItem[],
-    notes?: string,
-    purchaseDate?: string,
+    options: { supplierId: number; purchaseDate?: string; notes?: string },
   ): Promise<ConfirmImportResult> {
     const { data } = await api.post<ConfirmImportResult>('/compras/import/confirm', {
       items,
-      notes,
-      purchase_date: purchaseDate,
+      // Vai na compra e nos produtos novos (antes era sempre a Zarpellon).
+      supplier_id: options.supplierId,
+      notes: options.notes,
+      purchase_date: options.purchaseDate,
     });
     return data;
   },

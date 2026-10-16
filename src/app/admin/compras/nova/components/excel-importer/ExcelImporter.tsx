@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { FileSpreadsheet } from 'lucide-react';
 import { purchaseImportService } from '@/lib/services/purchase-import.service';
 import { Category } from '@/lib/services/categories.service';
+import { Supplier } from '@/lib/services/suppliers.service';
 import { getErrorMessage } from '@/lib/utils';
 import { getTodayInSaoPaulo } from '@/lib/formatters';
 import { ExcelUploadPrompt } from './ExcelUploadPrompt';
@@ -17,11 +18,12 @@ import { ConfirmImportResult, ImportPreviewResponse, NewProductRow, UpdateStockR
 
 interface ExcelImporterProps {
   categories: Category[];
+  suppliers: Supplier[];
   onConfirm: (result: ConfirmImportResult) => void;
   onCancel: () => void;
 }
 
-export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporterProps) {
+export function ExcelImporter({ categories, suppliers, onConfirm, onCancel }: ExcelImporterProps) {
   const [loading, setLoading] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,6 +32,9 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
   // sobe a planilha só hoje). Default: hoje no fuso de Brasília, não o do
   // servidor/navegador (ver getTodayInSaoPaulo).
   const [purchaseDate, setPurchaseDate] = useState(() => getTodayInSaoPaulo());
+  // Sem padrão de propósito: escolher sempre evita importar a compra de um
+  // fornecedor como se fosse de outro.
+  const [supplierId, setSupplierId] = useState<number | ''>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -89,7 +94,7 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
   }
 
   async function handleConfirm() {
-    if (!preview) return;
+    if (!preview || supplierId === '') return;
 
     const items = [
       // quantity/unit_cost/price vão POR UNIDADE COMPRADA (kit, quando for
@@ -120,7 +125,7 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
     try {
       setConfirming(true);
       setError(null);
-      const result = await purchaseImportService.confirm(items, undefined, purchaseDate);
+      const result = await purchaseImportService.confirm(items, { supplierId, purchaseDate });
       onConfirm(result);
     } catch (err) {
       setError(getErrorMessage(err, 'Erro ao confirmar importação.'));
@@ -140,7 +145,7 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
           </div>
           <div>
             <h2 className="text-xl font-playfair font-bold text-zinc-900">
-              Importar Planilha da Zarpellon
+              Importar Planilha de Compra
             </h2>
             <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider">
               Passo 1: Validação de Lote
@@ -148,6 +153,29 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <div>
+            <label
+              htmlFor="import-supplier"
+              className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-0.5"
+            >
+              Fornecedor
+            </label>
+            <select
+              id="import-supplier"
+              value={supplierId}
+              onChange={(e) => setSupplierId(e.target.value ? Number(e.target.value) : '')}
+              className={`border rounded-lg px-3 py-1.5 text-sm font-medium bg-white ${
+                supplierId === '' ? 'border-amber-300 text-zinc-400' : 'text-zinc-900'
+              }`}
+            >
+              <option value="">Selecione...</option>
+              {suppliers.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <div>
             <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-0.5">
               Data da Compra
@@ -188,6 +216,8 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
             />
             <UpdateStockTable
               rows={preview.atualizacoes}
+              selectedSupplierId={supplierId}
+              suppliers={suppliers}
               onUpdate={updateStockRow}
               onRemove={removeStockRow}
             />
@@ -205,6 +235,7 @@ export function ExcelImporter({ categories, onConfirm, onCancel }: ExcelImporter
       <ExcelImporterFooter
         itemCount={itemCount}
         confirming={confirming}
+        blockedReason={supplierId === '' ? 'Escolha o fornecedor da compra' : undefined}
         onClear={() => {
           setPreview(null);
           setError(null);

@@ -39,7 +39,7 @@ export default function NovaCompraPage() {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const { createProduct, creating: creatingProduct, errorCreating } = useProducts();
 
-  // Import de planilha Excel (Zarpellon)
+  // Import de planilha Excel (o fornecedor é escolhido dentro do importador)
   const [isExcelImporterOpen, setIsExcelImporterOpen] = useState(false);
 
   useEffect(() => {
@@ -192,7 +192,7 @@ export default function NovaCompraPage() {
           className="flex items-center gap-2 px-4 py-2 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition shadow-sm font-medium"
         >
           <FileSpreadsheet className="h-4 w-4" />
-          Importar Planilha (Zarpellon)
+          Importar Planilha
         </button>
       </div>
 
@@ -254,6 +254,7 @@ export default function NovaCompraPage() {
           <div className="w-full max-w-6xl">
             <ExcelImporter
               categories={categories}
+              suppliers={suppliers}
               onConfirm={handleExcelImportConfirm}
               onCancel={() => setIsExcelImporterOpen(false)}
             />

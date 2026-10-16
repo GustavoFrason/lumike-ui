@@ -2,17 +2,30 @@ import { Trash2, AlertTriangle } from 'lucide-react';
 import { CurrencyInputATM } from '@/components/ui/currency-input-atm';
 import { formatCurrency, parseCurrencyBR } from '@/lib/formatters';
 import { perPiece } from '@/lib/utils/kit-conversion';
+import { Supplier } from '@/lib/services/suppliers.service';
 import { UpdateStockRow } from './types';
 import { PiecesPerKitInput } from './PiecesPerKitInput';
 
 interface UpdateStockTableProps {
   rows: UpdateStockRow[];
+  /** Fornecedor escolhido para a importação ('' = ainda não escolhido). */
+  selectedSupplierId: number | '';
+  suppliers: Supplier[];
   onUpdate: (rowNumber: number, patch: Partial<UpdateStockRow>) => void;
   onRemove: (rowNumber: number) => void;
 }
 
-export function UpdateStockTable({ rows, onUpdate, onRemove }: UpdateStockTableProps) {
+export function UpdateStockTable({
+  rows,
+  selectedSupplierId,
+  suppliers,
+  onUpdate,
+  onRemove,
+}: UpdateStockTableProps) {
   if (rows.length === 0) return null;
+
+  const supplierName = (id: number) =>
+    suppliers.find((s) => s.id === id)?.name ?? `fornecedor #${id}`;
 
   return (
     <div className="bg-white rounded-xl border border-green-100 overflow-hidden">
@@ -25,7 +38,7 @@ export function UpdateStockTable({ rows, onUpdate, onRemove }: UpdateStockTableP
         <table className="w-full text-sm">
           <thead className="bg-zinc-50 text-[10px] uppercase text-zinc-400 font-bold">
             <tr>
-              <th className="text-left px-4 py-2">SKU Zarpellon</th>
+              <th className="text-left px-4 py-2">Código do fornecedor</th>
               <th className="text-left px-4 py-2">Produto no Catálogo</th>
               <th className="text-center px-4 py-2">Estoque Atual</th>
               <th className="text-center px-4 py-2" title="Kit = peças iguais vendidas soltas">
@@ -41,6 +54,14 @@ export function UpdateStockTable({ rows, onUpdate, onRemove }: UpdateStockTableP
               const product = row.existing_product;
               const pieces = row.pieces_per_kit || 1;
               const isKit = pieces > 1;
+              // Código igual ao de uma peça de outro fornecedor: pode ser
+              // coincidência, e aí o estoque entraria na peça errada.
+              const otherSupplierId =
+                selectedSupplierId !== '' &&
+                product.supplier_id != null &&
+                product.supplier_id !== selectedSupplierId
+                  ? product.supplier_id
+                  : null;
               return (
                 <tr key={row.row_number}>
                   <td className="px-4 py-2 font-mono text-xs text-zinc-500 whitespace-nowrap align-top">
@@ -70,6 +91,12 @@ export function UpdateStockTable({ rows, onUpdate, onRemove }: UpdateStockTableP
                       <span className="flex items-center gap-1 text-[10px] text-red-600 mt-0.5">
                         <AlertTriangle className="h-3 w-3" />
                         {product.match_count} produtos com este código — usando o item {product.id}
+                      </span>
+                    )}
+                    {otherSupplierId !== null && (
+                      <span className="flex items-center gap-1 text-[10px] text-amber-600 mt-0.5">
+                        <AlertTriangle className="h-3 w-3" />
+                        Cadastrado como {supplierName(otherSupplierId)}: confira se é a mesma peça
                       </span>
                     )}
                     {isKit && (
