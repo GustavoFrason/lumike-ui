@@ -25,7 +25,7 @@ export function NewProductsTable({ rows, categories, onUpdate, onRemove }: NewPr
         <table className="w-full text-sm">
           <thead className="bg-zinc-50 text-[10px] uppercase text-zinc-400 font-bold">
             <tr>
-              <th className="text-left px-4 py-2">SKU Zarpellon</th>
+              <th className="text-left px-4 py-2">Código do fornecedor</th>
               <th className="text-left px-4 py-2">Nome</th>
               <th className="text-left px-4 py-2">Categoria</th>
               <th className="text-center px-4 py-2" title="Kit = peças iguais vendidas soltas">
@@ -53,7 +53,7 @@ export function NewProductsTable({ rows, categories, onUpdate, onRemove }: NewPr
                         *
                       </span>
                     )}
-                    {/* 2º código da Zarpellon (alguns produtos têm dois) —
+                    {/* 2º código do fornecedor (alguns produtos têm dois) —
                         a busca e as próximas importações acham por qualquer um. */}
                     <input
                       type="text"
@@ -62,7 +62,7 @@ export function NewProductsTable({ rows, categories, onUpdate, onRemove }: NewPr
                         onUpdate(row.row_number, { sku2_alt: e.target.value.toUpperCase() })
                       }
                       placeholder="Código 2"
-                      aria-label="Código Zarpellon 2"
+                      aria-label="2º código do fornecedor"
                       maxLength={50}
                       className="block mt-1 w-28 border rounded px-2 py-0.5 text-[11px] font-mono"
                     />

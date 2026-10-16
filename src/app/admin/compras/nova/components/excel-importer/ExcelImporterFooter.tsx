@@ -3,6 +3,8 @@ import { ChevronRight, Loader2 } from 'lucide-react';
 interface ExcelImporterFooterProps {
   itemCount: number;
   confirming: boolean;
+  /** Falta algo para confirmar (ex: fornecedor): desabilita e mostra o motivo. */
+  blockedReason?: string;
   onClear: () => void;
   onConfirm: () => void;
   onCancel: () => void;
@@ -11,6 +13,7 @@ interface ExcelImporterFooterProps {
 export function ExcelImporterFooter({
   itemCount,
   confirming,
+  blockedReason,
   onClear,
   onConfirm,
   onCancel,
@@ -28,9 +31,12 @@ export function ExcelImporterFooter({
           Limpar e Trocar Planilha
         </button>
       )}
+      {hasItems && blockedReason && (
+        <span className="text-xs font-bold text-amber-600">{blockedReason}</span>
+      )}
       <button
         onClick={hasItems ? onConfirm : onCancel}
-        disabled={confirming || !hasItems}
+        disabled={confirming || !hasItems || !!blockedReason}
         className={`px-8 py-2.5 rounded-xl font-bold transition shadow-md flex items-center gap-2 ${
           hasItems
             ? 'bg-(--lumilee-gold) text-white hover:opacity-90 shadow-orange-100 disabled:opacity-50'

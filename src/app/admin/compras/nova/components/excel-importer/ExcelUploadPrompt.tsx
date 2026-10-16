@@ -22,13 +22,12 @@ export function ExcelUploadPrompt({
       <div className="h-20 w-20 bg-zinc-50 rounded-full flex items-center justify-center mb-6 border-2 border-dashed border-zinc-200 group-hover:border-(--lumilee-gold) transition-colors">
         <FileSpreadsheet className="h-10 w-10 text-zinc-300" />
       </div>
-      <h3 className="text-lg font-bold text-zinc-900 mb-2">
-        Selecione a planilha da Zarpellon Joias
-      </h3>
+      <h3 className="text-lg font-bold text-zinc-900 mb-2">Selecione a planilha da compra</h3>
       <p className="text-sm text-zinc-500 max-w-sm mb-4">
-        Arquivo .xlsx com as colunas Produto, Descrição, Qtd. e Valor Base. Valor de Venda é
-        opcional — se preenchido, vira o preço do produto; se não, o sistema aplica a regra padrão
-        (custo × 3). Tudo fica editável antes de confirmar.
+        Arquivo .xlsx no formato do modelo, de qualquer fornecedor: colunas Produto (código do
+        fornecedor), Descrição, Qtd. e Valor Base. Valor de Venda é opcional — se preenchido, vira o
+        preço do produto; se não, o sistema aplica a regra padrão (custo × 3). Tudo fica editável
+        antes de confirmar.
       </p>
 
       <a
