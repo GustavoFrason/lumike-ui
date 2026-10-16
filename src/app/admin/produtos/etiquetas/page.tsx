@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { use, useState, useEffect, useRef } from 'react';
 import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import Link from 'next/link';
@@ -20,6 +20,9 @@ import { ProductSelectionList } from './components/ProductSelectionList';
 import { LabelPreviewGrid } from './components/LabelPreviewGrid';
 import { loadSavedLabelConfig, saveLabelConfig } from './components/label-config-storage';
 import { compareProductsBySku, rankProductsForSearch } from '@/lib/utils/sort-products';
+import { purchasesService } from '@/lib/services/purchases.service';
+import { labelSelectionFromPurchase } from '@/lib/purchase-labels';
+import { AppliedPurchase, PurchaseLabelPicker } from './components/PurchaseLabelPicker';
 import {
   testQzConnection,
   printLabelsViaQz,
@@ -27,7 +30,16 @@ import {
   type QzPrintResult,
 } from '@/lib/services/qz-print.service';
 
-export default function EtiquetasPage() {
+export default function EtiquetasPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ compra?: string }>;
+}) {
+  // ?compra=<id>: vem de "Imprimir etiquetas" ao incluir a compra e do
+  // botão "Etiquetas" na lista de Compras.
+  const { compra } = use(searchParams);
+  const purchaseIdFromUrl = Number(compra) > 0 ? Number(compra) : null;
+
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [loadProgress, setLoadProgress] = useState<{ loaded: number; total: number } | null>(null);
@@ -36,6 +48,12 @@ export default function EtiquetasPage() {
 
   // Novo estado: Map de id -> quantidade
   const [selectedQuantities, setSelectedQuantities] = useState<Record<number, number>>({});
+
+  // Seleção carregada de uma compra (uma etiqueta por peça comprada).
+  const [appliedPurchase, setAppliedPurchase] = useState<AppliedPurchase | null>(null);
+  const [purchaseLoadingId, setPurchaseLoadingId] = useState<number | null>(null);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const urlPurchaseApplied = useRef(false);
 
   // Configurações de impressão — parte de DEFAULT_LABEL_CONFIG (components/types.ts),
   // a etiqueta física já usada nas peças hoje. Não duplica os valores aqui:
@@ -95,6 +113,49 @@ export default function EtiquetasPage() {
     };
   }, []);
 
+  /**
+   * Seleciona as etiquetas de uma compra: uma por peça, substituindo a
+   * seleção atual. Produto inativo não vem na lista desta tela, então entra
+   * a partir dos dados que a compra traz.
+   */
+  async function applyPurchase(purchaseId: number) {
+    setPurchaseLoadingId(purchaseId);
+    setPurchaseError(null);
+    try {
+      const purchase = await purchasesService.findOne(purchaseId);
+      const selection = labelSelectionFromPurchase(purchase);
+      if (selection.pieces === 0) {
+        setPurchaseError(`A compra #${purchaseId} não tem peças para etiquetar.`);
+        return;
+      }
+      setProducts((prev) => {
+        const known = new Set(prev.map((p) => p.id));
+        const missing = selection.products.filter((p) => !known.has(p.id));
+        return missing.length > 0 ? [...prev, ...missing] : prev;
+      });
+      setSelectedQuantities(selection.quantities);
+      setAppliedPurchase({
+        id: purchase.id,
+        purchaseDate: purchase.purchase_date,
+        supplierName: purchase.suppliers?.name ?? null,
+        pieces: selection.pieces,
+        inactive: selection.inactive,
+      });
+    } catch (err) {
+      setPurchaseError(getErrorMessage(err, `Erro ao carregar a compra #${purchaseId}.`));
+    } finally {
+      setPurchaseLoadingId(null);
+    }
+  }
+
+  // A compra da URL só depois dos produtos: senão a lista que chega por
+  // último sobrescreveria os inativos que a compra acrescentou.
+  useEffect(() => {
+    if (loadingProducts || !purchaseIdFromUrl || urlPurchaseApplied.current) return;
+    urlPurchaseApplied.current = true;
+    void applyPurchase(purchaseIdFromUrl);
+  }, [loadingProducts, purchaseIdFromUrl]);
+
   /** Salva o "Texto da etiqueta" no produto e atualiza a lista local. */
   async function saveLabelText(productId: number, text: string) {
     const updated = await productsService.update(productId, { label_text: text || null });
@@ -137,6 +198,7 @@ export default function EtiquetasPage() {
 
   function deselectAll() {
     setSelectedQuantities({});
+    setAppliedPurchase(null);
   }
 
   /**
@@ -323,6 +385,14 @@ export default function EtiquetasPage() {
         config={config}
         onConfigChange={setConfig}
         onReset={handleResetConfig}
+      />
+
+      <PurchaseLabelPicker
+        applied={appliedPurchase}
+        loadingId={purchaseLoadingId}
+        error={purchaseError}
+        onSelect={(id) => void applyPurchase(id)}
+        onClear={deselectAll}
       />
 
       {/* Selection Area - Hidden on Print */}

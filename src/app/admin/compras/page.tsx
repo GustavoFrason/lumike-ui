@@ -6,7 +6,7 @@ import { DataTable } from '@/components/ui/data-table';
 import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { formatCurrency, formatDate } from '@/lib/formatters';
-import { PlusCircle, Package } from 'lucide-react';
+import { PlusCircle, Package, QrCode } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PurchasesListPage() {
@@ -54,10 +54,12 @@ export default function PurchasesListPage() {
               ),
             },
             {
-              key: 'created_at',
-              header: 'Data',
+              key: 'purchase_date',
+              header: 'Data da Compra',
               render: (item) => (
-                <span className="text-zinc-600">{formatDate(item.created_at)}</span>
+                <span className="text-zinc-600">
+                  {formatDate(item.purchase_date ?? item.created_at)}
+                </span>
               ),
             },
             {
@@ -77,6 +79,20 @@ export default function PurchasesListPage() {
                   <Package className="h-4 w-4" />
                   <span>{item.items_count || 0}</span>
                 </div>
+              ),
+            },
+            {
+              key: 'labels',
+              header: '',
+              render: (item) => (
+                <Link
+                  href={`/admin/produtos/etiquetas?compra=${item.id}`}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-(--lumilee-gold) hover:underline"
+                  title="Abre as etiquetas desta compra, uma por peça"
+                >
+                  <QrCode className="h-4 w-4" />
+                  Etiquetas
+                </Link>
               ),
             },
           ]}

@@ -1,6 +1,6 @@
 import { Save } from 'lucide-react';
 import { Loading } from '@/components/ui/loading';
-import { formatCurrency } from '@/lib/formatters';
+import { formatCurrency, getTodayInSaoPaulo } from '@/lib/formatters';
 import { PurchaseItem } from './types';
 
 interface PurchaseSummaryProps {
@@ -8,6 +8,9 @@ interface PurchaseSummaryProps {
   total: number;
   notes: string;
   onNotesChange: (value: string) => void;
+  /** 'YYYY-MM-DD' */
+  purchaseDate: string;
+  onPurchaseDateChange: (value: string) => void;
   onFinalizar: () => void;
   creating: boolean;
   disabled: boolean;
@@ -18,6 +21,8 @@ export function PurchaseSummary({
   total,
   notes,
   onNotesChange,
+  purchaseDate,
+  onPurchaseDateChange,
   onFinalizar,
   creating,
   disabled,
@@ -38,6 +43,22 @@ export function PurchaseSummary({
       </div>
 
       <div className="space-y-4">
+        <div>
+          <label
+            htmlFor="purchase-date"
+            className="text-xs font-bold uppercase text-zinc-500 block mb-1"
+          >
+            Data da Compra
+          </label>
+          <input
+            id="purchase-date"
+            type="date"
+            value={purchaseDate}
+            max={getTodayInSaoPaulo()}
+            onChange={(e) => onPurchaseDateChange(e.target.value)}
+            className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-(--lumilee-gold) outline-none"
+          />
+        </div>
         <div>
           <label className="text-xs font-bold uppercase text-zinc-500 block mb-1">
             Observações
