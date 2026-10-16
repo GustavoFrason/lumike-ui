@@ -1,0 +1,18 @@
+# Normaliza terminador de linha pra LF em todo arquivo de texto, independente
+# do SO de quem fez checkout/commit (Windows tende a converter pra CRLF por
+# padrão via core.autocrlf). Sem isto, o `prettier --write .` do pre-commit
+# grava LF, o checkout espera CRLF e o git status mostra ~140 arquivos
+# "modificados" sem nenhuma diferença de conteúdo.
+* text=auto eol=lf
+
+# Binários: nunca normalizar.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.xlsx binary
+*.pdf binary
