@@ -45,7 +45,7 @@ export async function generateMetadata(
 
   if (!product) {
     return {
-      title: 'Produto não encontrado | Lumilee',
+      title: 'Produto não encontrado',
     };
   }
 
@@ -53,7 +53,8 @@ export async function generateMetadata(
   const previousImages = (await parent).openGraph?.images || [];
 
   return {
-    title: `${product.name} | Lumilee Semijoias`,
+    // O layout raiz completa com " | Lumilee Semijoias".
+    title: product.name,
     description:
       product.description?.slice(0, 160) || 'Descubra a elegância exclusiva das semijoias Lumilee.',
     openGraph: {

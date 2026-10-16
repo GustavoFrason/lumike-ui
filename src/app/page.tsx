@@ -15,6 +15,7 @@ import { TrustSection } from '@/components/trust-section';
 import { TestimonialsSection } from '@/components/testimonials-section';
 import { FAQSection } from '@/components/faq-section';
 import { CatalogPagination } from '@/components/catalog/catalog-pagination';
+import { getSiteSettings } from '@/lib/site-settings.server';
 import {
   buildCatalogProductsQuery,
   CATALOG_FEATURED_LIMIT,
@@ -25,16 +26,6 @@ import {
   hasActiveCatalogFilters,
   parseCatalogFilters,
 } from '@/lib/catalog-query';
-
-interface Setting {
-  key: string;
-  value: string;
-}
-
-async function getSettings() {
-  const data = await fetchServer<Setting[]>('/settings');
-  return data || [];
-}
 
 interface Collection {
   id: string;
@@ -108,10 +99,10 @@ export default async function HomePage({
     showFeatured ? safeFetch(getFeaturedProducts(), []) : Promise.resolve([]),
     safeFetch(getCategories(), []),
     safeFetch(getCollections(), []),
-    safeFetch(getSettings(), []),
+    getSiteSettings(),
   ]);
 
-  const settings = settingsArr.reduce(
+  const settings = (settingsArr ?? []).reduce(
     (acc, curr) => ({ ...acc, [curr.key]: curr.value }),
     {} as Record<string, string>,
   );

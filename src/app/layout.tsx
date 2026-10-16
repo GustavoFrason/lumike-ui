@@ -1,16 +1,12 @@
-'use client';
-
 import './globals.css';
+import type { Metadata } from 'next';
 import { Playfair_Display, Montserrat, Inter, Poppins } from 'next/font/google';
-import { usePathname } from 'next/navigation';
-import { Header } from '@/components/header';
-import { Footer } from '@/components/footer';
-import { FloatingWhatsApp } from '@/components/ui/floating-whatsapp';
-import { LeadCaptureModal } from '@/components/lead-capture-modal';
+import { PublicChrome } from '@/components/layout/PublicChrome';
 import { Toaster } from '@/components/ui/toaster';
 import { SessionProvider } from '@/contexts/session-context';
 import { FavoritesProvider } from '@/contexts/favorites-context';
 import { SiteSettingsProvider } from '@/contexts/site-settings-context';
+import { getSiteSettings } from '@/lib/site-settings.server';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -36,10 +32,23 @@ const poppins = Poppins({
   variable: '--font-poppins',
 });
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const isAdmin = pathname?.startsWith('/admin');
-  const isLogin = pathname === '/login';
+const SITE_NAME = 'Lumilee Semijoias';
+
+export const metadata: Metadata = {
+  title: { default: SITE_NAME, template: `%s | ${SITE_NAME}` },
+  description:
+    'Semijoias Lumilee: anéis, brincos, colares e pulseiras com acabamento de luxo. Veja a vitrine e fale com a gente pelo WhatsApp.',
+  openGraph: {
+    siteName: SITE_NAME,
+    locale: 'pt_BR',
+    type: 'website',
+  },
+};
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Já vem do servidor: o botão de WhatsApp aparece no primeiro render, sem
+  // esperar uma busca no navegador. `null` (API fora) = o provider busca lá.
+  const settings = await getSiteSettings();
 
   return (
     <html
@@ -49,19 +58,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="h-full w-full font-sans antialiased bg-(--off-white) text-(--deep-black) flex flex-col">
         <SessionProvider>
-          <SiteSettingsProvider>
+          <SiteSettingsProvider initialSettings={settings ?? undefined}>
             <FavoritesProvider>
-              {!isAdmin && !isLogin && <Header />}
-
-              <div className="grow">{children}</div>
-
-              {!isAdmin && !isLogin && (
-                <>
-                  <FloatingWhatsApp />
-                  <LeadCaptureModal />
-                  <Footer />
-                </>
-              )}
+              <PublicChrome>{children}</PublicChrome>
               <Toaster />
             </FavoritesProvider>
           </SiteSettingsProvider>

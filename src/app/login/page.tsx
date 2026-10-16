@@ -4,10 +4,13 @@
  * Se já estiver autenticado, redireciona direto ao dashboard.
  */
 
+import type { Metadata } from 'next';
 import { getAuthCookie } from '@/lib/cookies';
 import { LoginForm } from '@/components/forms/LoginForm';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = { title: 'Entrar' };
 
 export default async function LoginPage() {
   const token = await getAuthCookie();
