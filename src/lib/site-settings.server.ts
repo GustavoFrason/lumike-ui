@@ -1,4 +1,5 @@
 import { cache } from 'react';
+import { unstable_rethrow } from 'next/navigation';
 import { fetchServer } from './api-server';
 import type { Setting } from './services/settings.service';
 
@@ -19,6 +20,10 @@ export const getSiteSettings = cache(async (): Promise<Pick<Setting, 'key' | 'va
     });
     return (data ?? []).map(({ key, value }) => ({ key, value }));
   } catch (error) {
+    // Erros internos do Next (ex: o aviso de que a rota é dinâmica, no
+    // build) precisam seguir adiante; engolir esses deixava a página
+    // pré-renderizada sem as configurações.
+    unstable_rethrow(error);
     console.error('Erro carregando configurações da loja', error);
     return null;
   }
