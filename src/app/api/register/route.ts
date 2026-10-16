@@ -1,21 +1,19 @@
 import { NextResponse } from 'next/server';
+import { getBackendUrl } from '@/lib/backend-url';
 import { getClientForwardHeaders } from '@/lib/request-context';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/register`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(await getClientForwardHeaders()),
-        },
-        body: JSON.stringify(body),
+    const response = await fetch(`${getBackendUrl()}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(await getClientForwardHeaders()),
       },
-    );
+      body: JSON.stringify(body),
+    });
 
     const data = await response.json();
 

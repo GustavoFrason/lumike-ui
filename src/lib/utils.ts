@@ -14,8 +14,8 @@ export function cn(...inputs: ClassValue[]) {
  * Essa lógica (`err.response?.data?.message || err.message || fallback`)
  * estava copiada, com `err: any`, em pelo menos 10 lugares diferentes.
  *
- * `.error` vem primeiro: todo proxy `/api/*` do Next (ver
- * `createErrorResponse` em `api-helpers.ts`) embrulha o erro como
+ * `.error` vem primeiro: o proxy `/api/*` do Next (ver `bff-proxy.ts`)
+ * embrulha o erro como
  * `{ error: mensagem }`, não `{ message: mensagem }` — sem checar `.error`
  * essa função nunca conseguia extrair a mensagem de verdade do backend
  * (ex: "Estoque insuficiente..."), sempre caindo no texto genérico do

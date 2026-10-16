@@ -7,6 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import { setAuthCookie, clearAuthCookie } from '@/lib/cookies';
+import { getBackendUrl } from '@/lib/backend-url';
 import { getClientForwardHeaders } from '@/lib/request-context';
 
 export async function POST(req: Request) {
@@ -21,18 +22,15 @@ export async function POST(req: Request) {
     }
 
     // Faz proxy para o backend
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/login`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Rate limit de login (5/min) por visitante, não por servidor
-          ...(await getClientForwardHeaders()),
-        },
-        body: JSON.stringify({ email, senha }),
+    const response = await fetch(`${getBackendUrl()}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Rate limit de login (5/min) por visitante, não por servidor
+        ...(await getClientForwardHeaders()),
       },
-    );
+      body: JSON.stringify({ email, senha }),
+    });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ message: 'Erro ao autenticar' }));

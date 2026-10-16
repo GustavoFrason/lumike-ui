@@ -14,16 +14,16 @@ describe('ordersService', () => {
     mockedPost.mockReset().mockResolvedValue({ data: { id: 3 } });
   });
 
-  it('updateStatus calls the existing Next route PATCH /pedidos/:id', async () => {
+  it('updateStatus calls PATCH /pedidos/:id/status', async () => {
     await ordersService.updateStatus(3, 'completed');
 
-    expect(mockedPatch).toHaveBeenCalledWith('/pedidos/3', { status: 'completed' });
+    expect(mockedPatch).toHaveBeenCalledWith('/pedidos/3/status', { status: 'completed' });
   });
 
-  it('cancel posts the refund to /orders/:id/cancel', async () => {
+  it('cancel posts the refund to /pedidos/:id/cancel', async () => {
     await ordersService.cancel(3, { refundAmount: 50, notes: 'desistiu' });
 
-    expect(mockedPost).toHaveBeenCalledWith('/orders/3/cancel', {
+    expect(mockedPost).toHaveBeenCalledWith('/pedidos/3/cancel', {
       refundAmount: 50,
       notes: 'desistiu',
     });
