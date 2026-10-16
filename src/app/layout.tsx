@@ -11,6 +11,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { SessionProvider } from '@/contexts/session-context';
 import { FavoritesProvider } from '@/contexts/favorites-context';
 import { CartProvider } from '@/contexts/cart-context';
+import { SiteSettingsProvider } from '@/contexts/site-settings-context';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -49,22 +50,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="h-full w-full font-sans antialiased bg-(--off-white) text-(--deep-black) flex flex-col">
         <SessionProvider>
-          <FavoritesProvider>
-            <CartProvider>
-              {!isAdmin && !isLogin && <Header />}
+          <SiteSettingsProvider>
+            <FavoritesProvider>
+              <CartProvider>
+                {!isAdmin && !isLogin && <Header />}
 
-              <div className="grow">{children}</div>
+                <div className="grow">{children}</div>
 
-              {!isAdmin && !isLogin && (
-                <>
-                  <FloatingWhatsApp />
-                  <LeadCaptureModal />
-                  <Footer />
-                </>
-              )}
-              <Toaster />
-            </CartProvider>
-          </FavoritesProvider>
+                {!isAdmin && !isLogin && (
+                  <>
+                    <FloatingWhatsApp />
+                    <LeadCaptureModal />
+                    <Footer />
+                  </>
+                )}
+                <Toaster />
+              </CartProvider>
+            </FavoritesProvider>
+          </SiteSettingsProvider>
         </SessionProvider>
       </body>
     </html>

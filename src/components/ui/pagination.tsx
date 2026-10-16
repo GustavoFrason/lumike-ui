@@ -8,6 +8,7 @@
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getPageWindow } from '@/lib/pagination';
 
 interface PaginationProps {
   currentPage: number;
@@ -19,20 +20,7 @@ interface PaginationProps {
 export function Pagination({ currentPage, totalPages, onPageChange, className }: PaginationProps) {
   if (totalPages <= 1) return null;
 
-  const pages = [];
-  const maxVisible = 5;
-
-  // Calcula quais páginas mostrar
-  let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-  const endPage = Math.min(totalPages, startPage + maxVisible - 1);
-
-  if (endPage - startPage < maxVisible - 1) {
-    startPage = Math.max(1, endPage - maxVisible + 1);
-  }
-
-  for (let i = startPage; i <= endPage; i++) {
-    pages.push(i);
-  }
+  const { start: startPage, end: endPage, pages } = getPageWindow(currentPage, totalPages);
 
   return (
     <div className={cn('flex items-center justify-center gap-2', className)}>

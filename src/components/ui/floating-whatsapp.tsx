@@ -1,13 +1,22 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { buildWhatsappUrl } from '@/lib/utils/whatsapp';
+import { useSiteSettings } from '@/contexts/site-settings-context';
 
 export function FloatingWhatsApp() {
-  const phoneNumber = '5511999999999'; // Replace with actual number from settings/env if available
+  const { whatsappNumber } = useSiteSettings();
+  const whatsappUrl = buildWhatsappUrl(
+    whatsappNumber,
+    'Olá! Gostaria de saber mais sobre as semijoias Lumilee.',
+  );
+
+  // Sem número configurado (Configurações → Dados da Loja), o botão some.
+  if (!whatsappUrl) return null;
 
   return (
     <motion.a
-      href={`https://wa.me/${phoneNumber}`}
+      href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
       initial={{ scale: 0, opacity: 0 }}

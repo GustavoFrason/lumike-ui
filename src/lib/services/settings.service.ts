@@ -8,6 +8,12 @@ export interface Setting {
   updated_at: string;
 }
 
+/** Chaves de site_settings editadas em Configurações → Dados da Loja. */
+export const STORE_SETTING_KEYS = {
+  whatsappNumber: 'whatsapp_number',
+  pixKey: 'pix_key',
+} as const;
+
 export const settingsService = {
   /**
    * Lista todas as configurações

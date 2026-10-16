@@ -2,6 +2,8 @@
 
 import { MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { buildWhatsappUrl } from '@/lib/utils/whatsapp';
+import { useSiteSettings } from '@/contexts/site-settings-context';
 
 interface WhatsAppButtonProps {
   productName: string;
@@ -10,11 +12,15 @@ interface WhatsAppButtonProps {
 }
 
 export function WhatsAppButton({ productName, className, variant = 'icon' }: WhatsAppButtonProps) {
-  const phoneNumber = '5511999999999'; // TODO: Tornar configurável via env ou settings
-  const message = encodeURIComponent(
+  const { whatsappNumber } = useSiteSettings();
+  const whatsappUrl = buildWhatsappUrl(
+    whatsappNumber,
     `Olá! Gostaria de mais informações sobre o produto: ${productName}`,
   );
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+
+  // Sem número configurado (Configurações → Dados da Loja), não há para
+  // onde mandar o cliente.
+  if (!whatsappUrl) return null;
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
