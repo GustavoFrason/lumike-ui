@@ -1,7 +1,6 @@
 // import { cookies } from 'next/headers';
+import { getBackendUrl } from './backend-url';
 import { getClientForwardHeaders } from './request-context';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 type FetchOptions = RequestInit & {
   params?: Record<string, string>;
@@ -10,7 +9,7 @@ type FetchOptions = RequestInit & {
 export async function fetchServer<T>(path: string, options: FetchOptions = {}): Promise<T> {
   const { params, headers, ...rest } = options;
   const queryString = params ? '?' + new URLSearchParams(params).toString() : '';
-  const url = `${API_URL}${path}${queryString}`;
+  const url = `${getBackendUrl()}${path}${queryString}`;
 
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',

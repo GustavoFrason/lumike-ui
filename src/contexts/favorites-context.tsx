@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { favoritesService } from '@/lib/services/favorites.service';
 import { useSession } from '@/contexts/session-context';
+import { notify } from '@/components/ui/notify';
+import { getErrorMessage } from '@/lib/utils';
 
 interface FavoritesContextType {
   favoriteIds: number[];
@@ -48,7 +50,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
 
   const toggleFavorite = async (productId: number) => {
     if (status !== 'authenticated') {
-      alert('Faça login para favoritar produtos!');
+      notify.info('Faça login para favoritar produtos!');
       return;
     }
 
@@ -72,7 +74,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       setFavoriteIds((prev) =>
         isFaving ? prev.filter((id) => id !== productId) : [...prev, productId],
       );
-      alert('Erro ao salvar favorito.');
+      notify.error(getErrorMessage(error, 'Erro ao salvar favorito.'));
     }
   };
 

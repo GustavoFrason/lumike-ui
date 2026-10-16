@@ -19,10 +19,13 @@ import { WarrantyModal } from '../garantias/WarrantyModal';
 import { ProductFiltersBar } from './components/ProductFiltersBar';
 import { BulkActionsBar } from './components/BulkActionsBar';
 import { getProductColumns } from './components/product-columns';
+import { useConfirm } from '@/components/ui/confirm-dialog';
+import { notify } from '@/components/ui/notify';
 
 const ITEMS_PER_PAGE = 20;
 
 export default function ProdutosPage() {
+  const { confirm, confirmDialog } = useConfirm();
   const {
     products,
     pagination,
@@ -225,7 +228,13 @@ export default function ProdutosPage() {
   }
 
   async function handleExcluir(id: number) {
-    if (!confirm('Tem certeza que deseja excluir este produto?')) {
+    if (
+      !(await confirm({
+        title: 'Excluir este produto?',
+        confirmLabel: 'Excluir',
+        destructive: true,
+      }))
+    ) {
       return;
     }
 
@@ -386,10 +395,11 @@ export default function ProdutosPage() {
           onSave={() => {
             setShowWarrantyModal(false);
             setRepairProduto(null);
-            alert('Enviado para concerto com sucesso!');
+            notify.success('Enviado para concerto com sucesso!');
           }}
         />
       )}
+      {confirmDialog}
     </section>
   );
 }

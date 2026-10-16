@@ -10,8 +10,12 @@ import { Loading } from '@/components/ui/loading';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { Plus, Trash, Filter } from 'lucide-react';
 import { AccessoryPurchaseModal } from './AccessoryPurchaseModal';
+import { useConfirm } from '@/components/ui/confirm-dialog';
+import { notify } from '@/components/ui/notify';
+import { getErrorMessage } from '@/lib/utils';
 
 export default function AccessoryPurchasesPage() {
+  const { confirm, confirmDialog } = useConfirm();
   const [items, setItems] = useState<AccessoryPurchase[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -39,12 +43,15 @@ export default function AccessoryPurchasesPage() {
   }
 
   async function handleDelete(id: number) {
-    if (!confirm('Tem certeza que deseja excluir este item?')) return;
+    if (
+      !(await confirm({ title: 'Excluir este item?', confirmLabel: 'Excluir', destructive: true }))
+    )
+      return;
     try {
       await accessoryPurchasesService.remove(id);
       setItems(items.filter((i) => i.id !== id));
-    } catch {
-      alert('Erro ao excluir');
+    } catch (err) {
+      notify.error(getErrorMessage(err, 'Erro ao excluir'));
     }
   }
 
@@ -133,6 +140,7 @@ export default function AccessoryPurchasesPage() {
       {showModal && (
         <AccessoryPurchaseModal onClose={() => setShowModal(false)} onSave={handleSave} />
       )}
+      {confirmDialog}
     </div>
   );
 }

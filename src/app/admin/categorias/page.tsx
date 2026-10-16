@@ -10,8 +10,10 @@ import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { CategoryModal } from './CategoryModal';
 import { Category } from '@/lib/services/categories.service';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 
 export default function CategoriasPage() {
+  const { confirm, confirmDialog } = useConfirm();
   const {
     categories,
     loadingCategories,
@@ -71,7 +73,13 @@ export default function CategoriasPage() {
   }
 
   async function handleExcluir(id: number) {
-    if (!confirm('Tem certeza que deseja excluir esta categoria?')) {
+    if (
+      !(await confirm({
+        title: 'Excluir esta categoria?',
+        confirmLabel: 'Excluir',
+        destructive: true,
+      }))
+    ) {
       return;
     }
 
@@ -170,6 +178,7 @@ export default function CategoriasPage() {
           loading={creating || updating}
         />
       )}
+      {confirmDialog}
     </section>
   );
 }

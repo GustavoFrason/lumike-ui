@@ -25,6 +25,7 @@ import { getErrorMessage } from '@/lib/utils';
 import { CurrencyInputATM } from '@/components/ui/currency-input-atm';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { Loading } from '@/components/ui/loading';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 
 function addDays(date: string, days: number): string {
   const d = new Date(`${date}T00:00:00Z`);
@@ -35,6 +36,7 @@ function addDays(date: string, days: number): string {
 type Direction = 'from_reseller' | 'to_reseller';
 
 export default function AcertoRevendedoraPage({ params }: { params: Promise<{ id: string }> }) {
+  const { confirm, confirmDialog } = useConfirm();
   const { id: idParam } = use(params);
   const resellerId = Number(idParam);
   const today = getTodayInSaoPaulo();
@@ -116,7 +118,13 @@ export default function AcertoRevendedoraPage({ params }: { params: Promise<{ id
       direction === 'from_reseller'
         ? `Registrar acerto: ${statement.reseller.name} paga ${formatCurrency(amount)} à loja?`
         : `Registrar acerto: a loja paga ${formatCurrency(amount)} a ${statement.reseller.name}?`;
-    if (!confirm(confirmMsg)) return;
+    const ok = await confirm({
+      title: 'Registrar acerto?',
+      description: confirmMsg,
+      icon: HandCoins,
+      confirmLabel: 'Registrar acerto',
+    });
+    if (!ok) return;
 
     setSaving(true);
     setError(null);
@@ -416,6 +424,7 @@ export default function AcertoRevendedoraPage({ params }: { params: Promise<{ id
           </table>
         </div>
       )}
+      {confirmDialog}
     </section>
   );
 }

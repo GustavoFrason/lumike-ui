@@ -9,8 +9,10 @@ import { Loading } from '@/components/ui/loading';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { CollectionModal } from './CollectionModal';
 import { Collection, UpdateCollectionDto } from '@/lib/services/collections.service';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 
 export default function ColecoesPage() {
+  const { confirm, confirmDialog } = useConfirm();
   const {
     collections,
     loadingCollections,
@@ -61,7 +63,13 @@ export default function ColecoesPage() {
   }
 
   async function handleExcluir(id: string) {
-    if (!confirm('Tem certeza que deseja excluir esta coleção?')) {
+    if (
+      !(await confirm({
+        title: 'Excluir esta coleção?',
+        confirmLabel: 'Excluir',
+        destructive: true,
+      }))
+    ) {
       return;
     }
 
@@ -160,6 +168,7 @@ export default function ColecoesPage() {
           loading={creating || updating}
         />
       )}
+      {confirmDialog}
     </section>
   );
 }

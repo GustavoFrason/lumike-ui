@@ -11,10 +11,12 @@ import { Pagination } from '@/components/ui/pagination';
 import { PaginationInfo } from '@/components/ui/pagination-info';
 import { PaginatedSuppliers, Supplier } from '@/lib/services/suppliers.service';
 import { PlusCircle } from 'lucide-react';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 
 const ITEMS_PER_PAGE = 20;
 
 export default function FornecedoresPage() {
+  const { confirm, confirmDialog } = useConfirm();
   const {
     suppliers,
     loading,
@@ -65,7 +67,13 @@ export default function FornecedoresPage() {
   }
 
   async function handleExcluir(id: number) {
-    if (!confirm('Tem certeza que deseja excluir este fornecedor?')) {
+    if (
+      !(await confirm({
+        title: 'Excluir este fornecedor?',
+        confirmLabel: 'Excluir',
+        destructive: true,
+      }))
+    ) {
       return;
     }
     try {
@@ -174,6 +182,7 @@ export default function FornecedoresPage() {
           loading={loading}
         />
       )}
+      {confirmDialog}
     </section>
   );
 }

@@ -13,10 +13,14 @@ import { CustomerInfoSection } from './order-details/CustomerInfoSection';
 import { PaymentInfoSection } from './order-details/PaymentInfoSection';
 import { OrderItemsTable } from './order-details/OrderItemsTable';
 import { CancelOrderFooter } from './order-details/CancelOrderFooter';
+import { useConfirm } from '@/components/ui/confirm-dialog';
+import { notify } from '@/components/ui/notify';
 
 interface OrderDetailsModalProps {
   order: Order;
   onClose: () => void;
+  /** Venda cancelada ou recebimento registrado: a lista recarrega. */
+  onChanged: () => void;
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -50,7 +54,8 @@ const STATUS_COLORS: Record<string, 'pending' | 'active' | 'completed' | 'cancel
   parcelado_boca: 'active',
 };
 
-export function OrderDetailsModal({ order, onClose }: OrderDetailsModalProps) {
+export function OrderDetailsModal({ order, onClose, onChanged }: OrderDetailsModalProps) {
+  const { confirm, confirmDialog } = useConfirm();
   const [payments, setPayments] = useState<OrderPayment[]>([]);
   const [loadingPayments, setLoadingPayments] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
@@ -77,17 +82,24 @@ export function OrderDetailsModal({ order, onClose }: OrderDetailsModalProps) {
   const totalRecebido = order.total_amount - (order.boca_value ?? order.total_amount);
 
   async function handleCancelOrder() {
-    if (!confirm('Tem certeza que deseja cancelar esta venda? Esta ação é irreversível.')) return;
+    const ok = await confirm({
+      title: 'Cancelar esta venda?',
+      description: 'Esta ação é irreversível.',
+      confirmLabel: 'Cancelar venda',
+      cancelLabel: 'Voltar',
+      destructive: true,
+    });
+    if (!ok) return;
     setSubmittingCancel(true);
     try {
       // Via service (axios): erro do backend agora vira exceção. Antes o
       // fetch cru não checava response.ok e sempre dizia "sucesso".
       await ordersService.cancel(order.id, { refundAmount, notes: cancelNotes });
-      alert('Venda cancelada com sucesso!');
-      window.location.reload();
+      notify.success('Venda cancelada com sucesso!');
+      onChanged();
     } catch (error) {
       console.error(error);
-      alert(`Erro ao cancelar venda: ${getErrorMessage(error)}`);
+      notify.error(`Erro ao cancelar venda: ${getErrorMessage(error)}`);
     } finally {
       setSubmittingCancel(false);
     }
@@ -97,11 +109,11 @@ export function OrderDetailsModal({ order, onClose }: OrderDetailsModalProps) {
     setIsSubmittingPay(true);
     try {
       await accountsReceivableService.markAsPaid(order.id, payAmount, payMethod);
-      alert('Recebimento registrado com sucesso!');
-      window.location.reload();
+      notify.success('Recebimento registrado com sucesso!');
+      onChanged();
     } catch (err) {
       console.error(err);
-      alert('Erro ao registrar recebimento.');
+      notify.error(getErrorMessage(err, 'Erro ao registrar recebimento.'));
     } finally {
       setIsSubmittingPay(false);
     }
@@ -186,11 +198,12 @@ export function OrderDetailsModal({ order, onClose }: OrderDetailsModalProps) {
           }}
           onClose={() => setRepairProduct(null)}
           onSave={() => {
-            alert('Concerto registrado com sucesso!');
+            notify.success('Concerto registrado com sucesso!');
             setRepairProduct(null);
           }}
         />
       )}
+      {confirmDialog}
     </div>
   );
 }

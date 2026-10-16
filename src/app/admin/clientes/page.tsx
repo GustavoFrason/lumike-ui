@@ -16,10 +16,12 @@ import { accountsReceivableService, Debtor } from '@/lib/services/accounts-recei
 import { useDebounce } from 'use-debounce';
 import { FileSpreadsheet, Search, Users, Wallet, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 
 const ITEMS_PER_PAGE = 20;
 
 export default function ClientesPage() {
+  const { confirm, confirmDialog } = useConfirm();
   const {
     customers,
     pagination,
@@ -92,7 +94,13 @@ export default function ClientesPage() {
   }
 
   async function handleExcluir(id: number) {
-    if (!confirm('Tem certeza que deseja excluir este cliente?')) {
+    if (
+      !(await confirm({
+        title: 'Excluir este cliente?',
+        confirmLabel: 'Excluir',
+        destructive: true,
+      }))
+    ) {
       return;
     }
 
@@ -301,6 +309,7 @@ export default function ClientesPage() {
           </div>
         </div>
       )}
+      {confirmDialog}
     </section>
   );
 }

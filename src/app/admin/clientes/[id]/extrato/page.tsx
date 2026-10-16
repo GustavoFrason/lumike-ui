@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Printer } from 'lucide-react';
+import { notify } from '@/components/ui/notify';
+import { getErrorMessage } from '@/lib/utils';
 
 interface Transaction {
   date: string;
@@ -55,7 +57,7 @@ export default function CustomerStatementPage() {
       setData(response.data);
     } catch (error) {
       console.error('Erro ao buscar extrato:', error);
-      alert('Erro ao carregar extrato.');
+      notify.error(getErrorMessage(error, 'Erro ao carregar extrato.'));
     } finally {
       setLoading(false);
     }

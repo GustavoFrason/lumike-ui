@@ -8,6 +8,7 @@ import { Palette, Store, Share2, Upload, Loader2 } from 'lucide-react';
 import { cn, getErrorMessage } from '@/lib/utils';
 import { useSiteSettings } from '@/contexts/site-settings-context';
 import { StoreContactSettings } from './components/StoreContactSettings';
+import { notify } from '@/components/ui/notify';
 
 type Tab = 'appearance' | 'store' | 'integrations';
 
@@ -44,7 +45,7 @@ export default function ConfiguracoesPage() {
       return true;
     } catch (error) {
       console.error('Erro ao salvar:', error);
-      alert(getErrorMessage(error, 'Erro ao salvar alteração'));
+      notify.error(getErrorMessage(error, 'Erro ao salvar alteração'));
       return false;
     } finally {
       setSaving(null);
@@ -61,7 +62,7 @@ export default function ConfiguracoesPage() {
       await handleUpdate(key, url);
     } catch (error) {
       console.error('Erro no upload:', error);
-      alert('Falha ao subir imagem');
+      notify.error(getErrorMessage(error, 'Falha ao subir imagem'));
     } finally {
       setUploading(false);
     }
