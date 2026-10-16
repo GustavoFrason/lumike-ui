@@ -36,6 +36,12 @@ export function parseCurrencyBR(value: string | undefined | null): number {
  * Formata uma data para o padrão brasileiro
  */
 export function formatDate(date: string | Date): string {
+  // Data sem hora ('2026-08-31', ex: purchase_date): o `new Date` leria
+  // meia-noite em UTC, e no Brasil (UTC-3) apareceria o dia anterior.
+  if (typeof date === 'string') {
+    const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+    if (dateOnly) return `${dateOnly[3]}/${dateOnly[2]}/${dateOnly[1]}`;
+  }
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',

@@ -11,7 +11,9 @@ import { ErrorMessage } from '@/components/ui/error-message';
 import { getErrorMessage } from '@/lib/utils';
 import { ProductModal, type ProductModalSaveData } from '../../produtos/ProductModal';
 import { imagesService } from '@/lib/services/images.service';
-import { FileSpreadsheet, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { FileSpreadsheet, ArrowLeft, CheckCircle2, Printer } from 'lucide-react';
+import { useConfirm } from '@/components/ui/confirm-dialog';
+import { getTodayInSaoPaulo } from '@/lib/formatters';
 import Link from 'next/link';
 import { PurchaseItem } from './components/types';
 import { SupplierSelector } from './components/SupplierSelector';
@@ -23,6 +25,7 @@ import { ConfirmImportResult } from './components/excel-importer/types';
 
 export default function NovaCompraPage() {
   const router = useRouter();
+  const { confirm, confirmDialog } = useConfirm();
   const { products, loadProducts } = useProducts();
   const { suppliers, loadSuppliers } = useSuppliers();
   const { categories, loadCategories } = useCategories();
@@ -30,6 +33,8 @@ export default function NovaCompraPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [items, setItems] = useState<PurchaseItem[]>([]);
   const [notes, setNotes] = useState('');
+  // Data real da compra (pode ser retroativa), como no importador de planilha.
+  const [purchaseDate, setPurchaseDate] = useState(() => getTodayInSaoPaulo());
   const [selectedSupplierId, setSelectedSupplierId] = useState<number | ''>('');
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,7 +86,20 @@ export default function NovaCompraPage() {
     );
   }
 
-  function handleExcelImportConfirm(result: ConfirmImportResult) {
+  /** Depois de registrar a compra: imprimir as etiquetas dela agora? */
+  function askToPrintLabels() {
+    return confirm({
+      title: 'Compra registrada',
+      description: 'Quer imprimir as etiquetas desta compra agora? Sai uma etiqueta por peça.',
+      icon: Printer,
+      confirmLabel: 'Imprimir etiquetas',
+      cancelLabel: 'Agora não',
+    });
+  }
+
+  const labelsHref = (purchaseId: number) => `/admin/produtos/etiquetas?compra=${purchaseId}`;
+
+  async function handleExcelImportConfirm(result: ConfirmImportResult) {
     setIsExcelImporterOpen(false);
     // A compra já foi persistida (produtos + estoque) direto pelo backend —
     // essa tela só precisa refletir o catálogo atualizado, não empilhar os
@@ -92,6 +110,7 @@ export default function NovaCompraPage() {
       `Planilha importada! ${result.created} produto(s) novo(s) e ${result.updated} entrada(s) de estoque.`,
     );
     setTimeout(() => setSuccess(null), 5000);
+    if (await askToPrintLabels()) router.push(labelsHref(result.purchase_id));
   }
 
   async function handleQuickProductSave(produtoData: ProductModalSaveData) {
@@ -159,6 +178,7 @@ export default function NovaCompraPage() {
 
       const payload: CreatePurchaseDto = {
         supplier_id: Number(selectedSupplierId),
+        purchase_date: purchaseDate,
         notes,
         items: items.map((item) => ({
           product_id: item.product.id,
@@ -167,8 +187,8 @@ export default function NovaCompraPage() {
         })),
       };
 
-      await purchasesService.create(payload);
-      router.push('/admin/compras');
+      const purchase = await purchasesService.create(payload);
+      router.push((await askToPrintLabels()) ? labelsHref(purchase.id) : '/admin/compras');
     } catch (err) {
       setError(getErrorMessage(err, 'Erro ao registrar compra'));
     } finally {
@@ -230,6 +250,8 @@ export default function NovaCompraPage() {
             total={total}
             notes={notes}
             onNotesChange={setNotes}
+            purchaseDate={purchaseDate}
+            onPurchaseDateChange={setPurchaseDate}
             onFinalizar={handleFinalizar}
             creating={creating}
             disabled={items.length === 0 || !selectedSupplierId || creating}
@@ -261,6 +283,7 @@ export default function NovaCompraPage() {
           </div>
         </div>
       )}
+      {confirmDialog}
     </section>
   );
 }

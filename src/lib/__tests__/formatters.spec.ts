@@ -49,6 +49,11 @@ describe('formatters', () => {
       const date = new Date(2023, 11, 25, 12); // Month is 0-indexed (11 = Dec)
       expect(formatDate(date)).toBe('25/12/2023');
     });
+
+    it('formats a date-only string without shifting the day (no UTC midnight)', () => {
+      expect(formatDate('2026-08-31')).toBe('31/08/2026');
+      expect(formatDate('2026-01-01')).toBe('01/01/2026');
+    });
   });
 
   describe('formatDateTime', () => {
